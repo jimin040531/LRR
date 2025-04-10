@@ -10,6 +10,7 @@ import deu.cse.lectureroomreservation.control.SystemController;
  *
  * @author Prof.Jong Min Lee
  */
+// test
 public class LectureRoomSystem {
     
     /**
