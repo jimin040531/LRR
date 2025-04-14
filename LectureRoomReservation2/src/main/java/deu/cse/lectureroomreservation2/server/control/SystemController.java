@@ -16,13 +16,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class SystemController {
-    private Boolean wantToQuit = false;
 
+    private Boolean wantToQuit = false;
     private LoginController loginController = new LoginController();
-    
     private ReservationAgent agent;
     private ReservationController reservationController;
-
 
     /**
      * 시스템 실행에 필요한 초기화를 수행한다.
@@ -38,10 +36,9 @@ public class SystemController {
         }
 
     }
-    
-    public LoginStatus requestAuth(String id, String password) {
-        LoginStatus status = loginController.authenticate(id, password);
-        return status;
+
+    public LoginStatus requestAuth(String id, String password, String role) {
+        return loginController.authenticate(id, password, role);
     }
-    
+
 }

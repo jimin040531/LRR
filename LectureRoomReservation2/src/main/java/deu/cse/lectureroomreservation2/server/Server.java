@@ -12,15 +12,16 @@ import deu.cse.lectureroomreservation2.server.control.SystemController;
  * @author Prof.Jong Min Lee
  */
 public class Server {
+
     private SystemController controller;
-    
+
     public Server() {
         controller = new SystemController();
     }
-    
-    public LoginStatus requestAuth(String id, String password) {
-        System.out.printf(">>> id = %s, password = %s%n%n", id, password);
-        return controller.requestAuth(id, password);
+
+    public LoginStatus requestAuth(String id, String password, String selectedRole) {
+        System.out.printf(">>> id = %s, password = %s, selected = %s%n%n", id, password, selectedRole);
+        return controller.requestAuth(id, password, role);
     }
 
     /**
@@ -29,5 +30,5 @@ public class Server {
     public static void main(String[] args) {
         // TODO code application logic here
     }
-    
+
 }
