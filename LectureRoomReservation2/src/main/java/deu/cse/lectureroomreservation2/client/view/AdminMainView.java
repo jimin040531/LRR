@@ -114,7 +114,7 @@ public class AdminMainView extends javax.swing.JFrame {
 
     private void btnUserManagementActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserManagementActionPerformed
         // TODO add your handling code here:
-        new LectureRoomManagementView().setVisible(true);
+        new UserManagementView().setVisible(true);
         dispose();
     }//GEN-LAST:event_btnUserManagementActionPerformed
 
