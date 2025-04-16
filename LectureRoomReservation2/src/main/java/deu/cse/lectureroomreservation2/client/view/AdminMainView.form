@@ -38,9 +38,9 @@
                           <Component id="btnLectureRoomManagement" alignment="1" min="-2" pref="129" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="btnReservationHistory" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnTimetableManagement" alignment="1" min="-2" pref="126" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="btnTimetableManagement" max="32767" attributes="0"/>
+                          <Component id="btnReservationHistory" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                   </Group>
