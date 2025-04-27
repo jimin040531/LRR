@@ -24,6 +24,7 @@ public class Client {
     private MainMenu mainMenu = new MainMenu();
     private String requestId;
     private String requestPassword;
+    private String requestRadio;
     @Getter
     private LoginStatus status;
 
@@ -40,7 +41,8 @@ public class Client {
         }
         requestId = loginView.getId();
         requestPassword = loginView.getPassword();
-        status = server.requestAuth(requestId, requestPassword);
+        requestRadio = loginView.getRole();
+        status = server.requestAuth(requestId, requestPassword,requestRadio);
         if (status.isLoginSuccess()) {
             if (!isTestEnvironment) {
                 mainMenu.showMainMenu();

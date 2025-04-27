@@ -25,6 +25,7 @@ public class LoginFrame extends javax.swing.JFrame {
         roleGroup.add(stuRadio);
         roleGroup.add(profRadio);
         roleGroup.add(adminRadio);
+        setLocationRelativeTo(null);    // GUI 가운데 정렬.
     }
 
     /**
@@ -169,7 +170,7 @@ public class LoginFrame extends javax.swing.JFrame {
         String id = IDtext.getText();
         String pw = new String(PWtext.getPassword()); // JPasswordField는 이렇게 사용해야 함
         String role = null;     // 역할 라디오 버튼에서 선택된 값 가져오기
-        
+
         if (stuRadio.isSelected()) {
             role = "STUDENT";
         } else if (profRadio.isSelected()) {
@@ -178,9 +179,9 @@ public class LoginFrame extends javax.swing.JFrame {
             role = "ADMIN";
         }
 
-        // 🎯 역할 선택하지 않았을 경우 경고
-        if (role == null) {
-            javax.swing.JOptionPane.showMessageDialog(this, "로그인할 역할을 선택하세요.");
+        // 빈칸을 남기고 로그인 버튼을 눌렀을 경우.
+        if (id == null || pw == null || role == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, "해당 항목을 모두 입력하십시오.");
             return;
         }
 

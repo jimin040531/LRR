@@ -18,11 +18,16 @@ import lombok.Setter;
 @Builder
 public class LoginStatus {
 
-    @Setter
-    private Boolean loginSuccess;
-    @Getter
-    @Setter
+    @Builder.Default
+    private Boolean loginSuccess = false;
+
+    @Builder.Default
     private String role = "NONE";
+    
+    public LoginStatus() {
+        this.loginSuccess = false;
+        this.role = "NONE";
+    }
 
     public boolean isLoginSuccess() {
         return loginSuccess;

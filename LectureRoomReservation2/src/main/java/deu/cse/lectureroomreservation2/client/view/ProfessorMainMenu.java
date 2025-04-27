@@ -16,7 +16,7 @@ public class ProfessorMainMenu extends javax.swing.JFrame {
     public ProfessorMainMenu(String id) {
         initComponents();
         setDefaultCloseOperation(EXIT_ON_CLOSE); // 중요!
-        setSize(400, 300); // 최소한 크기 설정
+        setSize(330, 465); // 최소한 크기 설정
         setLocationRelativeTo(null); // 가운데 정렬
     }
 

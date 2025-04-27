@@ -21,7 +21,7 @@ public class Server {
 
     public LoginStatus requestAuth(String id, String password, String selectedRole) {
         System.out.printf(">>> id = %s, password = %s, selected = %s%n%n", id, password, selectedRole);
-        return controller.requestAuth(id, password, role);
+        return controller.requestAuth(id, password, selectedRole);
     }
 
     /**

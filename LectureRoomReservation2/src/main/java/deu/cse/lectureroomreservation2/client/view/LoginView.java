@@ -18,7 +18,9 @@ public class LoginView {
     
     private String id;
     private String password;
-    
+    private String role;  
+    private deu.cse.lectureroomreservation2.server.control.LoginStatus status; 
+
     public void show() {
         Scanner sc = new Scanner(System.in);
         
@@ -27,8 +29,10 @@ public class LoginView {
         System.out.print("* id 입력 : ");
         id = sc.next();
         
-        // TODO: 입력받는 암호가 모두 보이면 안 되므로 수정 필요
         System.out.print("* 암호 입력 : ");
         password = sc.next();
+        
+        System.out.print("* 역할 입력 (STUDENT/PROFESSOR/ADMIN) : ");
+        role = sc.next();
     }
 }
