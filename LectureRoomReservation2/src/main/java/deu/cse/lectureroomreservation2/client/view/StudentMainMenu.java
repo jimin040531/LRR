@@ -29,29 +29,31 @@ public class StudentMainMenu extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        LogoutButton = new javax.swing.JButton();
+        lecture_reser = new javax.swing.JButton();
+        reservat_check = new javax.swing.JButton();
+        reserva_cancel = new javax.swing.JButton();
+        stu_logout = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        reserv_time_check = new javax.swing.JButton();
+        lectureroom_check = new javax.swing.JButton();
+        stu_pass_change = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(305, 428));
 
-        jButton3.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
-        jButton3.setText("강의실 예약");
+        lecture_reser.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
+        lecture_reser.setText("강의실 예약");
 
-        jButton4.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
-        jButton4.setText("예약 확인");
+        reservat_check.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
+        reservat_check.setText("예약 확인");
 
-        jButton5.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
-        jButton5.setText("예약 취소");
+        reserva_cancel.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
+        reserva_cancel.setText("예약 취소");
 
-        LogoutButton.setText("로그아웃");
-        LogoutButton.addActionListener(new java.awt.event.ActionListener() {
+        stu_logout.setText("로그아웃");
+        stu_logout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                LogoutButtonActionPerformed(evt);
+                stu_logoutActionPerformed(evt);
             }
         });
 
@@ -59,11 +61,18 @@ public class StudentMainMenu extends javax.swing.JFrame {
         jLabel1.setText("Student Main");
         jLabel1.setToolTipText("");
 
-        jButton1.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
-        jButton1.setText("예약 가능 시간 확인");
+        reserv_time_check.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
+        reserv_time_check.setText("예약 가능 시간 확인");
 
-        jButton2.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
-        jButton2.setText("강의실 조회");
+        lectureroom_check.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
+        lectureroom_check.setText("강의실 조회");
+
+        stu_pass_change.setText("비밀번호 변경");
+        stu_pass_change.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stu_pass_changeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -72,61 +81,72 @@ public class StudentMainMenu extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(LogoutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap()
+                        .addComponent(stu_pass_change)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(stu_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel1))
-                            .addGroup(layout.createSequentialGroup()
                                 .addGap(37, 37, 37)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                        .addGap(0, 33, Short.MAX_VALUE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(lectureroom_check, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(reservat_check, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(reserva_cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lecture_reser, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(reserv_time_check, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel1)))
+                        .addGap(0, 27, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(73, 73, 73)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(60, 60, 60)
+                .addComponent(reserv_time_check, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
-                .addComponent(LogoutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lecture_reser, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lectureroom_check, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(reservat_check, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(reserva_cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(stu_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(stu_pass_change, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void LogoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogoutButtonActionPerformed
+    private void stu_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stu_logoutActionPerformed
         // TODO add your handling code here:
         int choice = javax.swing.JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", javax.swing.JOptionPane.YES_NO_OPTION);
 
-        if (choice == javax.swing.JOptionPane.YES_OPTION) {  // 예를 눌렀을 경우.
+        if (choice == javax.swing.JOptionPane.YES_OPTION) {
             this.dispose();  // 현재 창 닫기
             new LoginFrame().setVisible(true); // 로그인 화면 띄우기
         }
-    }//GEN-LAST:event_LogoutButtonActionPerformed
+    }//GEN-LAST:event_stu_logoutActionPerformed
+
+    private void stu_pass_changeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stu_pass_changeActionPerformed
+        // TODO add your handling code here:
+        ChangePassView frame = new ChangePassView();
+        frame.setSize(300, 450);           // ✨ 창 크기 설정 (적당히 보기 좋은 크기)
+        frame.setLocationRelativeTo(null); // ✨ 화면 가운데 정렬
+        frame.setVisible(true);            // ✨ 화면에 보이게 만들기
+    }//GEN-LAST:event_stu_pass_changeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -164,12 +184,13 @@ public class StudentMainMenu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton LogoutButton;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton lecture_reser;
+    private javax.swing.JButton lectureroom_check;
+    private javax.swing.JButton reserv_time_check;
+    private javax.swing.JButton reserva_cancel;
+    private javax.swing.JButton reservat_check;
+    private javax.swing.JButton stu_logout;
+    private javax.swing.JButton stu_pass_change;
     // End of variables declaration//GEN-END:variables
 }
