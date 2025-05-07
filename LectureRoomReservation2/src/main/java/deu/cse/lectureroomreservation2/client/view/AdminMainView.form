@@ -75,7 +75,7 @@
     <Component class="javax.swing.JLabel" name="lblTitle">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="18" style="0"/>
+          <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="18" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="&#xad00;&#xb9ac;&#xc790;"/>
       </Properties>

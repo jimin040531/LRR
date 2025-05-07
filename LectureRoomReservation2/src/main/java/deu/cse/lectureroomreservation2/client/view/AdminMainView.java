@@ -36,7 +36,7 @@ public class AdminMainView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        lblTitle.setFont(new java.awt.Font("맑은 고딕", 0, 18)); // NOI18N
+        lblTitle.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
         lblTitle.setText("관리자");
 
         btnUserManagement.setText("👤 사용자 관리");

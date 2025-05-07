@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Client.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">LectureRoomReservation2</a> &gt; <a href="index.source.html" class="el_package">deu.cse.lectureroomreservation2.client</a> &gt; <span class="el_source">Client.java</span></div><h1>Client.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package deu.cse.lectureroomreservation2.client;
+
+import deu.cse.lectureroomreservation2.client.view.LoginView;
+import deu.cse.lectureroomreservation2.client.view.MainMenu;
+import deu.cse.lectureroomreservation2.server.Server;
+import deu.cse.lectureroomreservation2.server.control.LoginStatus;
+import lombok.Getter;
+
+/**
+ * Client는 강의실 예약 시스템에서 뷰와 관련된 행위를 다룬다. 필요시 Server에 요청하여 필요한 작업을 수행할 수 있다.
+ *
+ * @author Prof.Jong Min Lee
+ */
+public class Client {
+
+    private Server server;
+
+<span class="fc" id="L22">    @Getter</span>
+    private LoginView loginView = new LoginView();
+<span class="fc" id="L24">    private MainMenu mainMenu = new MainMenu();</span>
+    private String requestId;
+    private String requestPassword;
+    @Getter
+    private LoginStatus status;
+
+<span class="fc" id="L30">    public Client(Server server) {</span>
+<span class="fc" id="L31">        this.server = server;</span>
+<span class="fc" id="L32">    }</span>
+
+    public void run() {
+<span class="fc" id="L35">        boolean isTestEnvironment = Boolean.parseBoolean(System.getProperty(&quot;isTestEnvironment&quot;, &quot;false&quot;));</span>
+<span class="fc" id="L36">        System.out.println(&quot;&gt;&gt;&gt; isTestEnvironment = &quot; + isTestEnvironment);</span>
+
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if (!isTestEnvironment) {</span>
+<span class="nc" id="L39">            loginView.show();</span>
+        }
+<span class="fc" id="L41">        requestId = loginView.getId();</span>
+<span class="fc" id="L42">        requestPassword = loginView.getPassword();</span>
+<span class="fc" id="L43">        status = server.requestAuth(requestId, requestPassword);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (status.isLoginSuccess()) {</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">            if (!isTestEnvironment) {</span>
+<span class="nc" id="L46">                mainMenu.showMainMenu();</span>
+            }
+<span class="pc bpc" id="L48" title="3 of 4 branches missed.">            switch (mainMenu.getSelectedMenu()) {</span>
+                case 1 -&gt; {
+<span class="nc" id="L50">                    System.out.println(&quot;1.강의실 예약을 선택했습니다.&quot;);</span>
+<span class="nc" id="L51">                }</span>
+                case 2 -&gt; {
+<span class="nc" id="L53">                    System.out.println(&quot;2.예약 목록을 선택했습니다.&quot;);</span>
+<span class="nc" id="L54">                }</span>
+                case 99 -&gt; {
+<span class="nc" id="L56">                    System.out.println(&quot;99.종료를 선택했습니다.&quot;);</span>
+                }
+            }
+<span class="fc" id="L59">            System.out.println(&quot;\n\n실행을 종료합니다.&quot;);</span>
+        } else {
+<span class="fc" id="L61">            System.out.println(&quot;\n\n로그인 ID나 암호가 맞지 않아 로그인을 실패했습니다.&quot;);</span>
+        }
+
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        // test code
+<span class="nc" id="L71">        Client c = new Client(new Server());</span>
+<span class="nc" id="L72">        c.run();</span>
+<span class="nc" id="L73">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
