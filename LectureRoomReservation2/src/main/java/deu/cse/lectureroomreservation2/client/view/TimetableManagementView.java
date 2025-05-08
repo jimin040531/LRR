@@ -4,6 +4,10 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
+import deu.cse.lectureroomreservation2.server.control.TimeTableController;
+import java.util.Map;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Jimin
@@ -13,11 +17,95 @@ public class TimetableManagementView extends javax.swing.JFrame {
     /**
      * Creates new form TimetableManagementView
      */
+    private TimeTableController controller;
+
     public TimetableManagementView() {
         initComponents();
         setLocationRelativeTo(null);
+        controller = new TimeTableController();
+        loadTimetableOnRoomSelect();  // 강의실 선택 시 시간표 자동 로드
+    }
+    
+    // 강의실 선택 시 시간표 자동 로드
+    private void loadTimetableOnRoomSelect() {
+        cmbRoomSelect.addActionListener(evt -> {
+            String selectedRoom = cmbRoomSelect.getSelectedItem().toString();
+            // 먼저 테이블을 초기화
+            loadTimetable(selectedRoom);  // 선택한 강의실에 맞는 시간표 로드
+        });
     }
 
+    // 테이블을 빈 값으로 초기화하는 메서드
+    private void initializeTimetable() {
+        for (int i = 0; i < tblTimetable.getRowCount(); i++) {
+            for (int j = 2; j < tblTimetable.getColumnCount(); j++) {
+                tblTimetable.setValueAt("", i, j);  // 모든 셀을 빈 값으로 초기화
+            }
+        }
+    }
+    
+    // 시간표를 메모장에서 불러오기
+    private void loadTimetable(String selectedRoom) {
+        controller.loadSchedulesFromFile();  // 파일에서 데이터 불러오기
+        initializeTimetable(); // 테이블을 빈 값으로 초기화하는 메서드 호출
+        updateTimetableTable(selectedRoom);
+    }
+
+    // 강의실 시간표 업데이트
+    private void updateTimetableTable(String selectedRoom) {
+        for (String day : new String[] {"월", "화", "수", "목", "금"}) {
+            Map<String, String> schedule = controller.getScheduleForRoom(selectedRoom, day);
+
+            if (schedule != null) {
+                for (int i = 0; i < tblTimetable.getRowCount(); i++) {
+                    for (int j = 2; j < tblTimetable.getColumnCount(); j++) {
+                        if (tblTimetable.getColumnName(j).equals(day)) {
+                            tblTimetable.setValueAt(null, i, j);
+                        }
+                    }
+                }
+
+                for (Map.Entry<String, String> entry : schedule.entrySet()) {
+                    String timeSlot = entry.getKey();
+                    String subject = entry.getValue();
+                    int rowIndex = getRowForTime(timeSlot.split("-")[0]);
+                    int colIndex = getDayIndex(day);
+
+                    if (rowIndex != -1 && colIndex != -1) {
+                        tblTimetable.setValueAt(subject, rowIndex, colIndex);
+                    }
+                }
+            }
+        }
+    }
+
+    // 요일을 열 인덱스로 변환
+    private int getDayIndex(String day) {
+        switch (day) {
+            case "월": return 2;
+            case "화": return 3;
+            case "수": return 4;
+            case "목": return 5;
+            case "금": return 6;
+            default: return -1;
+        }
+    }
+
+    // 시간대에 해당하는 행 인덱스를 얻는 메서드
+    private int getRowForTime(String time) {
+        switch (time) {
+            case "09:00": return 0;
+            case "10:00": return 1;
+            case "11:00": return 2;
+            case "12:00": return 3;
+            case "13:00": return 4;
+            case "14:00": return 5;
+            case "15:00": return 6;
+            case "16:00": return 7;
+            case "17:00": return 8;
+            default: return -1;
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -27,28 +115,35 @@ public class TimetableManagementView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblTitle = new javax.swing.JLabel();
-        btnBack = new javax.swing.JButton();
-        lblSubject = new javax.swing.JLabel();
-        lblDayOfWeek = new javax.swing.JLabel();
-        lblRoomSelect = new javax.swing.JLabel();
-        lblStartTime = new javax.swing.JLabel();
-        lblEndTime = new javax.swing.JLabel();
-        cmbRoomSelect = new javax.swing.JComboBox<>();
         txtSubject = new javax.swing.JTextField();
         cmbDayOfWeek = new javax.swing.JComboBox<>();
         cmbEndTime = new javax.swing.JComboBox<>();
+        lblTitle = new javax.swing.JLabel();
         cmbStartTime = new javax.swing.JComboBox<>();
+        btnBack = new javax.swing.JButton();
         btnAdd = new javax.swing.JButton();
+        lblSubject = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblTimetable = new javax.swing.JTable();
+        lblDayOfWeek = new javax.swing.JLabel();
+        lblRoomSelect = new javax.swing.JLabel();
         lblTableTitle = new javax.swing.JLabel();
+        lblStartTime = new javax.swing.JLabel();
         btnDelete = new javax.swing.JButton();
+        lblEndTime = new javax.swing.JLabel();
+        btnEdit = new javax.swing.JButton();
+        cmbRoomSelect = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        cmbDayOfWeek.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "월", "화", "수", "목", "금", "토", "일" }));
+
+        cmbEndTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:50", "10:50", "11:50", "12:50", "13:50", "14:50", "15:50", "16:50", "17:50" }));
+
         lblTitle.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
         lblTitle.setText("시간표 관리");
+
+        cmbStartTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00" }));
 
         btnBack.setText("<");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
@@ -57,24 +152,6 @@ public class TimetableManagementView extends javax.swing.JFrame {
             }
         });
 
-        lblSubject.setText("과목명 : ");
-
-        lblDayOfWeek.setText("요일 :");
-
-        lblRoomSelect.setText("강의실 선택 :");
-
-        lblStartTime.setText("시작 시간 :");
-
-        lblEndTime.setText("종료 시간 :");
-
-        cmbRoomSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "908 (세미나실)", "911 (실습실)", "912 (강의실)", "913 (강의실)", "914 (강의실)", "915 (실습실)", "916 (실습실)", "918 (실습실)" }));
-
-        cmbDayOfWeek.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "월", "화", "수", "목", "금", "토", "일" }));
-
-        cmbEndTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00" }));
-
-        cmbStartTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00" }));
-
         btnAdd.setText("➕ 등록");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -82,33 +159,53 @@ public class TimetableManagementView extends javax.swing.JFrame {
             }
         });
 
+        lblSubject.setText("과목명 : ");
+
         tblTimetable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"09:00", "10:00", "", null, null, null, null},
-                {"10:00", "11:00", null, null, null, null, null},
-                {"11:00", "12:00", null, null, null, null, null},
-                {"12:00", "13:00", null, null, null, null, null},
-                {"13:00", "14:00", null, null, null, null, null},
-                {"14:00", "15:00", null, null, null, null, null},
-                {"15:00", "16:00", null, null, null, null, null},
-                {"16:00", "17:00", null, null, null, null, null},
-                {"17:00", "18:00", null, null, null, null, null}
+                {"09:00", "09:50", "", null, null, null, null},
+                {"10:00", "10:50", null, null, null, null, null},
+                {"11:00", "11:50", null, null, null, null, null},
+                {"12:00", "12:50", null, null, null, null, null},
+                {"13:00", "13:50", null, null, null, null, null},
+                {"14:00", "14:50", null, null, null, null, null},
+                {"15:00", "15:50", null, null, null, null, null},
+                {"16:00", "16:50", null, null, null, null, null},
+                {"17:00", "17:50", null, null, null, null, null}
             },
             new String [] {
                 "시작", "종료", "월", "화", "수", "목", "금"
             }
         ));
         jScrollPane1.setViewportView(tblTimetable);
-        if (tblTimetable.getColumnModel().getColumnCount() > 0) {
-            tblTimetable.getColumnModel().getColumn(0).setResizable(false);
-            tblTimetable.getColumnModel().getColumn(0).setPreferredWidth(40);
-            tblTimetable.getColumnModel().getColumn(1).setPreferredWidth(40);
-        }
+
+        lblDayOfWeek.setText("요일 :");
+
+        lblRoomSelect.setText("강의실 선택 :");
 
         lblTableTitle.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
         lblTableTitle.setText("[ 강의실 시간표 ]");
 
+        lblStartTime.setText("시작 시간 :");
+
         btnDelete.setText("🗑 삭제");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
+        lblEndTime.setText("종료 시간 :");
+
+        btnEdit.setText("✏ 수정");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
+        cmbRoomSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "908", "911", "912", "913", "914", "915", "916", "918" }));
+        cmbRoomSelect.setToolTipText("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -126,28 +223,30 @@ public class TimetableManagementView extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnBack)
-                                .addGap(170, 170, 170)
-                                .addComponent(lblTitle))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblDayOfWeek)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmbDayOfWeek, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lblStartTime)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmbStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lblEndTime)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cmbEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(btnDelete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1))
+                        .addComponent(btnBack)
+                        .addGap(170, 170, 170)
+                        .addComponent(lblTitle)
+                        .addGap(0, 208, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblDayOfWeek)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbDayOfWeek, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblStartTime)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblEndTime)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cmbEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -180,6 +279,8 @@ public class TimetableManagementView extends javax.swing.JFrame {
                     .addComponent(cmbDayOfWeek, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAdd))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnEdit)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnDelete)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblTableTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -193,13 +294,90 @@ public class TimetableManagementView extends javax.swing.JFrame {
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         // TODO add your handling code here:
-        new AdminMainView().setVisible(true);
         dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        // TODO add your handling code here:
+        String selectedRoom = cmbRoomSelect.getSelectedItem().toString().trim();
+        String subject = txtSubject.getText().trim();
+        String dayOfWeek = cmbDayOfWeek.getSelectedItem().toString().trim();
+        String startTime = cmbStartTime.getSelectedItem().toString().trim();
+        String endTime = cmbEndTime.getSelectedItem().toString().trim();
+
+        if (selectedRoom.isEmpty() || subject.isEmpty() || dayOfWeek.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "모든 항목을 입력해야 합니다.");
+            return;
+        }
+
+        if (controller.isScheduleExists(selectedRoom, dayOfWeek, startTime, endTime)) {
+            JOptionPane.showMessageDialog(this, "이미 등록된 시간표입니다.");
+            return;
+        }
+
+        try {
+            controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject);
+            loadTimetable(selectedRoom);
+            JOptionPane.showMessageDialog(this, "시간표가 추가되었습니다.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "시간표 추가 중 오류가 발생했습니다.");
+        }
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        String selectedRoom = cmbRoomSelect.getSelectedItem().toString().trim();
+        String subject = txtSubject.getText().trim();
+        String dayOfWeek = cmbDayOfWeek.getSelectedItem().toString().trim();
+        String startTime = cmbStartTime.getSelectedItem().toString().trim();
+        String endTime = cmbEndTime.getSelectedItem().toString().trim();
+
+        if (subject.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "수정할 과목명을 입력해주세요.");
+            return;
+        }
+
+        try {
+            // 1️⃣기존 시간표 삭제
+            controller.deleteScheduleFromFile(selectedRoom, dayOfWeek, startTime, endTime);
+
+            // 2️⃣새 정보로 추가
+            controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject);
+
+            // 3️⃣화면 갱신
+            loadTimetable(selectedRoom);
+            JOptionPane.showMessageDialog(this, "시간표가 수정되었습니다.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "시간표 수정 중 오류가 발생했습니다.");
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        String selectedRoom = cmbRoomSelect.getSelectedItem().toString().trim();
+        String dayOfWeek = cmbDayOfWeek.getSelectedItem().toString().trim();
+        String startTime = cmbStartTime.getSelectedItem().toString().trim();
+        String endTime = cmbEndTime.getSelectedItem().toString().trim();
+
+        try {
+            boolean deleted = controller.deleteScheduleFromFile(selectedRoom, dayOfWeek, startTime, endTime);
+            if (deleted) {
+                controller.loadSchedulesFromFile();  // 메모리 반영만 (혹시 이후 재조회 시 필요할 수 있음)
+
+                // ✅ 해당 시간대 셀만 찾아서 빈 문자열로 변경
+                int rowIndex = getRowForTime(startTime);
+                int colIndex = getDayIndex(dayOfWeek);
+
+                if (rowIndex != -1 && colIndex != -1) {
+                    tblTimetable.setValueAt("", rowIndex, colIndex);
+                }
+
+                JOptionPane.showMessageDialog(this, "시간표가 삭제되었습니다.");
+            } else {
+                JOptionPane.showMessageDialog(this, "해당 시간표를 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "시간표 삭제 중 오류가 발생했습니다.");
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -227,6 +405,9 @@ public class TimetableManagementView extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(TimetableManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -240,6 +421,7 @@ public class TimetableManagementView extends javax.swing.JFrame {
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnEdit;
     private javax.swing.JComboBox<String> cmbDayOfWeek;
     private javax.swing.JComboBox<String> cmbEndTime;
     private javax.swing.JComboBox<String> cmbRoomSelect;
