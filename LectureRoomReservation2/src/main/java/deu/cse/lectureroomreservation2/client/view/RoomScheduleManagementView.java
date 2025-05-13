@@ -5,6 +5,7 @@
 package deu.cse.lectureroomreservation2.client.view;
 
 import deu.cse.lectureroomreservation2.server.control.TimeTableController;
+import deu.cse.lectureroomreservation2.server.model.DaysOfWeek;
 import java.util.Map;
 import javax.swing.JOptionPane;
 
@@ -23,15 +24,14 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         controller = new TimeTableController();
-        loadTimetableOnRoomSelect();  // 강의실 선택 시 시간표 자동 로드
+        loadTimetableOnRoomSelect();
     }
     
     // 강의실 선택 시 시간표 자동 로드
     private void loadTimetableOnRoomSelect() {
         cmbRoomSelect.addActionListener(evt -> {
             String selectedRoom = cmbRoomSelect.getSelectedItem().toString();
-            // 먼저 테이블을 초기화
-            loadTimetable(selectedRoom);  // 선택한 강의실에 맞는 시간표 로드
+            loadTimetable(selectedRoom);
         });
     }
 
@@ -39,17 +39,16 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
     private void initializeTimetable() {
         for (int i = 0; i < tblTimetable.getRowCount(); i++) {
             for (int j = 2; j < tblTimetable.getColumnCount(); j++) {
-                tblTimetable.setValueAt("", i, j);  // 모든 셀을 빈 값으로 초기화
+                tblTimetable.setValueAt("", i, j);
             }
         }
     }
     
     // 시간표를 메모장에서 불러오기
     private void loadTimetable(String selectedRoom) {
-        controller.loadSchedulesFromFile();  // 파일 로드
-        initializeTimetable();               // 초기화
+        initializeTimetable();  // 초기화
         String type = rbLecture.isSelected() ? "수업" : "제한";
-        updateTimetableTable(selectedRoom, type);  // ✅ 타입 전달 필수
+        updateTimetableTable(selectedRoom, type);   // 타입 전달 필수
     }
 
     // 강의실 시간표 업데이트
@@ -73,19 +72,17 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         }
     }
 
-    // 요일을 열 인덱스로 변환
+    // 요일 -> 열 인덱스
     private int getDayIndex(String day) {
-        switch (day) {
-            case "월": return 2;
-            case "화": return 3;
-            case "수": return 4;
-            case "목": return 5;
-            case "금": return 6;
-            default: return -1;
+        try {
+            // 열 인덱스는 테이블에서 "월" 열이 2번째에 위치하므로 +2
+            return DaysOfWeek.fromKoreanDay(day).index() + 2;
+        } catch (IllegalArgumentException e) {
+            return -1; //
         }
     }
 
-    // 시간대에 해당하는 행 인덱스를 얻는 메서드
+    // 시간 -> 행 인덱스
     private int getRowForTime(String time) {
         switch (time) {
             case "09:00": return 0;
@@ -370,7 +367,9 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         }
 
         try {
+            // 시간표 삭제
             controller.deleteScheduleFromFile(selectedRoom, dayOfWeek, startTime, endTime);
+            // 수정된 값으로 시간표 추가
             controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject, type);
             loadTimetable(selectedRoom);
             JOptionPane.showMessageDialog(this, "시간표가 수정되었습니다.");

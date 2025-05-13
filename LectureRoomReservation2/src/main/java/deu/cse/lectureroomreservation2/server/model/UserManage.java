@@ -21,8 +21,16 @@ public class UserManage {
         this.password = password;
     }
 
-    public String getRole() { return role; }
-    public String getName() { return name; }
-    public String getId() { return id; }
-    public String getPassword() { return password; }
+    public String getRole() { 
+        return role; 
+    }
+    public String getName() { 
+        return name; 
+    }
+    public String getId() { 
+        return id; 
+    }
+    public String getPassword() { 
+        return password; 
+    }
 }

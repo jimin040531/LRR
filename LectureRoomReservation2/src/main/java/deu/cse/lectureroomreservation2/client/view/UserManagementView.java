@@ -26,28 +26,15 @@ public class UserManagementView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
     
-    private void updateProfessorTable(List<String[]> users) {
-        DefaultTableModel model = (DefaultTableModel) tblProfessors.getModel();
+    private void updateUserTable(JTable table, List<String[]> users) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
-
         for (String[] user : users) {
             model.addRow(new Object[] {
-                user[1], // name
-                user[2], // id
-                user[3]  // password
-            });
-        }
-    }
-
-    private void updateStudentTable(List<String[]> users) {
-        DefaultTableModel model = (DefaultTableModel) tblStudents.getModel();
-        model.setRowCount(0);
-
-        for (String[] user : users) {
-            model.addRow(new Object[] {
-                user[1], // name
-                user[2], // id
-                user[3]  // password
+                user[0], // 권한
+                user[1], // 이름
+                user[2], // 아이디
+                user[3]  // 비밀번호
             });
         }
     }
@@ -320,12 +307,7 @@ public class UserManagementView extends javax.swing.JFrame {
         String roleFilter = roleLabel.equals("교수") ? "P" : "S";
 
         List<String[]> result = handler.handleSearchRequest(roleFilter, nameFilter);
-
-        if (roleFilter.equals("P")) {
-            updateProfessorTable(result);
-        } else {
-            updateStudentTable(result);
-        }
+        updateUserTable(roleFilter.equals("P") ? tblProfessors : tblStudents, result);
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
@@ -351,12 +333,13 @@ public class UserManagementView extends javax.swing.JFrame {
         String roleCode = roleLabel.equals("교수") ? "P" : "S";
         String[] newUser = new String[] { roleCode, name, id, password };
 
-        DefaultTableModel model = roleCode.equals("P")
-            ? (DefaultTableModel) tblProfessors.getModel()
-            : (DefaultTableModel) tblStudents.getModel();
-        model.addRow(new Object[] { name, id, password });
-
-        handler.saveUser(newUser);
+        List<String[]> updatedList = handler.saveUserAndGetUpdatedList(newUser);
+        
+        if (roleCode.equals("P")) {
+            updateUserTable(tblProfessors, updatedList);
+        } else {
+            updateUserTable(tblStudents, updatedList);
+        }
 
         txtName.setText("");
         txtId.setText("");

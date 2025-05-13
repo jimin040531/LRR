@@ -11,7 +11,7 @@ import java.util.*;
  *
  * @author Jimin
  */
-public class UserDAO {
+public class UserFileManager {
     private static final String filePath = System.getProperty("user.dir") + "/src/main/resources/UserInfo.txt";
 
     public List<UserManage> searchUsers(String roleFilter, String nameFilter) {
