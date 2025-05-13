@@ -4,6 +4,8 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
+import deu.cse.lectureroomreservation2.client.Client;
+
 /**
  *
  * @author User
@@ -13,7 +15,13 @@ public class ProfessorMainMenu extends javax.swing.JFrame {
     /**
      * Creates new form ProfessorMainMenu
      */
-    public ProfessorMainMenu(String id) {
+    private final Client client;
+    private final String userId;
+
+    public ProfessorMainMenu(String userId, Client client) {
+        this.client = client;
+        this.userId = userId;
+
         initComponents();
         setDefaultCloseOperation(EXIT_ON_CLOSE); // 중요!
         setSize(330, 465); // 최소한 크기 설정
@@ -132,6 +140,9 @@ public class ProfessorMainMenu extends javax.swing.JFrame {
         int choice = javax.swing.JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", javax.swing.JOptionPane.YES_NO_OPTION);
 
         if (choice == javax.swing.JOptionPane.YES_OPTION) {
+            if (client != null) {
+                client.logout();
+            }
             this.dispose();  // 현재 창 닫기
             new LoginFrame().setVisible(true); // 로그인 화면 띄우기
         }
@@ -175,7 +186,7 @@ public class ProfessorMainMenu extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ProfessorMainMenu("PROFESSOR").setVisible(true);
+                new ProfessorMainMenu("PROFESSOR", null).setVisible(true);
             }
         });
     }

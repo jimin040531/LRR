@@ -8,6 +8,7 @@ import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import java.io.*;
 
 /**
  *
@@ -16,17 +17,26 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class LoginStatus {
+public class LoginStatus implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    @Builder.Default
+    private Boolean loginSuccess;
 
     @Builder.Default
-    private Boolean loginSuccess = false;
+    private String role;
+    private String message;
 
-    @Builder.Default
-    private String role = "NONE";
-    
     public LoginStatus() {
         this.loginSuccess = false;
         this.role = "NONE";
+        this.message = null;
+    }
+
+    public LoginStatus(Boolean loginSuccess, String role, String message) {
+        this.loginSuccess = loginSuccess;
+        this.role = role;
+        this.message = message;
     }
 
     public boolean isLoginSuccess() {
@@ -62,9 +72,10 @@ public class LoginStatus {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final LoginStatus other = (LoginStatus) obj;
-        return this.loginSuccess == other.loginSuccess
-                && Objects.equals(this.role, other.role);
+        LoginStatus other = (LoginStatus) obj;
+        //return this.loginSuccess == other.loginSuccess
+        //       && Objects.equals(this.role, other.role);
+        return Objects.equals(loginSuccess, other.loginSuccess)
+                && Objects.equals(role, other.role);
     }
-
 }

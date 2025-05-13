@@ -4,6 +4,11 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
+import java.io.IOException;
+import java.io.*;
+import java.util.*;
+import deu.cse.lectureroomreservation2.server.control.ChangePassController;
+import javax.swing.JOptionPane;
 /**
  *
  * @author SAMSUNG
@@ -27,7 +32,7 @@ public class ChangePassView extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        ChangePassButton = new javax.swing.JButton();
         back_cancel = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -41,9 +46,19 @@ public class ChangePassView extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
         jLabel1.setText("비밀번호 변경");
 
-        jButton1.setText("변경");
+        ChangePassButton.setText("변경");
+        ChangePassButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ChangePassButtonActionPerformed(evt);
+            }
+        });
 
         back_cancel.setText("뒤로가기");
+        back_cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                back_cancelActionPerformed(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -68,7 +83,7 @@ public class ChangePassView extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(back_cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(ChangePassButton, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addGap(0, 0, Short.MAX_VALUE)))
@@ -108,13 +123,70 @@ public class ChangePassView extends javax.swing.JFrame {
                     .addComponent(change_pass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(ChangePassButton)
                     .addComponent(back_cancel))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void ChangePassButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChangePassButtonActionPerformed
+        // TODO add your handling code here:
+        String id = change_ID.getText().trim();
+        String currentPass = new String(current_password.getPassword());
+        String newPass = new String(change_pass.getPassword());
+
+        ChangePassController controller = new ChangePassController();
+        String result = controller.changePassword(id, currentPass, newPass);
+
+        if ("SUCCESS".equals(result)) {
+            JOptionPane.showMessageDialog(this, "비밀번호가 성공적으로 변경되었습니다.");
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, result);
+        }
+    }//GEN-LAST:event_ChangePassButtonActionPerformed
+
+    private void back_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_back_cancelActionPerformed
+        // TODO add your handling code here:
+        this.dispose(); // 현재 창 닫기.
+    }//GEN-LAST:event_back_cancelActionPerformed
+
+    private boolean updatePassword(String id, String currentPass, String newPass) {
+        File file = new File("user.txt");
+        List<String> lines = new ArrayList<>();
+        boolean updated = false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split("\t");
+                if (parts.length >= 3 && parts[0].equals(id) && parts[1].equals(currentPass)) {
+                    parts[1] = newPass; // 비밀번호 변경
+                    updated = true;
+                }
+                lines.add(String.join("\t", parts));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        if (updated) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                for (String line : lines) {
+                    bw.write(line);
+                    bw.newLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        return updated;
+    }
 
     /**
      * @param args the command line arguments
@@ -155,11 +227,11 @@ public class ChangePassView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton ChangePassButton;
     private javax.swing.JButton back_cancel;
     private javax.swing.JTextField change_ID;
     private javax.swing.JPasswordField change_pass;
     private javax.swing.JPasswordField current_password;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -6,7 +6,8 @@ package deu.cse.lectureroomreservation2.client.view;
 
 import deu.cse.lectureroomreservation2.client.view.StudentMainMenu;
 import deu.cse.lectureroomreservation2.client.view.ProfessorMainMenu;
-import deu.cse.lectureroomreservation2.client.view.AdminMainMenu;
+import deu.cse.lectureroomreservation2.client.Client;
+import java.io.*;
 
 /**
  *
@@ -161,11 +162,11 @@ public class LoginFrame extends javax.swing.JFrame {
         String role = null;     // 역할 라디오 버튼에서 선택된 값 가져오기
 
         if (stuRadio.isSelected()) {
-            role = "STUDENT";
+            role = "S";
         } else if (profRadio.isSelected()) {
-            role = "PROFESSOR";
+            role = "P";
         } else if (adminRadio.isSelected()) {
-            role = "ADMIN";
+            role = "A";
         }
 
         // 빈칸을 남기고 로그인 버튼을 눌렀을 경우.
@@ -174,37 +175,53 @@ public class LoginFrame extends javax.swing.JFrame {
             return;
         }
 
-        // 🎯 LoginController 객체 생성 및 로그인 시도
-        deu.cse.lectureroomreservation2.server.control.LoginController loginController
-                = new deu.cse.lectureroomreservation2.server.control.LoginController();
+        try {
+            // TCP 서버에 접속
+            deu.cse.lectureroomreservation2.client.Client client = new deu.cse.lectureroomreservation2.client.Client("localhost", 5000);
+            client.sendLoginRequest(id, pw, role);  // 로그인 요청 전송
 
-        deu.cse.lectureroomreservation2.server.control.LoginStatus status
-                = loginController.authenticate(id, pw, role); // 역할까지 전달
+            try {
+                deu.cse.lectureroomreservation2.server.control.LoginStatus status = client.receiveLoginStatus();  // 로그인 응답 수신
 
-        // 🎯 로그인 실패 시 경고
-        if (!status.isLoginSuccess()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "로그인 실패! ID, 비밀번호 또는 역할이 일치하지 않습니다.");
-            return;
+                if (!status.isLoginSuccess()) {
+                    if ("WAIT".equals(status.getRole())) {
+                        javax.swing.JOptionPane.showMessageDialog(this, status.getMessage());
+                    } else if ("DUPLICATE".equals(status.getRole())) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "이미 로그인 중인 계정입니다.");
+                    } else {
+                        javax.swing.JOptionPane.showMessageDialog(this, "로그인 실패! ID, 비밀번호 또는 역할이 일치하지 않습니다.");
+                    }
+                    return;
+                }
+
+                // 로그인 성공 → 역할에 따라 메인 화면 분기
+                switch (status.getRole()) {
+                    case "STUDENT" ->
+                        new StudentMainMenu(id, client).setVisible(true);
+                    case "PROFESSOR" ->
+                        new ProfessorMainMenu(id, client).setVisible(true);
+                    case "ADMIN" ->
+                        javax.swing.JOptionPane.showMessageDialog(this, "관리자 메뉴는 아직 구현되지 않았습니다.");
+                    default -> {
+                        javax.swing.JOptionPane.showMessageDialog(this, "알 수 없는 사용자 유형입니다.");
+                        return;
+                    }
+                }
+
+                this.dispose();  // 현재 로그인 창 닫기
+
+            } catch (EOFException e) {
+                // 서버에서 소켓을 바로 끊은 경우 (ex: 인원 초과 처리 등)
+                javax.swing.JOptionPane.showMessageDialog(this, "접속 인원이 가득 찼거나 서버에서 연결이 종료되었습니다.");
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                javax.swing.JOptionPane.showMessageDialog(this, "서버 응답 처리 중 오류가 발생했습니다.");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this, "서버에 연결할 수 없습니다.");
         }
-
-        // 🎯 로그인 성공 → 역할에 따라 메인 화면 분기
-        switch (status.getRole()) {
-            case "STUDENT":
-                new StudentMainMenu(id).setVisible(true);
-                break;
-            case "PROFESSOR":
-                new ProfessorMainMenu(id).setVisible(true);
-                break;
-            case "ADMIN":
-                new AdminMainMenu(id).setVisible(true);
-                break;
-            default:
-                javax.swing.JOptionPane.showMessageDialog(this, "알 수 없는 사용자 유형입니다.");
-                return;
-        }
-
-        // 현재 로그인 창 닫기
-        this.dispose();
     }//GEN-LAST:event_LoginButtonActionPerformed
 
     private void stuRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stuRadioActionPerformed

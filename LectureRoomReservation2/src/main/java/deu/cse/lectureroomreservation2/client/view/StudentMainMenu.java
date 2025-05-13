@@ -4,6 +4,8 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
+import deu.cse.lectureroomreservation2.client.Client;
+
 /**
  *
  * @author User
@@ -13,11 +15,17 @@ public class StudentMainMenu extends javax.swing.JFrame {
     /**
      * Creates new form StudentMainMenu
      */
-    public StudentMainMenu(String id) {
+    private final String userId;
+    private final Client client;
+
+    public StudentMainMenu(String userId, Client client) {
+        this.userId = userId;
+        this.client = client;
+
         initComponents();
-        setDefaultCloseOperation(EXIT_ON_CLOSE); // 중요!
-        setSize(330, 465); // 최소한 크기 설정
-        setLocationRelativeTo(null); // 가운데 정렬
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(330, 465);
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -135,6 +143,9 @@ public class StudentMainMenu extends javax.swing.JFrame {
         int choice = javax.swing.JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", javax.swing.JOptionPane.YES_NO_OPTION);
 
         if (choice == javax.swing.JOptionPane.YES_OPTION) {
+            if (client != null) {
+                client.logout();
+            }
             this.dispose();  // 현재 창 닫기
             new LoginFrame().setVisible(true); // 로그인 화면 띄우기
         }
@@ -178,7 +189,7 @@ public class StudentMainMenu extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new StudentMainMenu("STUDENT").setVisible(true);
+                new StudentMainMenu("S", null).setVisible(true);
             }
         });
     }
