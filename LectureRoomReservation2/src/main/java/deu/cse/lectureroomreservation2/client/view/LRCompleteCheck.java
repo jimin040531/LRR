@@ -1,23 +1,35 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package deu.cse.lectureroomreservation2.client.view;
 
 import java.awt.*;
+import java.io.*;
+import deu.cse.lectureroomreservation2.client.view.*;
 
-/**
- *
- * @author pc
- */
 public class LRCompleteCheck extends javax.swing.JFrame {
-    
-
-    /**
-     * Creates new form LRDoubleChack
-     */
     public LRCompleteCheck() {
         initComponents();
+        
+        String troomNumber = "915";
+        String tdate = "2025 05 15";
+        String tday = "목요일";
+        String showDate = tdate + " " + tday;
+        
+        viewSelectRoom.setText(troomNumber);
+        viewSelectTime.setText(showDate);
+        
+        viewSelectRoom.setEditable(false);
+        viewSelectTime.setEditable(false);
+    }
+    
+    public LRCompleteCheck(String roomNumber, String date, String day) {
+        initComponents();
+        
+        String showDate = date + " " + day;
+
+        viewSelectRoom.setText(date);
+        viewSelectTime.setText(roomNumber);
+        
+        viewSelectRoom.setEditable(false);
+        viewSelectTime.setEditable(false);
     }
 
     /**
@@ -30,8 +42,8 @@ public class LRCompleteCheck extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        viewSelectTime = new javax.swing.JTextField();
         viewSelectRoom = new javax.swing.JTextField();
+        viewSelectTime = new javax.swing.JTextField();
         LastLRCancel = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         LastLRButton1 = new javax.swing.JButton();
@@ -40,18 +52,15 @@ public class LRCompleteCheck extends javax.swing.JFrame {
 
         jLabel1.setText("예약 확인");
 
-        viewSelectTime.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        viewSelectTime.setEnabled(false);
-        viewSelectTime.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewSelectTimeActionPerformed(evt);
-            }
-        });
-
-        viewSelectRoom.setEnabled(false);
         viewSelectRoom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 viewSelectRoomActionPerformed(evt);
+            }
+        });
+
+        viewSelectTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewSelectTimeActionPerformed(evt);
             }
         });
 
@@ -82,8 +91,8 @@ public class LRCompleteCheck extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(viewSelectTime)
-                            .addComponent(viewSelectRoom, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE))
+                            .addComponent(viewSelectRoom)
+                            .addComponent(viewSelectTime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(61, 61, 61)
@@ -102,9 +111,9 @@ public class LRCompleteCheck extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(viewSelectTime, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(viewSelectRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(viewSelectTime, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -117,25 +126,23 @@ public class LRCompleteCheck extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void viewSelectTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSelectTimeActionPerformed
-        // TODO add your handling code here: 강의실 번호
-        viewSelectTime.setText("2025년 5월 15일 목요일 13:00 ~ 13:50");
-        viewSelectTime.setEnabled(false);
-    }//GEN-LAST:event_viewSelectTimeActionPerformed
+    private void viewSelectRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSelectRoomActionPerformed
+        // TODO add your handling code here: 강의실 표시
+    }//GEN-LAST:event_viewSelectRoomActionPerformed
 
     private void LastLRCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LastLRCancelActionPerformed
         // TODO add your handling code here: 취소 버튼
-        
+        this.dispose();
     }//GEN-LAST:event_LastLRCancelActionPerformed
 
-    private void viewSelectRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSelectRoomActionPerformed
-        // TODO add your handling code here: 날짜 시간 정보
-        
-    }//GEN-LAST:event_viewSelectRoomActionPerformed
+    private void viewSelectTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSelectTimeActionPerformed
+        // TODO add your handling code here: 날짜 시간 표시
+    }//GEN-LAST:event_viewSelectTimeActionPerformed
 
     private void LastLRButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LastLRButton1ActionPerformed
-        // TODO add your handling code here: 확인 버튼
-        
+        // TODO add your handling code here: 예약 버튼
+        new viewResultLR();
+        this.dispose();
     }//GEN-LAST:event_LastLRButton1ActionPerformed
 
     /**
@@ -163,6 +170,18 @@ public class LRCompleteCheck extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(LRCompleteCheck.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
