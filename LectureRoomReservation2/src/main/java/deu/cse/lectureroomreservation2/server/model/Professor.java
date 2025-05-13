@@ -8,7 +8,7 @@ package deu.cse.lectureroomreservation2.server.model;
  *
  * @author Jimin
  */
-public class Professor extends User {
+public class Professor extends UserManage {
     public Professor(String name, String id, String password) {
         super("P", name, id, password);
     }

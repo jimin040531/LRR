@@ -14,8 +14,8 @@ import java.util.*;
 public class UserDAO {
     private static final String filePath = System.getProperty("user.dir") + "/src/main/resources/UserInfo.txt";
 
-    public List<User> searchUsers(String roleFilter, String nameFilter) {
-        List<User> result = new ArrayList<>();
+    public List<UserManage> searchUsers(String roleFilter, String nameFilter) {
+        List<UserManage> result = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -43,7 +43,7 @@ public class UserDAO {
         return result;
     }
 
-    public void saveUser(User user) {
+    public void saveUser(UserManage user) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
             writer.write(String.join(",", user.getRole(), user.getName(), user.getId(), user.getPassword()));
             writer.newLine();

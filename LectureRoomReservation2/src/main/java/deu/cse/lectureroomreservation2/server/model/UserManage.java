@@ -8,13 +8,13 @@ package deu.cse.lectureroomreservation2.server.model;
  *
  * @author Jimin
  */
-public class User {
+public class UserManage {
     protected String role;
     protected String name;
     protected String id;
     protected String password;
 
-    public User(String role, String name, String id, String password) {
+    public UserManage(String role, String name, String id, String password) {
         this.role = role;
         this.name = name;
         this.id = id;

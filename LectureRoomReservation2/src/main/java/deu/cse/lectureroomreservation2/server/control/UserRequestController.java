@@ -6,7 +6,7 @@ package deu.cse.lectureroomreservation2.server.control;
 
 import deu.cse.lectureroomreservation2.server.model.Professor;
 import deu.cse.lectureroomreservation2.server.model.Student;
-import deu.cse.lectureroomreservation2.server.model.User;
+import deu.cse.lectureroomreservation2.server.model.UserManage;
 import deu.cse.lectureroomreservation2.server.model.UserDAO;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +18,10 @@ public class UserRequestController {
     private final UserDAO userDAO = new UserDAO();
 
     public List<String[]> handleSearchRequest(String roleFilter, String nameFilter) {
-        List<User> users = userDAO.searchUsers(roleFilter, nameFilter);
+        List<UserManage> users = userDAO.searchUsers(roleFilter, nameFilter);
         List<String[]> result = new ArrayList<>();
 
-        for (User user : users) {
+        for (UserManage user : users) {
             result.add(new String[] {
                 user.getRole(), user.getName(), user.getId(), user.getPassword()
             });
@@ -36,7 +36,7 @@ public class UserRequestController {
         String id = userData[2];
         String password = userData[3];
 
-        User user;
+        UserManage user;
         if (role.equals("P")) {
             user = new Professor(name, id, password);
         } else {

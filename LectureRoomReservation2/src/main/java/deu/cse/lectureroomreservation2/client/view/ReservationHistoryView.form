@@ -56,7 +56,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="btnSearch" pref="116" max="32767" attributes="0"/>
-                          <Component id="jTextField1" max="32767" attributes="0"/>
+                          <Component id="txtDate" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -85,7 +85,7 @@
                   <Component id="lblDate" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="lblRoomSelect" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cmbRoomSelect" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtDate" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="btnSearch" min="-2" max="-2" attributes="0"/>
@@ -245,10 +245,7 @@
         <Property name="text" type="java.lang.String" value="\ud83d\uddd1 &#xc0ad;&#xc81c;" containsInvalidXMLChars="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextField1">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField1"/>
-      </Properties>
+    <Component class="javax.swing.JTextField" name="txtDate">
     </Component>
   </SubComponents>
 </Form>
