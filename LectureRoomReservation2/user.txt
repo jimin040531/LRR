@@ -1,3 +1,0 @@
-20212991	1234	STUDENT
-12345	profpass	PROFESSOR
-admin	adminpass	ADMIN
