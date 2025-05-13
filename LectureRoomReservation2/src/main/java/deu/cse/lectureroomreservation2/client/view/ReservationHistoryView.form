@@ -55,8 +55,8 @@
                       <Component id="lblDate" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="btnSearch" max="32767" attributes="0"/>
-                          <Component id="dateChooser" pref="116" max="32767" attributes="0"/>
+                          <Component id="btnSearch" pref="116" max="32767" attributes="0"/>
+                          <Component id="jTextField1" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -79,15 +79,13 @@
                       <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                      <Component id="lblUserId" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtUserId" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="lblDate" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="lblRoomSelect" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="cmbRoomSelect" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="dateChooser" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblUserId" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtUserId" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblDate" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblRoomSelect" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cmbRoomSelect" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="btnSearch" min="-2" max="-2" attributes="0"/>
@@ -169,8 +167,6 @@
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
     </Component>
-    <Component class="com.toedter.calendar.JDateChooser" name="dateChooser">
-    </Component>
     <Component class="javax.swing.JLabel" name="lblReservationTableTitle">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xc608;&#xc57d; &#xb0b4;&#xc5ed;"/>
@@ -186,16 +182,22 @@
         <Component class="javax.swing.JTable" name="tblReservationHistory">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="5" rowCount="4">
-                <Column editable="true" title="&#xc0ac;&#xc6a9;&#xc790; ID" type="java.lang.Object"/>
+              <Table columnCount="6" rowCount="4">
                 <Column editable="true" title="&#xac15;&#xc758;&#xc2e4;" type="java.lang.Object"/>
-                <Column editable="true" title="&#xb0a0;&#xc9dc;" type="java.lang.Object"/>
+                <Column editable="true" title="&#xc694;&#xc77c;" type="java.lang.Object"/>
                 <Column editable="true" title="&#xc2dc;&#xc791; &#xc2dc;&#xac04;" type="java.lang.Object"/>
                 <Column editable="true" title="&#xc885;&#xb8cc; &#xc2dc;&#xac04;" type="java.lang.Object"/>
+                <Column editable="true" title="&#xc0ac;&#xc6a9;&#xc790; ID" type="java.lang.Object"/>
+                <Column editable="true" title="&#xb0a0;&#xc9dc;" type="java.lang.Object"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                   <Title/>
                   <Editor/>
@@ -241,6 +243,11 @@
     <Component class="javax.swing.JButton" name="btnDelete">
       <Properties>
         <Property name="text" type="java.lang.String" value="\ud83d\uddd1 &#xc0ad;&#xc81c;" containsInvalidXMLChars="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextField1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="jTextField1"/>
       </Properties>
     </Component>
   </SubComponents>

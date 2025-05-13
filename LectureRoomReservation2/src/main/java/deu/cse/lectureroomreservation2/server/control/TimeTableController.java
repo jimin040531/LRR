@@ -1,55 +1,56 @@
 package deu.cse.lectureroomreservation2.server.control;
 
 import deu.cse.lectureroomreservation2.server.model.DaysOfWeek;
+import deu.cse.lectureroomreservation2.server.model.ScheduleEntry;
 import deu.cse.lectureroomreservation2.server.model.ScheduleManager;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.Map;
 
 public class TimeTableController {
     private ScheduleManager scheduleManager;
+    private final String filePath = System.getProperty("user.dir") + "/src/main/resources/ScheduleInfo.txt";
 
     public TimeTableController() {
         this.scheduleManager = new ScheduleManager();
     }
 
-    // 📌 시간표 파일 경로
-    private final String filePath = "C:\\Users\\Jimin\\Documents\\NetBeansProjects\\test\\schedule.txt";
+    // 📌 파일 → 메모리 로드
+    public void loadSchedulesFromFile() {
+        this.scheduleManager = new ScheduleManager(); // 기존 정보 초기화
 
-    // 📌 메모리로 시간표 읽기
-    public void loadSchedulesFromFile() {        
-        this.scheduleManager = new ScheduleManager();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 5) {
+                if (parts.length == 6) {
                     String roomNumber = parts[0].trim();
                     String day = parts[1].trim();
                     String startTime = parts[2].trim();
                     String endTime = parts[3].trim();
                     String subject = parts[4].trim();
+                    String type = parts[5].trim(); // "수업" or "제한"
 
                     DaysOfWeek dayOfWeek = DaysOfWeek.fromKoreanDay(day);
-                    scheduleManager.addSchedule(roomNumber, dayOfWeek, startTime, endTime, subject);
+                    scheduleManager.addSchedule(roomNumber, dayOfWeek, startTime, endTime, subject, type);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("시간표 파일 로딩 실패", e);
         }
     }
 
-    // 📌 시간표 존재 여부 확인
+    // 📌 해당 시간표 존재 여부 확인
     public boolean isScheduleExists(String roomNumber, String day, String startTime, String endTime) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.trim().split(",");
-                if (isSameSchedule(parts, roomNumber, day, startTime, endTime)) {
+                if (parts.length >= 4 &&
+                    parts[0].trim().equals(roomNumber) &&
+                    parts[1].trim().equals(day) &&
+                    parts[2].trim().equals(startTime) &&
+                    parts[3].trim().equals(endTime)) {
                     return true;
                 }
             }
@@ -59,9 +60,9 @@ public class TimeTableController {
         return false;
     }
 
-    // 📌 과목 추가
-    public void addScheduleToFile(String roomNumber, String day, String startTime, String endTime, String subject) {
-        if (roomNumber.isBlank() || day.isBlank() || startTime.isBlank() || endTime.isBlank() || subject.isBlank()) {
+    // 📌 시간표 추가
+    public void addScheduleToFile(String roomNumber, String day, String startTime, String endTime, String subject, String type) {
+        if (roomNumber.isBlank() || day.isBlank() || startTime.isBlank() || endTime.isBlank() || subject.isBlank() || type.isBlank()) {
             throw new IllegalArgumentException("입력값이 누락되었습니다.");
         }
 
@@ -70,24 +71,24 @@ public class TimeTableController {
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            writer.write(String.join(",", roomNumber, day, startTime, endTime, subject));
+            writer.write(String.join(",", roomNumber, day, startTime, endTime, subject, type));
             writer.newLine();
         } catch (IOException e) {
             throw new RuntimeException("시간표 추가 중 오류가 발생했습니다.", e);
         }
     }
 
-    // 📌 과목 수정 (해당 항목을 찾아 과목명 덮어쓰기)
-    public boolean updateScheduleInFile(String roomNumber, String day, String startTime, String endTime, String newSubject) {
+    // 📌 시간표 수정 (과목명/종류 덮어쓰기)
+    public boolean updateScheduleInFile(String roomNumber, String day, String startTime, String endTime, String newSubject, String newType) {
         return modifyScheduleFile((parts) -> {
             if (isSameSchedule(parts, roomNumber, day, startTime, endTime)) {
-                return roomNumber + "," + day + "," + startTime + "," + endTime + "," + newSubject;
+                return String.join(",", roomNumber, day, startTime, endTime, newSubject, newType);
             }
             return String.join(",", parts);
         });
     }
 
-    // 📌 과목 삭제
+    // 📌 시간표 삭제
     public boolean deleteScheduleFromFile(String roomNumber, String day, String startTime, String endTime) {
         return modifyScheduleFile((parts) -> {
             if (isSameSchedule(parts, roomNumber, day, startTime, endTime)) {
@@ -97,13 +98,13 @@ public class TimeTableController {
         });
     }
 
-    // 📌 강의실/요일 기준 시간표 조회
-    public Map<String, String> getScheduleForRoom(String roomNumber, String day) {
+    // 📌 요일/강의실/타입별 시간표 조회
+    public Map<String, String> getScheduleForRoom(String roomNumber, String day, String type) {
         DaysOfWeek dayOfWeek = DaysOfWeek.fromKoreanDay(day);
-        return scheduleManager.getSchedule(roomNumber, dayOfWeek);
+        return scheduleManager.getSchedule(roomNumber, dayOfWeek, type);
     }
 
-    // 🔧 내부 공통 처리 메서드
+    // 🔧 공통 수정 함수
     private boolean modifyScheduleFile(ScheduleLineModifier modifier) {
         boolean modified = false;
         StringBuilder updatedContent = new StringBuilder();
@@ -114,10 +115,10 @@ public class TimeTableController {
                 String[] parts = line.trim().split(",");
                 String result = modifier.modify(parts);
                 if (result == null) {
-                    modified = true; // 삭제됨
+                    modified = true;
                     continue;
                 } else if (!String.join(",", parts).equals(result)) {
-                    modified = true; // 수정됨
+                    modified = true;
                 }
                 updatedContent.append(result).append(System.lineSeparator());
             }
@@ -136,7 +137,7 @@ public class TimeTableController {
         return modified;
     }
 
-    // 🔧 동일한 시간표인지 확인
+    // 🔧 동일한 시간표 항목인지 비교
     private boolean isSameSchedule(String[] parts, String room, String day, String start, String end) {
         return parts.length >= 4 &&
                parts[0].trim().equals(room) &&
@@ -145,9 +146,8 @@ public class TimeTableController {
                parts[3].trim().equals(end);
     }
 
-    // 🔧 라인 수정용 함수형 인터페이스
     @FunctionalInterface
     private interface ScheduleLineModifier {
-        String modify(String[] parts); // null이면 삭제
+        String modify(String[] parts); // null 반환 시 해당 항목 삭제
     }
 }

@@ -29,7 +29,6 @@ public class AdminMainView extends javax.swing.JFrame {
 
         lblTitle = new javax.swing.JLabel();
         btnUserManagement = new javax.swing.JButton();
-        btnLectureRoomManagement = new javax.swing.JButton();
         btnReservationHistory = new javax.swing.JButton();
         btnLogout = new javax.swing.JButton();
         btnTimetableManagement = new javax.swing.JButton();
@@ -46,13 +45,6 @@ public class AdminMainView extends javax.swing.JFrame {
             }
         });
 
-        btnLectureRoomManagement.setText("🖥 ️강의실 관리");
-        btnLectureRoomManagement.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLectureRoomManagementActionPerformed(evt);
-            }
-        });
-
         btnReservationHistory.setText("📅 예약 내역 조회");
         btnReservationHistory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -62,7 +54,7 @@ public class AdminMainView extends javax.swing.JFrame {
 
         btnLogout.setText("🚪");
 
-        btnTimetableManagement.setText("🕒 시간표 관리");
+        btnTimetableManagement.setText("🕒 강의실 일정 관리");
         btnTimetableManagement.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTimetableManagementActionPerformed(evt);
@@ -74,7 +66,7 @@ public class AdminMainView extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnLogout)
@@ -82,9 +74,7 @@ public class AdminMainView extends javax.swing.JFrame {
                         .addComponent(lblTitle)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnUserManagement, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnLectureRoomManagement, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnUserManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnTimetableManagement, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -103,9 +93,7 @@ public class AdminMainView extends javax.swing.JFrame {
                     .addComponent(btnUserManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnReservationHistory, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnTimetableManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLectureRoomManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(btnTimetableManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -118,12 +106,6 @@ public class AdminMainView extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_btnUserManagementActionPerformed
 
-    private void btnLectureRoomManagementActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLectureRoomManagementActionPerformed
-        // TODO add your handling code here:
-        new LectureRoomManagementView().setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnLectureRoomManagementActionPerformed
-
     private void btnReservationHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReservationHistoryActionPerformed
         // TODO add your handling code here:
         new ReservationHistoryView().setVisible(true);
@@ -132,7 +114,7 @@ public class AdminMainView extends javax.swing.JFrame {
 
     private void btnTimetableManagementActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimetableManagementActionPerformed
         // TODO add your handling code here:
-        new TimetableManagementView().setVisible(true);
+        new RoomScheduleManagementView().setVisible(true);
         dispose();
     }//GEN-LAST:event_btnTimetableManagementActionPerformed
 
@@ -172,7 +154,6 @@ public class AdminMainView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnLectureRoomManagement;
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnReservationHistory;
     private javax.swing.JButton btnTimetableManagement;

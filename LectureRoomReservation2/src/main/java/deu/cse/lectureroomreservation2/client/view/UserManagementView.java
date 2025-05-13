@@ -4,7 +4,10 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
-import javax.swing.JDialog;
+import deu.cse.lectureroomreservation2.server.control.UserRequestController;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.util.*;
 
 /**
  *
@@ -15,9 +18,38 @@ public class UserManagementView extends javax.swing.JFrame {
     /**
      * Creates new form UserManagementView
      */
+    
+    private UserRequestController handler = new UserRequestController();
+
     public UserManagementView() {
         initComponents();
         setLocationRelativeTo(null);
+    }
+    
+    private void updateProfessorTable(List<String[]> users) {
+        DefaultTableModel model = (DefaultTableModel) tblProfessors.getModel();
+        model.setRowCount(0);
+
+        for (String[] user : users) {
+            model.addRow(new Object[] {
+                user[1], // name
+                user[2], // id
+                user[3]  // password
+            });
+        }
+    }
+
+    private void updateStudentTable(List<String[]> users) {
+        DefaultTableModel model = (DefaultTableModel) tblStudents.getModel();
+        model.setRowCount(0);
+
+        for (String[] user : users) {
+            model.addRow(new Object[] {
+                user[1], // name
+                user[2], // id
+                user[3]  // password
+            });
+        }
     }
 
     /**
@@ -38,7 +70,7 @@ public class UserManagementView extends javax.swing.JFrame {
         txtName = new javax.swing.JTextField();
         txtId = new javax.swing.JTextField();
         txtPw = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        btnADD = new javax.swing.JButton();
         cmbRoleFilter = new javax.swing.JComboBox<>();
         txtSearch = new javax.swing.JTextField();
         lblTitle = new javax.swing.JLabel();
@@ -70,7 +102,12 @@ public class UserManagementView extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("jButton1");
+        btnADD.setText("등록");
+        btnADD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnADDActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
         jDialog1.getContentPane().setLayout(jDialog1Layout);
@@ -93,7 +130,7 @@ public class UserManagementView extends javax.swing.JFrame {
                                 .addComponent(txtId, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
                                 .addComponent(txtName, javax.swing.GroupLayout.Alignment.LEADING))))
                     .addGroup(jDialog1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(btnADD)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -117,7 +154,7 @@ public class UserManagementView extends javax.swing.JFrame {
                     .addComponent(txtPw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPw))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(btnADD)
                 .addContainerGap())
         );
 
@@ -278,7 +315,17 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
+        String roleLabel = cmbRoleFilter.getSelectedItem().toString();
+        String nameFilter = txtSearch.getText().trim();
+        String roleFilter = roleLabel.equals("교수") ? "P" : "S";
+
+        List<String[]> result = handler.handleSearchRequest(roleFilter, nameFilter);
+
+        if (roleFilter.equals("P")) {
+            updateProfessorTable(result);
+        } else {
+            updateStudentTable(result);
+        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
@@ -288,6 +335,34 @@ public class UserManagementView extends javax.swing.JFrame {
     private void cmbRoleFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoleFilterActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbRoleFilterActionPerformed
+
+    private void btnADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnADDActionPerformed
+        // TODO add your handling code here:
+        String roleLabel = cmbRole.getSelectedItem().toString();
+        String name = txtName.getText().trim();
+        String id = txtId.getText().trim();
+        String password = txtPw.getText().trim();
+
+        if (name.isEmpty() || id.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "모든 필드를 입력하세요.");
+            return;
+        }
+
+        String roleCode = roleLabel.equals("교수") ? "P" : "S";
+        String[] newUser = new String[] { roleCode, name, id, password };
+
+        DefaultTableModel model = roleCode.equals("P")
+            ? (DefaultTableModel) tblProfessors.getModel()
+            : (DefaultTableModel) tblStudents.getModel();
+        model.addRow(new Object[] { name, id, password });
+
+        handler.saveUser(newUser);
+
+        txtName.setText("");
+        txtId.setText("");
+        txtPw.setText("");
+        jDialog1.setVisible(false);
+    }//GEN-LAST:event_btnADDActionPerformed
 
     /**
      * @param args the command line arguments
@@ -325,6 +400,7 @@ public class UserManagementView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnADD;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
@@ -332,7 +408,6 @@ public class UserManagementView extends javax.swing.JFrame {
     private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cmbRole;
     private javax.swing.JComboBox<String> cmbRoleFilter;
-    private javax.swing.JButton jButton1;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

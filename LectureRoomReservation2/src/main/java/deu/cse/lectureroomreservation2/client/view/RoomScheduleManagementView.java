@@ -12,14 +12,14 @@ import javax.swing.JOptionPane;
  *
  * @author Jimin
  */
-public class TimetableManagementView extends javax.swing.JFrame {
+public class RoomScheduleManagementView extends javax.swing.JFrame {
 
     /**
      * Creates new form TimetableManagementView
      */
     private TimeTableController controller;
 
-    public TimetableManagementView() {
+    public RoomScheduleManagementView() {
         initComponents();
         setLocationRelativeTo(null);
         controller = new TimeTableController();
@@ -46,29 +46,23 @@ public class TimetableManagementView extends javax.swing.JFrame {
     
     // 시간표를 메모장에서 불러오기
     private void loadTimetable(String selectedRoom) {
-        controller.loadSchedulesFromFile();  // 파일에서 데이터 불러오기
-        initializeTimetable(); // 테이블을 빈 값으로 초기화하는 메서드 호출
-        updateTimetableTable(selectedRoom);
+        controller.loadSchedulesFromFile();  // 파일 로드
+        initializeTimetable();               // 초기화
+        String type = rbLecture.isSelected() ? "수업" : "제한";
+        updateTimetableTable(selectedRoom, type);  // ✅ 타입 전달 필수
     }
 
     // 강의실 시간표 업데이트
-    private void updateTimetableTable(String selectedRoom) {
+    private void updateTimetableTable(String selectedRoom, String type) {
         for (String day : new String[] {"월", "화", "수", "목", "금"}) {
-            Map<String, String> schedule = controller.getScheduleForRoom(selectedRoom, day);
+            // 요일별, 강의실별, 타입별로 필터링 된 Map 가져옴
+            Map<String, String> schedule = controller.getScheduleForRoom(selectedRoom, day, type);
 
             if (schedule != null) {
-                for (int i = 0; i < tblTimetable.getRowCount(); i++) {
-                    for (int j = 2; j < tblTimetable.getColumnCount(); j++) {
-                        if (tblTimetable.getColumnName(j).equals(day)) {
-                            tblTimetable.setValueAt(null, i, j);
-                        }
-                    }
-                }
-
                 for (Map.Entry<String, String> entry : schedule.entrySet()) {
-                    String timeSlot = entry.getKey();
+                    String startTime = entry.getKey();
                     String subject = entry.getValue();
-                    int rowIndex = getRowForTime(timeSlot.split("-")[0]);
+                    int rowIndex = getRowForTime(startTime);
                     int colIndex = getDayIndex(day);
 
                     if (rowIndex != -1 && colIndex != -1) {
@@ -115,6 +109,7 @@ public class TimetableManagementView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         txtSubject = new javax.swing.JTextField();
         cmbDayOfWeek = new javax.swing.JComboBox<>();
         cmbEndTime = new javax.swing.JComboBox<>();
@@ -133,15 +128,24 @@ public class TimetableManagementView extends javax.swing.JFrame {
         lblEndTime = new javax.swing.JLabel();
         btnEdit = new javax.swing.JButton();
         cmbRoomSelect = new javax.swing.JComboBox<>();
+        rbLecture = new javax.swing.JRadioButton();
+        rbBlock = new javax.swing.JRadioButton();
+        txtContent = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        txtSubject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSubjectActionPerformed(evt);
+            }
+        });
 
         cmbDayOfWeek.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "월", "화", "수", "목", "금", "토", "일" }));
 
         cmbEndTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:50", "10:50", "11:50", "12:50", "13:50", "14:50", "15:50", "16:50", "17:50" }));
 
         lblTitle.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
-        lblTitle.setText("시간표 관리");
+        lblTitle.setText("강의실 일정 관리");
 
         cmbStartTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00" }));
 
@@ -158,8 +162,6 @@ public class TimetableManagementView extends javax.swing.JFrame {
                 btnAddActionPerformed(evt);
             }
         });
-
-        lblSubject.setText("과목명 : ");
 
         tblTimetable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -181,10 +183,10 @@ public class TimetableManagementView extends javax.swing.JFrame {
 
         lblDayOfWeek.setText("요일 :");
 
-        lblRoomSelect.setText("강의실 선택 :");
+        lblRoomSelect.setText("강의실 :");
 
         lblTableTitle.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
-        lblTableTitle.setText("[ 강의실 시간표 ]");
+        lblTableTitle.setText("[ 강의실 일정표 ]");
 
         lblStartTime.setText("시작 시간 :");
 
@@ -207,6 +209,19 @@ public class TimetableManagementView extends javax.swing.JFrame {
         cmbRoomSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "908", "911", "912", "913", "914", "915", "916", "918" }));
         cmbRoomSelect.setToolTipText("");
 
+        buttonGroup1.add(rbLecture);
+        rbLecture.setText("강의실 수업");
+        rbLecture.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbLectureActionPerformed(evt);
+            }
+        });
+
+        buttonGroup1.add(rbBlock);
+        rbBlock.setText("강의실 제한");
+
+        txtContent.setText("과목명/제한사유 :");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -214,77 +229,93 @@ public class TimetableManagementView extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblRoomSelect)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbRoomSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblSubject)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnBack)
-                        .addGap(170, 170, 170)
-                        .addComponent(lblTitle)
-                        .addGap(0, 208, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)))
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblDayOfWeek)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(rbBlock)
+                            .addComponent(rbLecture))
+                        .addGap(27, 27, 27)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addComponent(lblDayOfWeek)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmbDayOfWeek, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblRoomSelect)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmbRoomSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbDayOfWeek, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblStartTime)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblEndTime)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cmbEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblTableTitle)
+                                .addGap(2, 2, 2))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(txtContent)
+                                    .addComponent(lblStartTime))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(cmbStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblEndTime)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cmbEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnBack)
+                        .addGap(181, 181, 181)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblTitle)
+                            .addComponent(lblSubject))))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblTableTitle)
-                .addGap(188, 188, 188))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnBack)
-                        .addGap(24, 24, 24))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(lblTitle)
-                        .addGap(18, 18, 18)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblSubject)
-                    .addComponent(lblRoomSelect)
-                    .addComponent(cmbRoomSelect, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblStartTime)
-                    .addComponent(lblEndTime)
-                    .addComponent(cmbStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmbEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblDayOfWeek)
-                    .addComponent(cmbDayOfWeek, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAdd))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblTitle)
+                            .addComponent(btnBack))
+                        .addGap(18, 18, 18)
+                        .addComponent(lblSubject)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cmbEndTime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(cmbStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblStartTime)
+                                .addComponent(lblEndTime)))
+                        .addGap(29, 29, 29))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cmbRoomSelect, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblRoomSelect)
+                            .addComponent(rbLecture))
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cmbDayOfWeek, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblDayOfWeek)
+                            .addComponent(txtSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(rbBlock)
+                            .addComponent(txtContent)
+                            .addComponent(btnAdd))))
                 .addComponent(btnEdit)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnDelete)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addComponent(lblTableTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -303,6 +334,7 @@ public class TimetableManagementView extends javax.swing.JFrame {
         String dayOfWeek = cmbDayOfWeek.getSelectedItem().toString().trim();
         String startTime = cmbStartTime.getSelectedItem().toString().trim();
         String endTime = cmbEndTime.getSelectedItem().toString().trim();
+        String type = rbLecture.isSelected() ? "수업" : "제한";
 
         if (selectedRoom.isEmpty() || subject.isEmpty() || dayOfWeek.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
             JOptionPane.showMessageDialog(this, "모든 항목을 입력해야 합니다.");
@@ -315,7 +347,7 @@ public class TimetableManagementView extends javax.swing.JFrame {
         }
 
         try {
-            controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject);
+            controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject, type);
             loadTimetable(selectedRoom);
             JOptionPane.showMessageDialog(this, "시간표가 추가되었습니다.");
         } catch (Exception e) {
@@ -330,6 +362,7 @@ public class TimetableManagementView extends javax.swing.JFrame {
         String dayOfWeek = cmbDayOfWeek.getSelectedItem().toString().trim();
         String startTime = cmbStartTime.getSelectedItem().toString().trim();
         String endTime = cmbEndTime.getSelectedItem().toString().trim();
+        String type = rbLecture.isSelected() ? "수업" : "제한";
 
         if (subject.isEmpty()) {
             JOptionPane.showMessageDialog(this, "수정할 과목명을 입력해주세요.");
@@ -337,13 +370,8 @@ public class TimetableManagementView extends javax.swing.JFrame {
         }
 
         try {
-            // 1️⃣기존 시간표 삭제
             controller.deleteScheduleFromFile(selectedRoom, dayOfWeek, startTime, endTime);
-
-            // 2️⃣새 정보로 추가
-            controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject);
-
-            // 3️⃣화면 갱신
+            controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject, type);
             loadTimetable(selectedRoom);
             JOptionPane.showMessageDialog(this, "시간표가 수정되었습니다.");
         } catch (Exception e) {
@@ -379,6 +407,14 @@ public class TimetableManagementView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
+    private void rbLectureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbLectureActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_rbLectureActionPerformed
+
+    private void txtSubjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSubjectActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSubjectActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -396,14 +432,18 @@ public class TimetableManagementView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TimetableManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RoomScheduleManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TimetableManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RoomScheduleManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TimetableManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RoomScheduleManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TimetableManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RoomScheduleManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -412,7 +452,7 @@ public class TimetableManagementView extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TimetableManagementView().setVisible(true);
+                new RoomScheduleManagementView().setVisible(true);
             }
         });
     }
@@ -422,6 +462,7 @@ public class TimetableManagementView extends javax.swing.JFrame {
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<String> cmbDayOfWeek;
     private javax.swing.JComboBox<String> cmbEndTime;
     private javax.swing.JComboBox<String> cmbRoomSelect;
@@ -434,7 +475,10 @@ public class TimetableManagementView extends javax.swing.JFrame {
     private javax.swing.JLabel lblSubject;
     private javax.swing.JLabel lblTableTitle;
     private javax.swing.JLabel lblTitle;
+    private javax.swing.JRadioButton rbBlock;
+    private javax.swing.JRadioButton rbLecture;
     private javax.swing.JTable tblTimetable;
+    private javax.swing.JLabel txtContent;
     private javax.swing.JTextField txtSubject;
     // End of variables declaration//GEN-END:variables
 }
