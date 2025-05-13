@@ -125,8 +125,6 @@ public abstract class User {
         // for 돌리기전 선택된 호실+ 요일에 대해 배열 또 만들기
         String fixResult[][] = new String[result.length][4];
         String fixResult2[][] = new String[result2.length][4];
-        int j = 0;
-        int jj = 0;
         int fixRow = 0;
         int fixRow2 = 0;
 
@@ -151,7 +149,7 @@ public abstract class User {
                 } else {
                     fixResult2[fixRow2][4] = "error"; //이거 쓸일이 없으면 좋을건데
                 }
-                fixRow++;
+                fixRow2++;
             }
         }
 
