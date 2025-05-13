@@ -23,8 +23,8 @@ public class UserData {
      * @return 올바른 사용자 ID일 경우 암호를 반환하지만, 아닌 경우 ull을 반환한다.
      */
     public Optional<User> getUser(String id, String password, String role) {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(USER_FILE); 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(USER_FILE);
+           BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             String line;
 
@@ -38,7 +38,7 @@ public class UserData {
                 String filePw = tokens[1].trim();
                 String fileRole = tokens[2].trim().toUpperCase();
 
-                if (!fileRole.matches("[SPA]")) {
+                if (!(fileRole.equals("S") || fileRole.equals("P") || fileRole.equals("A"))) {
                     continue;
                 }
 
