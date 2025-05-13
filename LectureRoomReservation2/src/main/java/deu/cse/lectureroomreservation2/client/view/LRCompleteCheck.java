@@ -40,14 +40,15 @@ public class LRCompleteCheck extends javax.swing.JFrame {
 
         jLabel1.setText("예약 확인");
 
-        viewSelectTime.setText("915");
+        viewSelectTime.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        viewSelectTime.setEnabled(false);
         viewSelectTime.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 viewSelectTimeActionPerformed(evt);
             }
         });
 
-        viewSelectRoom.setText("2025 / 05 / 15 목요일 ");
+        viewSelectRoom.setEnabled(false);
         viewSelectRoom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 viewSelectRoomActionPerformed(evt);
@@ -80,9 +81,7 @@ public class LRCompleteCheck extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, 0))
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(viewSelectTime)
                             .addComponent(viewSelectRoom, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE))
                         .addContainerGap())
@@ -119,22 +118,24 @@ public class LRCompleteCheck extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void viewSelectTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSelectTimeActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here: 강의실 번호
         viewSelectTime.setText("2025년 5월 15일 목요일 13:00 ~ 13:50");
         viewSelectTime.setEnabled(false);
     }//GEN-LAST:event_viewSelectTimeActionPerformed
 
     private void LastLRCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LastLRCancelActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here: 취소 버튼
+        
     }//GEN-LAST:event_LastLRCancelActionPerformed
 
     private void viewSelectRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSelectRoomActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here: 날짜 시간 정보
         
     }//GEN-LAST:event_viewSelectRoomActionPerformed
 
     private void LastLRButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LastLRButton1ActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here: 확인 버튼
+        
     }//GEN-LAST:event_LastLRButton1ActionPerformed
 
     /**

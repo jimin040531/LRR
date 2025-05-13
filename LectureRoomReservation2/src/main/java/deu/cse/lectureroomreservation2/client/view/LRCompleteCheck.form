@@ -28,10 +28,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="jLabel1" min="-2" pref="74" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="jLabel1" min="-2" pref="74" max="-2" attributes="0"/>
                           <Component id="viewSelectTime" alignment="0" max="32767" attributes="0"/>
                           <Component id="viewSelectRoom" alignment="1" pref="441" max="32767" attributes="0"/>
                       </Group>
@@ -83,7 +80,10 @@
     </Component>
     <Component class="javax.swing.JTextField" name="viewSelectTime">
       <Properties>
-        <Property name="text" type="java.lang.String" value="915"/>
+        <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+          <Color id="&#xd14d;&#xc2a4;&#xd2b8; &#xcee4;&#xc11c;"/>
+        </Property>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewSelectTimeActionPerformed"/>
@@ -91,7 +91,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="viewSelectRoom">
       <Properties>
-        <Property name="text" type="java.lang.String" value="2025 / 05 / 15 &#xbaa9;&#xc694;&#xc77c; "/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewSelectRoomActionPerformed"/>
