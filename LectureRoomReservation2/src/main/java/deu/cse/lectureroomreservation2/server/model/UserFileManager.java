@@ -29,11 +29,7 @@ public class UserFileManager {
                 String password = parts[3].trim();
 
                 if (role.equals(roleFilter) && name.contains(nameFilter)) {
-                    if (role.equals("P")) {
-                        result.add(new Professor(name, id, password));
-                    } else if (role.equals("S")) {
-                        result.add(new Student(name, id, password));
-                    }
+                    result.add(new UserManage(role, name, id, password));  // UserManage 사용
                 }
             }
         } catch (IOException e) {

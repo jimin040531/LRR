@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------------
+Test set: deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 0.268 s <<< FAILURE! -- in deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest
+deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest.testEmptyNewPassword -- Time elapsed: 0.067 s <<< ERROR!
+java.nio.file.NoSuchFileException: user.txt
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:85)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:103)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:108)
+	at java.base/sun.nio.fs.WindowsFileCopy.copy(WindowsFileCopy.java:108)
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.copy(WindowsFileSystemProvider.java:282)
+	at java.base/java.nio.file.Files.copy(Files.java:1304)
+	at deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest.backupUserFile(ChangePassControllerTest.java:25)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest.testChangePassSuccess -- Time elapsed: 0.065 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <비밀번호가 변경되었습니다.> but was: <ID 또는 기존 비밀번호가 올바르지 않습니다.>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
+	at deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest.testChangePassSuccess(ChangePassControllerTest.java:36)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

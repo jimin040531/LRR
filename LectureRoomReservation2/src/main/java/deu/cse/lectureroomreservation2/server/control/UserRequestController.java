@@ -4,8 +4,6 @@
  */
 package deu.cse.lectureroomreservation2.server.control;
 
-import deu.cse.lectureroomreservation2.server.model.Professor;
-import deu.cse.lectureroomreservation2.server.model.Student;
 import deu.cse.lectureroomreservation2.server.model.UserManage;
 import deu.cse.lectureroomreservation2.server.model.UserFileManager;
 import java.util.ArrayList;
@@ -36,13 +34,7 @@ public class UserRequestController {
         String id = userData[2];
         String password = userData[3];
 
-        UserManage user = new UserManage(userData[0], userData[1], userData[2], userData[3]);
-        if (role.equals("P")) {
-            user = new Professor(name, id, password);
-        } else {
-            user = new Student(name, id, password);
-        }
-
+        UserManage user = new UserManage(role, name, id, password);  // 통합된 UserManage 사용
         FileManager.saveUser(user);
     }
     
