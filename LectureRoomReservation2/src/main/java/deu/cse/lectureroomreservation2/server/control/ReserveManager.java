@@ -66,6 +66,12 @@ public class ReserveManager {
         boolean updated = false; // 예약 정보 갱신 여부
         String newReserve = roomNumber + " / " + date + " / " + day; // 예약 정보 문자열
 
+        // 한 시간대 40명 초과 예약 제한
+        int userCount = countUsersByReserveInfo(newReserve);
+        if (userCount >= 40) {
+            return new ReserveResult(false, "해당 시간대 예약 인원이 40명을 초과하여 예약할 수 없습니다.");
+        }
+
         // 학생 예약 시 교수의 예약과 중복되는지 먼저 체크
         if ("S".equals(role)) {
             try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
@@ -208,6 +214,7 @@ public class ReserveManager {
         return reserves;
     }
 
+    // 예약 정보로 총 예약자 수 조회 - 클라이언트 요청 시 사용
     public static int countUsersByReserveInfo(String reserveInfo) {
         int count = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
