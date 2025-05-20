@@ -15,7 +15,7 @@ public class receiveController {
 
     // 파일 경로 및 이름 지정
     private static final String filePath = "src/main/resources/";
-    private static final String UserFileName = "UserInfo.txt";
+    private static final String UserFileName = "UserInfotest.txt";
     private static final String noticeFileName = "noticeSave.txt";
 
     public static String getFilepath() {
