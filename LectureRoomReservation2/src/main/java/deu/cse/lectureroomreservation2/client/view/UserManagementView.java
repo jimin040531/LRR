@@ -18,23 +18,22 @@ public class UserManagementView extends javax.swing.JFrame {
     /**
      * Creates new form UserManagementView
      */
-    
     private UserRequestController handler = new UserRequestController();
 
     public UserManagementView() {
         initComponents();
         setLocationRelativeTo(null);
     }
-    
+
     private void updateUserTable(JTable table, List<String[]> users) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
         for (String[] user : users) {
-            model.addRow(new Object[] {
+            model.addRow(new Object[]{
                 user[0], // 권한
                 user[1], // 이름
                 user[2], // 아이디
-                user[3]  // 비밀번호
+                user[3] // 비밀번호
             });
         }
     }
@@ -286,7 +285,7 @@ public class UserManagementView extends javax.swing.JFrame {
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         // TODO add your handling code here:
-        new AdminMainView().setVisible(true);
+        new AdminMainView("A", null).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
@@ -295,10 +294,10 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-    // 다이얼로그 표시
-    jDialog1.setLocationRelativeTo(this);
-    jDialog1.setSize(300, 200);
-    jDialog1.setVisible(true);
+        // 다이얼로그 표시
+        jDialog1.setLocationRelativeTo(this);
+        jDialog1.setSize(300, 200);
+        jDialog1.setVisible(true);
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
@@ -331,10 +330,10 @@ public class UserManagementView extends javax.swing.JFrame {
         }
 
         String roleCode = roleLabel.equals("교수") ? "P" : "S";
-        String[] newUser = new String[] { roleCode, name, id, password };
+        String[] newUser = new String[]{roleCode, name, id, password};
 
         List<String[]> updatedList = handler.saveUserAndGetUpdatedList(newUser);
-        
+
         if (roleCode.equals("P")) {
             updateUserTable(tblProfessors, updatedList);
         } else {

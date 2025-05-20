@@ -4,6 +4,8 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
+import deu.cse.lectureroomreservation2.client.Client;
+
 /**
  *
  * @author Jimin
@@ -13,8 +15,17 @@ public class AdminMainView extends javax.swing.JFrame {
     /**
      * Creates new form AdminMainView
      */
-    public AdminMainView() {
+    private final String userId;
+    private final Client client;
+
+    public AdminMainView(String userId, Client client) {
+        
+        this.userId = userId;
+        this.client = client;
+
         initComponents();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(235, 309);
         setLocationRelativeTo(null);
     }
 
@@ -53,6 +64,11 @@ public class AdminMainView extends javax.swing.JFrame {
         });
 
         btnLogout.setText("🚪");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         btnTimetableManagement.setText("🕒 강의실 일정 관리");
         btnTimetableManagement.addActionListener(new java.awt.event.ActionListener() {
@@ -117,6 +133,11 @@ public class AdminMainView extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_btnTimetableManagementActionPerformed
 
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        // TODO add your handling code here:
+        new LoginFrame().setVisible(true); // 로그인 화면 띄우기
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -147,7 +168,7 @@ public class AdminMainView extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminMainView().setVisible(true);
+                new AdminMainView("A",null).setVisible(true);
             }
         });
     }

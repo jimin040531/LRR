@@ -26,7 +26,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         controller = new TimeTableController();
         loadTimetableOnRoomSelect();
     }
-    
+
     // 강의실 선택 시 시간표 자동 로드
     private void loadTimetableOnRoomSelect() {
         cmbRoomSelect.addActionListener(evt -> {
@@ -43,7 +43,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
             }
         }
     }
-    
+
     // 시간표를 메모장에서 불러오기
     private void loadTimetable(String selectedRoom) {
         initializeTimetable();  // 초기화
@@ -53,7 +53,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
 
     // 강의실 시간표 업데이트
     private void updateTimetableTable(String selectedRoom, String type) {
-        for (String day : new String[] {"월", "화", "수", "목", "금"}) {
+        for (String day : new String[]{"월", "화", "수", "목", "금"}) {
             // 요일별, 강의실별, 타입별로 필터링 된 Map 가져옴
             Map<String, String> schedule = controller.getScheduleForRoom(selectedRoom, day, type);
 
@@ -85,18 +85,29 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
     // 시간 -> 행 인덱스
     private int getRowForTime(String time) {
         switch (time) {
-            case "09:00": return 0;
-            case "10:00": return 1;
-            case "11:00": return 2;
-            case "12:00": return 3;
-            case "13:00": return 4;
-            case "14:00": return 5;
-            case "15:00": return 6;
-            case "16:00": return 7;
-            case "17:00": return 8;
-            default: return -1;
+            case "09:00":
+                return 0;
+            case "10:00":
+                return 1;
+            case "11:00":
+                return 2;
+            case "12:00":
+                return 3;
+            case "13:00":
+                return 4;
+            case "14:00":
+                return 5;
+            case "15:00":
+                return 6;
+            case "16:00":
+                return 7;
+            case "17:00":
+                return 8;
+            default:
+                return -1;
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -322,6 +333,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         // TODO add your handling code here:
+        new AdminMainView("A", null).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
