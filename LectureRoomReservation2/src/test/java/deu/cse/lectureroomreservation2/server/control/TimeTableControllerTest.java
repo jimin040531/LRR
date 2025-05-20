@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Jimin
  */
 public class TimeTableControllerTest {
-    private TimeTableController controller;
-    private static final Path TEST_FILE = Paths.get("src/test/resources/test_schedule.txt");
+    
+    TimeTableController controller;
+    private static final Path TEST_FILE = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "test_ScheduleInfo.txt");
 
     private final String room = "911";
     private final String day = "월";

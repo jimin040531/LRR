@@ -14,6 +14,12 @@ public class ScheduleFileManager {
     
     private final String filePath;
 
+    // 기본 생성자 (기본 경로를 지정)
+    public ScheduleFileManager() {
+        this.filePath = System.getProperty("user.dir") + "/src/main/resources/ScheduleInfo.txt";
+    }
+
+    // 경로를 직접 받는 생성자
     public ScheduleFileManager(String filePath) {
         this.filePath = filePath;
     }
