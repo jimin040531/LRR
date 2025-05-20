@@ -4,23 +4,35 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
+import javax.swing.JFrame;
 /**
  *
  * @author H
  */
 public class noticeWriterView extends javax.swing.JFrame {
     private String noticetxt;
+    private boolean inputFinished = false;
 
     /**
      * Creates new form sendNotice
      */
     public noticeWriterView() {
         initComponents();
-        
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     public String getNotice() {
         return noticetxt;
+    }
+    
+    public interface NoticeListener {
+        void onNoticeEntered(String noticeText);
+    }
+
+    private NoticeListener listener;
+
+    public void setNoticeListener(NoticeListener listener) {
+        this.listener = listener;
     }
 
     /**

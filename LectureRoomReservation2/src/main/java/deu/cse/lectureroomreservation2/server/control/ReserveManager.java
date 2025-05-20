@@ -6,16 +6,18 @@ import deu.cse.lectureroomreservation2.common.*;
 
 public class ReserveManager {
     // 사용자 정보 파일 경로 (예약 정보도 이 파일에 저장)
-    private static final String USER_FILE = receiveController.getFilepath() + "UserInfotest.txt";
+    private static final String USER_FILE = receiveController.getFilepath() + receiveController.getFileName();
+    // src/main/resources/UserInfotest.txt
     private static final int MAX_RESERVE = 4; // 최대 예약 개수
 
     /**
      * 예약 요청을 처리하는 메서드입니다.
-     * @param id 사용자 ID
-     * @param role 사용자 역할(학생/교수)
+     * 
+     * @param id         사용자 ID
+     * @param role       사용자 역할(학생/교수)
      * @param roomNumber 강의실 번호
-     * @param date 예약 날짜
-     * @param day 예약 요일
+     * @param date       예약 날짜
+     * @param day        예약 요일
      * @return ReserveResult(예약 성공/실패 및 사유)
      */
     public static ReserveResult reserve(String id, String role, String roomNumber, String date, String day) {
@@ -23,6 +25,29 @@ public class ReserveManager {
         boolean updated = false; // 예약 정보 갱신 여부
         String newReserve = roomNumber + " / " + date + " / " + day; // 예약 정보 문자열
 
+        // 1. 학생 예약 시 교수의 예약과 중복되는지 먼저 체크
+        if ("S".equals(role)) {
+            try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    // 교수(P)인 사용자만 검사
+                    if (parts.length >= 6 && "P".equals(parts[4])) {
+                        for (int i = 5; i < parts.length; i++) {
+                            if (parts[i].trim().equals(newReserve)) {
+                                // 이미 교수 예약이 있음
+                                return new ReserveResult(false, "해당 시간/강의실은 교수에 의해 이미 예약되어 있습니다.");
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ReserveResult(false, "파일 읽기 오류");
+            }
+        }
+
+        // (학생/교수 예약 처리)..
         try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -30,7 +55,8 @@ public class ReserveManager {
                 // 해당 id의 사용자를 찾으면 예약 정보 처리
                 if (parts.length >= 5 && parts[0].equals(id)) {
                     List<String> reserves = new ArrayList<>();
-                    for (int i = 5; i < parts.length; i++) reserves.add(parts[i]);
+                    for (int i = 5; i < parts.length; i++)
+                        reserves.add(parts[i]);
                     // 이미 예약된 정보가 존재하면 true, 사유와 false 실패 반환
                     if (reserves.contains(newReserve))
                         return new ReserveResult(false, "이미 예약된 강의실/시간입니다.");
@@ -41,12 +67,14 @@ public class ReserveManager {
                     reserves.add(newReserve);
                     // 기존 정보 + 예약 정보로 라인 재구성
                     StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < 5; i++) sb.append(parts[i]).append(i < 4 ? "," : "");
-                    for (String r : reserves) sb.append(",").append(r);
+                    for (int i = 0; i < 5; i++)
+                        sb.append(parts[i]).append(i < 4 ? "," : "");
+                    for (String r : reserves)
+                        sb.append(",").append(r);
                     lines.add(sb.toString());
                     updated = true;
                 } else {
-                    // 해당 id가 아니면 그대로 저장ㅇㅇ
+                    // 해당 id가 아니면 그대로 저장
                     lines.add(line);
                 }
             }
@@ -70,5 +98,52 @@ public class ReserveManager {
         }
         // 해당 id를 찾지 못한 경우
         return new ReserveResult(false, "사용자 정보를 찾을 수 없습니다.");
+    }
+
+    /**
+     * 교수 예약 시 학생 예약 중복 취소 및 해당 학생 ID 리스트 반환
+     */
+    public static List<String> cancelStudentReservesForProfessor(String roomNumber, String date, String day) {
+        List<String> affectedStudentIds = new ArrayList<>();
+        List<String> lines = new ArrayList<>();
+        String targetReserve = roomNumber + " / " + date + " / " + day;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 6 && !"P".equals(parts[4])) { // 학생만
+                    List<String> reserves = new ArrayList<>();
+                    for (int i = 5; i < parts.length; i++)
+                        reserves.add(parts[i]);
+                    if (reserves.contains(targetReserve)) {
+                        reserves.remove(targetReserve);
+                        affectedStudentIds.add(parts[0]);
+                    }
+                    // 라인 재구성
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < 5; i++)
+                        sb.append(parts[i]).append(i < 4 ? "," : "");
+                    for (String r : reserves)
+                        sb.append(",").append(r);
+                    lines.add(sb.toString());
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 파일에 다시 저장
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(USER_FILE))) {
+            for (String l : lines) {
+                bw.write(l);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return affectedStudentIds;
     }
 }

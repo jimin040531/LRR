@@ -4,10 +4,7 @@
  */
 package deu.cse.lectureroomreservation2.client;
 
-import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
-import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
-import deu.cse.lectureroomreservation2.common.ReserveRequest;
-import deu.cse.lectureroomreservation2.common.ReserveResult;
+import deu.cse.lectureroomreservation2.common.*;
 import deu.cse.lectureroomreservation2.server.control.LoginStatus;
 import java.io.*;
 import java.net.Socket;
@@ -81,6 +78,20 @@ public class Client {
         out.writeObject(new CheckMaxTimeRequest(id));
         out.flush();
         return (CheckMaxTimeResult) in.readObject();
+    }
+    
+    // 공지사항 수신 및 확인 처리
+    public void checkAndShowNotices(javax.swing.JFrame parentFrame) throws IOException {
+        while (true) {
+            String msgType = in.readUTF();
+            if ("NOTICE_END".equals(msgType))
+                break;
+            if ("NOTICE".equals(msgType)) {
+                String noticeText = in.readUTF();
+                javax.swing.JOptionPane.showMessageDialog(parentFrame, noticeText, "공지사항",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
     }
 
     public static void main(String[] args) {

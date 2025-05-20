@@ -3,21 +3,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package deu.cse.lectureroomreservation2.server;
-
-import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
-import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
-import deu.cse.lectureroomreservation2.common.ReserveRequest;
-import deu.cse.lectureroomreservation2.common.ReserveResult;
-import deu.cse.lectureroomreservation2.server.control.CheckMaxTime;
 /**
  *
  * @author SAMSUNG
  */
 import deu.cse.lectureroomreservation2.server.control.LoginStatus;
 import deu.cse.lectureroomreservation2.server.control.receiveController;
+import deu.cse.lectureroomreservation2.common.*;
+import deu.cse.lectureroomreservation2.server.control.*;
 
 import java.io.*;
 import java.net.Socket;
+//공지사항 부분 추가 import
+import java.util.List;
 
 public class ClientHandler implements Runnable {
 
@@ -75,6 +73,21 @@ public class ClientHandler implements Runnable {
 
             // 로그인 성공한 경우 명령 수신 루프
             if (status.isLoginSuccess()) {
+                // 공지사항 수신 및 표시
+                System.out.println("로그인 성공 하여 역할 " + status.getRole() + "를 가집니다.");
+                if ("STUDENT".equals(status.getRole())) {
+                    List<String> notices = noticeController.getNotices(id);
+                    for (String notice : notices) {
+                        out.writeUTF("NOTICE");
+                        out.flush();
+                        out.writeUTF(notice);
+                        out.flush();
+                        noticeController.removeNotice(id, notice);
+                    }
+                    out.writeUTF("NOTICE_END");
+                    out.flush();
+                }
+                
                 while (true) {
                     try {
                         String command = in.readUTF();
