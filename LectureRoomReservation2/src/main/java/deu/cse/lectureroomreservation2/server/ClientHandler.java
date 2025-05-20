@@ -8,6 +8,9 @@ package deu.cse.lectureroomreservation2.server;
  *
  * @author SAMSUNG
  */
+import deu.cse.lectureroomreservation2.server.control.*;
+import deu.cse.lectureroomreservation2.common.*;
+import java.util.List;
 import deu.cse.lectureroomreservation2.server.control.LoginStatus;
 import java.io.*;
 import java.net.Socket;
@@ -68,12 +71,49 @@ public class ClientHandler implements Runnable {
 
             // 로그인 성공한 경우 명령 수신 루프
             if (status.isLoginSuccess()) {
+                // 공지사항 수신 및 표시
+                System.out.println("로그인 성공 하여 역할 " + status.getRole() + "를 가집니다.");
+                if ("STUDENT".equals(status.getRole())) {
+                    List<String> notices = noticeController.getNotices(id);
+                    for (String notice : notices) {
+                        out.writeUTF("NOTICE");
+                        out.flush();
+                        out.writeUTF(notice);
+                        out.flush();
+                        noticeController.removeNotice(id, notice);
+                    }
+                    out.writeUTF("NOTICE_END");
+                    out.flush();
+                }
+                
                 while (true) {
                     try {
                         String command = in.readUTF();
                         if ("LOGOUT".equalsIgnoreCase(command)) {
                             System.out.println("사용자 로그아웃됨: " + id);
                             break;
+                        }
+                        
+                        // 예약 요청 처리
+                        if ("RESERVE".equals(command)) {
+                            // 클라이언트로부터 예약 요청 객체를 받음
+                            ReserveRequest req = (ReserveRequest) in.readObject();
+                            // 예약 처리 결과를 받아옴
+                            ReserveResult result = new receiveController().handleReserve(req);
+                            // 결과를 클라이언트에 전송
+                            out.writeObject(result);
+                            out.flush();
+                        }
+                        // CHECK_MAX_TIME 명령 처리 추가
+                        if ("CHECK_MAX_TIME".equals(command)) {
+                            CheckMaxTimeRequest req = (CheckMaxTimeRequest) in.readObject();
+                            boolean exceeded = new CheckMaxTime(req.getId()).check();
+
+                            String reason = exceeded ? "최대 예약 가능 개수를 초과했습니다." : "예약 가능";
+
+                            CheckMaxTimeResult result = new CheckMaxTimeResult(exceeded, reason);
+                            out.writeObject(result);
+                            out.flush();
                         }
                     } catch (IOException e) {
                         System.out.println("클라이언트 연결 오류 또는 종료됨.");

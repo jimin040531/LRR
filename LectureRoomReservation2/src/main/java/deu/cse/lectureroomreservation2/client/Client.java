@@ -5,6 +5,7 @@
 package deu.cse.lectureroomreservation2.client;
 
 import deu.cse.lectureroomreservation2.server.control.LoginStatus;
+import deu.cse.lectureroomreservation2.common.*;
 import java.io.*;
 import java.net.Socket;
 
@@ -54,6 +55,43 @@ public class Client {
 
     public boolean isConnected() {
         return socket != null && socket.isConnected() && !socket.isClosed();
+    }
+    
+    // 예약 요청 처리
+    public ReserveResult sendReserveRequest(String id, String role, String roomNumber, String date, String day, String notice)
+            throws IOException, ClassNotFoundException {
+        // 예약 요청 객체 생성
+        ReserveRequest req = new ReserveRequest(id, role, roomNumber, date, day, notice);
+        // 서버에 예약 명령 전송
+        out.writeUTF("RESERVE");
+        out.flush();
+        out.writeObject(req);
+        out.flush();
+        // 서버로부터 결과 수신
+        return (ReserveResult) in.readObject();
+    }
+
+    // 최대 예약 시간 체크 요청 처리
+    public CheckMaxTimeResult sendCheckMaxTimeRequest(String id) throws IOException, ClassNotFoundException {
+        out.writeUTF("CHECK_MAX_TIME");
+        out.flush();
+        out.writeObject(new CheckMaxTimeRequest(id));
+        out.flush();
+        return (CheckMaxTimeResult) in.readObject();
+    }
+
+    // 공지사항 수신 및 확인 처리
+    public void checkAndShowNotices(javax.swing.JFrame parentFrame) throws IOException {
+        while (true) {
+            String msgType = in.readUTF();
+            if ("NOTICE_END".equals(msgType))
+                break;
+            if ("NOTICE".equals(msgType)) {
+                String noticeText = in.readUTF();
+                javax.swing.JOptionPane.showMessageDialog(parentFrame, noticeText, "공지사항",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
     }
 
     public static void main(String[] args) {
