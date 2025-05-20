@@ -26,6 +26,7 @@ public class ClientHandler implements Runnable {
     public void run() {
         boolean acquired = false;
         String id = null;
+        boolean loggedIn = false;
 
         try {
             System.out.println("클라이언트 연결 요청 수신됨: " + socket.getInetAddress());
@@ -37,32 +38,38 @@ public class ClientHandler implements Runnable {
             String password = in.readUTF();
             String role = in.readUTF();
 
-            // 세마포어 체크는 로그인 정보 받고 나서 수행
+            // 세마포어 먼저 확보
             acquired = server.getConnectionLimiter().tryAcquire();
             if (!acquired) {
                 System.out.println("접속 거부됨 (최대 인원 초과): " + id);
-                out.writeObject(new LoginStatus(false, "WAIT", "현재 접속 인원이 가득 찼습니다. 잠시 후 다시 시도해 주세요."));
+                out.writeObject(new LoginStatus(false, "WAIT", "현재 접속 인원이 가득 찼습니다."));
                 out.flush();
                 return;
             }
 
-            // 중복로그인 체크
+            // 로그인 시도 전에 중복 체크
             synchronized (server.getLoggedInUsers()) {
-                if (server.getLoggedInUsers().contains(id)) {
+                if (server.isUserLoggedIn(id)) {
                     System.out.println("접속 거부(중복 로그인): " + id);
                     out.writeObject(new LoginStatus(false, "DUPLICATE", "이미 로그인 중인 계정입니다."));
                     out.flush();
                     return;
+                } else {
+                    // 로그인 시도 중으로 가정하고 잠시 true 등록
+                    server.addLoggedInUser(id);
+                    loggedIn = true;
                 }
             }
 
-            LoginStatus status = server.requestAuth(id, password, role);    // 인증
-            if (status.isLoginSuccess()) {
-                synchronized (server.getLoggedInUsers()) {
-                    server.getLoggedInUsers().add(id);  // 로그인 성공한 사용자 등록
-                }
+            // 이제 인증 진행
+            LoginStatus status = server.requestAuth(id, password, role);
+            if (!status.isLoginSuccess()) {
+                // 인증 실패 → 로그인 시도 상태 제거
+                server.removeLoggedInUser(id);
+                loggedIn = false;
             }
 
+            // 로그인 결과 전송
             out.writeObject(status);
             out.flush();
 
@@ -89,9 +96,10 @@ public class ClientHandler implements Runnable {
                 server.getConnectionLimiter().release();
             }
 
+            // 무조건 상태 정리
             if (id != null) {
                 synchronized (server.getLoggedInUsers()) {
-                    server.getLoggedInUsers().remove(id);  // 로그아웃 처리
+                    server.removeLoggedInUser(id);  // 로그인 상태를 false로
                 }
             }
 
@@ -102,16 +110,4 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-/*
-    private void handleStudent(ObjectInputStream in, ObjectOutputStream out, String id) {
-        System.out.println("학생 기능 처리: " + id);
-    }
-
-    private void handleProfessor(ObjectInputStream in, ObjectOutputStream out, String id) {
-        System.out.println("교수 기능 처리: " + id);
-    }
-
-    private void handleAdmin(ObjectInputStream in, ObjectOutputStream out, String id) {
-        System.out.println("관리자 기능 처리: " + id);
-    }*/
 }

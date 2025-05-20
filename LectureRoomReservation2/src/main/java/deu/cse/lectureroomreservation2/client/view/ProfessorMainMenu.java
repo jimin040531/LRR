@@ -26,6 +26,16 @@ public class ProfessorMainMenu extends javax.swing.JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE); // 중요!
         setSize(330, 465); // 최소한 크기 설정
         setLocationRelativeTo(null); // 가운데 정렬
+
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (client != null) {
+                    client.logout(); // 서버에 로그아웃 알리기
+                }
+            }
+        });
+
     }
 
     /**

@@ -26,6 +26,16 @@ public class StudentMainMenu extends javax.swing.JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(330, 465);
         setLocationRelativeTo(null);
+
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (client != null) {
+                    client.logout(); // 서버에 로그아웃 알리기
+                }
+            }
+        });
+
     }
 
     /**

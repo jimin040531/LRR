@@ -19,7 +19,7 @@ public class AdminMainView extends javax.swing.JFrame {
     private final Client client;
 
     public AdminMainView(String userId, Client client) {
-        
+
         this.userId = userId;
         this.client = client;
 
@@ -27,6 +27,16 @@ public class AdminMainView extends javax.swing.JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(235, 309);
         setLocationRelativeTo(null);
+
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (client != null) {
+                    client.logout(); // 서버에 로그아웃 알리기
+                }
+            }
+        });
+
     }
 
     /**
@@ -135,7 +145,17 @@ public class AdminMainView extends javax.swing.JFrame {
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         // TODO add your handling code here:
+        // 서버에 로그아웃 요청 전송
+        if (client != null && client.isConnected()) {
+            try {
+                client.logout(); // 서버에 "LOGOUT" 전송 및 소켓 종료
+            } catch (Exception e) {
+                System.err.println("로그아웃 중 오류 발생: " + e.getMessage());
+            }
+        }
+
         new LoginFrame().setVisible(true); // 로그인 화면 띄우기
+        dispose(); // 현재 관리자 창 닫기
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     /**
@@ -168,7 +188,7 @@ public class AdminMainView extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminMainView("A",null).setVisible(true);
+                new AdminMainView("A", null).setVisible(true);
             }
         });
     }

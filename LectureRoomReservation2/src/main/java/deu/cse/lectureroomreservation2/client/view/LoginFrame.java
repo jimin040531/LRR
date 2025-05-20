@@ -191,6 +191,7 @@ public class LoginFrame extends javax.swing.JFrame {
                     } else {
                         javax.swing.JOptionPane.showMessageDialog(this, "로그인 실패! ID, 비밀번호 또는 역할이 일치하지 않습니다.");
                     }
+                    client.logout();
                     return;
                 }
 

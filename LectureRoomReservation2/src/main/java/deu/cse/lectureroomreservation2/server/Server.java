@@ -22,26 +22,28 @@ public class Server {
     private static final int MAX_CLIENTS = 3;   // 최대 동시접속 가능 인원 수 3명.
     private final Semaphore connectionLimiter = new Semaphore(MAX_CLIENTS); // 최대 3명까지
 
-    private final Set<String> loggedInUsers = Collections.synchronizedSet(new HashSet<>());
+    private final Map<String, Boolean> loggedInUsers = Collections.synchronizedMap(new HashMap<>());
 
     public Server() {
         controller = new LoginController();
     }
 
-    public Set<String> getLoggedInUsers() {
+    public Map<String, Boolean> getLoggedInUsers() {
         return loggedInUsers;
     }
 
     public boolean isUserLoggedIn(String id) {
-        return loggedInUsers.contains(id);
+        return loggedInUsers.getOrDefault(id, false);
     }
 
     public void addLoggedInUser(String id) {
-        loggedInUsers.add(id);
+        loggedInUsers.put(id, true);
     }
 
     public void removeLoggedInUser(String id) {
-        loggedInUsers.remove(id);
+        if (loggedInUsers.containsKey(id)) {
+            loggedInUsers.put(id, false);  // 상태를 false로
+        }
     }
 
     public LoginStatus requestAuth(String id, String password, String selectedRole) {
@@ -49,8 +51,7 @@ public class Server {
 
         if (status.isLoginSuccess()) {
             System.out.printf(">>> id = %s, password = %s, selected = %s%n%n", id, password, selectedRole);
-        }
-        else{
+        } else {
             System.out.println(">>> ID , PW, Role 재확인.");
         }
 
