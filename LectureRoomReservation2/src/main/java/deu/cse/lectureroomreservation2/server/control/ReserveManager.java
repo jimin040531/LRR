@@ -18,8 +18,7 @@ public class ReserveManager {
      * @param id         사용자 ID
      * @param role       사용자 역할(학생/교수)
      * @param roomNumber 강의실 번호
-     * @param date       예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00
-     *                   13:00"
+     * @param date       예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00 13:00"
      * @param day        예약 요일
      * @return ReserveResult(예약 성공/실패 및 사유)
      */
