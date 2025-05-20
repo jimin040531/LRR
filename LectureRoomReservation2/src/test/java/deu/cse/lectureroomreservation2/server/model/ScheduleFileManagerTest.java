@@ -4,76 +4,63 @@
  */
 package deu.cse.lectureroomreservation2.server.model;
 
-import deu.cse.lectureroomreservation2.server.control.TimeTableController;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- *
+ * 
  * @author Jimin
  */
 public class ScheduleFileManagerTest {
-    
+
+    // 상대경로로 테스트용 파일 경로 지정
+    private static final Path TEST_FILE = Paths.get("src/test/resources/test_schedule.txt");
     private ScheduleFileManager fileManager;
-    
-    private static final Path SCHEDULE_FILE = Paths.get("ScheduleInfo.txt");
-    private static final Path BACKUP_FILE = Paths.get("ScheduleInfo_backup.txt");
-    
-    // 테스트 실행 전 : 파일 백업 + 초기화
+
     @BeforeEach
     void setUp() throws IOException {
-        // 백업
-        if (Files.exists(SCHEDULE_FILE)) {
-            Files.copy(SCHEDULE_FILE, BACKUP_FILE, StandardCopyOption.REPLACE_EXISTING);
+        if (!Files.exists(TEST_FILE.getParent())) {
+            Files.createDirectories(TEST_FILE.getParent());
         }
-        // 초기화
-        Files.write(SCHEDULE_FILE, new ArrayList<>()); // 빈 파일로 초기화
-        fileManager = new ScheduleFileManager();       
-    }
-    
-    // 테스트 실행 후 : 파일 백업 복원
-    @AfterEach
-    void tearDown() throws IOException {
-        // 복원
-        if (Files.exists(BACKUP_FILE)) {
-            Files.copy(BACKUP_FILE, SCHEDULE_FILE, StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
-    
-    @Test
-    public void testReadAllLines() {
-        System.out.println("readAllLines");
-        ScheduleFileManager instance = new ScheduleFileManager();
-        List expResult = null;
-        List result = instance.readAllLines();
-        assertEquals(expResult, result);
+        Files.write(TEST_FILE, new byte[0]); // 빈 파일 생성
+        fileManager = new ScheduleFileManager(TEST_FILE.toString());
     }
 
     @Test
-    public void testAppendLine() {
-        System.out.println("appendLine");
-        String line = "";
-        ScheduleFileManager instance = new ScheduleFileManager();
-        instance.appendLine(line);
+    public void testReadAllLines_emptyFile() {
+        List<String[]> lines = fileManager.readAllLines();
+        assertNotNull(lines, "readAllLines -> null X (List를 반환해야 함)");
+        assertTrue(lines.isEmpty(), "초기 빈 파일은 내용이 없어야 함");
+    }
+
+    @Test
+    public void testAppendLine_andRead() {
+        String testLine = "911,월,16:00,16:50,컴퓨터비전응용,수업";
+        fileManager.appendLine(testLine);
+
+        List<String[]> lines = fileManager.readAllLines();
+        assertEquals(1, lines.size(), "1줄 추가 완료");
+        assertArrayEquals(testLine.split(","), lines.get(0), "추가된 내용이 일치해야 함");
     }
 
     @Test
     public void testOverwriteAll() {
-        System.out.println("overwriteAll");
-        List<String> newLines = null;
-        ScheduleFileManager instance = new ScheduleFileManager();
-        instance.overwriteAll(newLines);
+        List<String> newLines = List.of(
+            "911,월,16:00,16:50,컴퓨터비전응용,수업",
+            "912,화,09:00,09:50,자료구조,수업"
+        );
+        fileManager.overwriteAll(newLines);
+
+        List<String[]> lines = fileManager.readAllLines();
+        assertEquals(newLines.size(), lines.size(), "덮어쓴 라인 수가 일치해야 함");
+        for (int i = 0; i < newLines.size(); i++) {
+            assertArrayEquals(newLines.get(i).split(","), lines.get(i), "각 줄 내용이 일치해야 함");
+        }
     }
-    
 }

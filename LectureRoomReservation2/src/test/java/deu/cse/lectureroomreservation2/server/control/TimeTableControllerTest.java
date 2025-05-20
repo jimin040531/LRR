@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +23,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TimeTableControllerTest {
     
     TimeTableController controller;
-    private static final Path TEST_FILE = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "test_schedule.txt");
-
+    
+    // 상대경로로 테스트용 파일 경로 지정
+    private static final Path TEST_FILE = Paths.get("src/test/resources/test_schedule.txt");
+    
     private final String room = "911";
     private final String day = "월";
     private final String start = "16:00";
@@ -42,11 +43,6 @@ public class TimeTableControllerTest {
         ScheduleFileManager fileManager = new ScheduleFileManager(TEST_FILE.toString());
         controller = new TimeTableController(fileManager);
     }
-
-    //@AfterEach
-    //void tearDown() throws IOException {
-     //  Files.deleteIfExists(TEST_FILE); // 테스트 후 삭제 (원한다면 생략 가능)
-    //}
 
     @Test
     public void testLoadSchedulesFromFile() {
