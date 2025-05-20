@@ -3,7 +3,7 @@ package deu.cse.lectureroomreservation2.client.view;
 import deu.cse.lectureroomreservation2.common.ReserveResult;
 import java.io.*;
 import deu.cse.lectureroomreservation2.client.*;
-import MainFolder.common.*;
+import deu.cse.lectureroomreservation2.common.*;
 import javax.swing.JOptionPane;
 
 public class LRCompleteCheck extends javax.swing.JFrame {
