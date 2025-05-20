@@ -54,7 +54,7 @@ public class TimeTableController {
             return false;
         }
 
-     public void addScheduleToFile(String room, String day, String start, String end, String subject, String type) {
+    public void addScheduleToFile(String room, String day, String start, String end, String subject, String type) {
             if (isScheduleExists(room, day, start, end)) {
                 throw new IllegalArgumentException("이미 등록된 시간표입니다.");
             }
