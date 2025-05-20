@@ -13,9 +13,10 @@ import java.util.List;
  */
 public class receiveController {
 
-    // 파일 경로 지정
+    // 파일 경로 및 이름 지정
     private static final String filePath = "src/main/resources/";
     private static final String UserFileName = "UserInfo.txt";
+    private static final String noticeFileName = "noticeSave.txt";
 
     public static String getFilepath() {
         return filePath;
@@ -23,6 +24,10 @@ public class receiveController {
 
     public static String getFileName() {
         return UserFileName;
+    }
+    
+    public static String getNoticeFileName() {
+        return noticeFileName;
     }
 
     // 예약 요청 처리
