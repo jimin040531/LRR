@@ -25,7 +25,7 @@ public class LRCompleteCheck extends javax.swing.JFrame {
         String tRole = "S";
 
         String troomNumber = "915";
-        String tdate = "2025 05 15";
+        String tdate = "2025 05 15 12:00 13:00";
         String tday = "목요일";
         showDate = tdate + " " + tday;
 
@@ -43,6 +43,7 @@ public class LRCompleteCheck extends javax.swing.JFrame {
     }
 
     public LRCompleteCheck(String id, String role, String roomNumber, String date, String day, Client client) {
+        //사용자 아이디, 사용자 역할("P" 또는 "S"), 강의실 번호, 년 월 일 (시작 시간:분), 요일, 클라이언트 넘겨주기 
         this.client = client;
 
         initComponents();
