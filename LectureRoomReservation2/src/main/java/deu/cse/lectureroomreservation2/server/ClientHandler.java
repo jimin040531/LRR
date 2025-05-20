@@ -85,7 +85,7 @@ public class ClientHandler implements Runnable {
                     out.writeUTF("NOTICE_END");
                     out.flush();
                 }
-                
+
                 while (true) {
                     try {
                         String command = in.readUTF();
@@ -93,7 +93,7 @@ public class ClientHandler implements Runnable {
                             System.out.println("사용자 로그아웃됨: " + id);
                             break;
                         }
-                        
+
                         // 예약 요청 처리
                         if ("RESERVE".equals(command)) {
                             // 클라이언트로부터 예약 요청 객체를 받음
@@ -113,6 +113,20 @@ public class ClientHandler implements Runnable {
 
                             CheckMaxTimeResult result = new CheckMaxTimeResult(exceeded, reason);
                             out.writeObject(result);
+                            out.flush();
+                        }
+                        // 클라이언트 요청 - id로 예약 정보 조회 요청 받는 부분
+                        if ("RETRIEVE_MY_RESERVE".equals(command)) {
+                            String userId = in.readUTF();
+                            List<String> reserves = ReserveManager.getReserveInfoById(userId);
+                            out.writeObject(reserves);
+                            out.flush();
+                        }
+                        // 클라이언트 요청 - 예약 정보로 총 예약자 수 조회 요청 받는 부분
+                        if ("COUNT_RESERVE_USERS".equals(command)) {
+                            String reserveInfo = in.readUTF();
+                            int userCount = ReserveManager.countUsersByReserveInfo(reserveInfo);
+                            out.writeInt(userCount);
                             out.flush();
                         }
                     } catch (IOException e) {
@@ -142,7 +156,7 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-/*
+    /*
     private void handleStudent(ObjectInputStream in, ObjectOutputStream out, String id) {
         System.out.println("학생 기능 처리: " + id);
     }

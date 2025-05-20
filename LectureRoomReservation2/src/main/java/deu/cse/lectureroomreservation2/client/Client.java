@@ -8,6 +8,7 @@ import deu.cse.lectureroomreservation2.server.control.LoginStatus;
 import deu.cse.lectureroomreservation2.common.*;
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 
 /**
  * Client는 강의실 예약 시스템에서 뷰와 관련된 행위를 다룬다. 필요시 Server에 요청하여 필요한 작업을 수행할 수 있다.
@@ -93,6 +94,43 @@ public class Client {
             }
         }
     }
+    
+    // 클라이언트의 예약 정보 조회 요청 처리
+    @SuppressWarnings("unchecked")
+    public List<String> retrieveMyReserveInfo(String id) throws IOException, ClassNotFoundException {
+        out.writeUTF("RETRIEVE_MY_RESERVE");
+        out.flush();
+        out.writeUTF(id);
+        out.flush();
+        return (List<String>) in.readObject();
+    }
+    // 클라이언트에서 사용예시, 응답예시시
+    /*
+     * List<String> myReserves = client.retrieveMyReserveInfo(id);
+     * for (String reserve : myReserves) {
+     * System.out.println(reserve);
+     * }
+     * //응답 예시
+     * [
+     * "915 / 2025 / 05 / 20 / 12:00 13:00 / 월요일",
+     * "101 / 2025 / 06 / 01 / 09:00 10:00 / 화요일"
+     * ]
+     */
+
+     // 예약 정보로 예약한 총 사용자 수 요청 처리
+    public int requestReserveUserCount(String reserveInfo) throws IOException {
+        out.writeUTF("COUNT_RESERVE_USERS");
+        out.flush();
+        out.writeUTF(reserveInfo);
+        out.flush();
+        return in.readInt();
+    }
+    // 클라이언트에서 사용예시, 응답예시
+    /*
+     * String reserveInfo = "915 / 2025 / 05 / 21 / 00:00 01:00 / 화요일";
+     * int userCount = client.requestReserveUserCount(reserveInfo);
+     * System.out.println("해당 예약 정보로 예약한 사용자 수: " + userCount);
+     */
 
     public static void main(String[] args) {
         try {
