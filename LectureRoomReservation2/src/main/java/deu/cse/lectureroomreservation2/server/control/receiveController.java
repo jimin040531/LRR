@@ -5,7 +5,6 @@
 package deu.cse.lectureroomreservation2.server.control;
 
 import deu.cse.lectureroomreservation2.common.*;
-import deu.cse.lectureroomreservation2.server.control.*;
 
 /**
  *
