@@ -11,8 +11,13 @@ import java.util.*;
  * @author Jimin
  */
 public class ScheduleFileManager {
-    private final String filePath = System.getProperty("user.dir") + "/src/main/resources/ScheduleInfo.txt";
+    
+    private final String filePath;
 
+    public ScheduleFileManager(String filePath) {
+        this.filePath = filePath;
+    }
+    
     public List<String[]> readAllLines() {
         List<String[]> list = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {

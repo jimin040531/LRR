@@ -19,8 +19,8 @@ public class TimeTableController {
     private final ScheduleFileManager fileManager;
     private ScheduleManager scheduleManager;
 
-    public TimeTableController() {
-        this.fileManager = new ScheduleFileManager();
+    public TimeTableController(ScheduleFileManager fileManager) {
+        this.fileManager = fileManager;
         this.scheduleManager = new ScheduleManager();
     }
 
