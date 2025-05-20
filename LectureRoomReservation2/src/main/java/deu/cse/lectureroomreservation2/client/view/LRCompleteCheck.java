@@ -43,7 +43,7 @@ public class LRCompleteCheck extends javax.swing.JFrame {
     }
 
     public LRCompleteCheck(String id, String role, String roomNumber, String date, String day, Client client) {
-        //사용자 아이디, 사용자 역할("P" 또는 "S"), 강의실 번호, 년 월 일 (시작 시간:분), 요일, 클라이언트 넘겨주기 
+        //id : 사용자 아이디, role : 사용자 역할("P" 또는 "S"), roomNumber : 강의실 번호, date : 년 월 일 시작(시간:분) 끝(시간:분), day : 요일, client 클라이언트 넘겨주기
         this.client = client;
 
         initComponents();
