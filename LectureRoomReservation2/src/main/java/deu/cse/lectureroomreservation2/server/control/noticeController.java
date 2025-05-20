@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.*;
 
 public class noticeController {
-    private static final String NOTICE_FILE = receiveController.getFilepath() + "noticeSave.txt";
+    private static final String NOTICE_FILE = receiveController.getFilepath() + receiveController.getNoticeFileName();
 
     // 파일 존재 여부 확인 및 없으면 생성
     private static void ensureNoticeFileExists() {
