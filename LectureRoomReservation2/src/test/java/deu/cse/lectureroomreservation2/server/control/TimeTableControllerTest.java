@@ -43,10 +43,10 @@ public class TimeTableControllerTest {
         controller = new TimeTableController(fileManager);
     }
 
-    @AfterEach
-    void tearDown() throws IOException {
-        Files.deleteIfExists(TEST_FILE); // 테스트 후 삭제 (원한다면 생략 가능)
-    }
+    //@AfterEach
+    //void tearDown() throws IOException {
+     //  Files.deleteIfExists(TEST_FILE); // 테스트 후 삭제 (원한다면 생략 가능)
+    //}
 
     @Test
     public void testLoadSchedulesFromFile() {
