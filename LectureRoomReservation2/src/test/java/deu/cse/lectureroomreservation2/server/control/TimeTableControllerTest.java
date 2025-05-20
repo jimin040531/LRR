@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TimeTableControllerTest {
     
     TimeTableController controller;
-    private static final Path TEST_FILE = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "test_ScheduleInfo.txt");
+    private static final Path TEST_FILE = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "test_schedule.txt");
 
     private final String room = "911";
     private final String day = "월";
