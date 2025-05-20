@@ -26,19 +26,16 @@ public class ClientHandler implements Runnable {
     public void run() {
         boolean acquired = false;
         String id = null;
-        boolean loggedIn = false;
 
         try {
             System.out.println("클라이언트 연결 요청 수신됨: " + socket.getInetAddress());
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-            // 사용자 정보 먼저 받음
             id = in.readUTF();
             String password = in.readUTF();
             String role = in.readUTF();
 
-            // 세마포어 먼저 확보
             acquired = server.getConnectionLimiter().tryAcquire();
             if (!acquired) {
                 System.out.println("접속 거부됨 (최대 인원 초과): " + id);
@@ -47,33 +44,28 @@ public class ClientHandler implements Runnable {
                 return;
             }
 
-            // 로그인 시도 전에 중복 체크
-            synchronized (server.getLoggedInUsers()) {
-                if (server.isUserLoggedIn(id)) {
-                    System.out.println("접속 거부(중복 로그인): " + id);
-                    out.writeObject(new LoginStatus(false, "DUPLICATE", "이미 로그인 중인 계정입니다."));
-                    out.flush();
-                    return;
-                } else {
-                    // 로그인 시도 중으로 가정하고 잠시 true 등록
-                    server.addLoggedInUser(id);
-                    loggedIn = true;
+            // 1. 인증 먼저
+            LoginStatus status = server.requestAuth(id, password, role);
+
+            // 2. 인증 성공한 경우에만 중복 로그인 체크
+            if (status.isLoginSuccess()) {
+                synchronized (server.getLoggedInUsers()) {
+                    if (server.isUserLoggedIn(id)) {
+                        System.out.println("접속 거부(중복 로그인): " + id);
+                        out.writeObject(new LoginStatus(false, "DUPLICATE", "이미 로그인 중인 계정입니다."));
+                        out.flush();
+                        return;
+                    } else {
+                        server.addLoggedInUser(id, socket);  // ✅ 인증 완료 후에만 등록
+                    }
                 }
             }
 
-            // 이제 인증 진행
-            LoginStatus status = server.requestAuth(id, password, role);
-            if (!status.isLoginSuccess()) {
-                // 인증 실패 → 로그인 시도 상태 제거
-                server.removeLoggedInUser(id);
-                loggedIn = false;
-            }
-
-            // 로그인 결과 전송
+            // 3. 로그인 결과 전송
             out.writeObject(status);
             out.flush();
 
-            // 로그인 성공한 경우 명령 수신 루프
+            // 4. 로그인 성공한 경우 명령 수신 루프
             if (status.isLoginSuccess()) {
                 while (true) {
                     try {
@@ -96,10 +88,10 @@ public class ClientHandler implements Runnable {
                 server.getConnectionLimiter().release();
             }
 
-            // 무조건 상태 정리
+            // 세션 종료 후 항상 상태 정리
             if (id != null) {
                 synchronized (server.getLoggedInUsers()) {
-                    server.removeLoggedInUser(id);  // 로그인 상태를 false로
+                    server.removeLoggedInUser(id);
                 }
             }
 
