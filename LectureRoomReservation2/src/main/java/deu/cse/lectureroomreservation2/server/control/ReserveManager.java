@@ -3,7 +3,7 @@ package deu.cse.lectureroomreservation2.server.control;
 import java.io.*;
 import java.util.*;
 import deu.cse.lectureroomreservation2.common.*;
-import deu.cse.lectureroomreservation2.Server.*;
+import deu.cse.lectureroomreservation2.server.*;
 
 public class ReserveManager {
     // 사용자 정보 파일 경로 (예약 정보도 이 파일에 저장)
