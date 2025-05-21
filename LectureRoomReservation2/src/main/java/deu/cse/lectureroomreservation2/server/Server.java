@@ -6,7 +6,6 @@ package deu.cse.lectureroomreservation2.server;
 
 import deu.cse.lectureroomreservation2.server.control.AutoReserveCleaner;
 import deu.cse.lectureroomreservation2.server.control.LoginStatus;
-import deu.cse.lectureroomreservation2.server.control.receiveController;
 import deu.cse.lectureroomreservation2.server.control.LoginController;
 import java.io.*;
 import java.net.ServerSocket;
@@ -30,7 +29,6 @@ public class Server {
         controller = new LoginController();
 
         // 예약 정보 자동 삭제 스레드 시작
-        String userFilePath = receiveController.getFilepath() + receiveController.getFileName();
         new AutoReserveCleaner().start();
     }
 

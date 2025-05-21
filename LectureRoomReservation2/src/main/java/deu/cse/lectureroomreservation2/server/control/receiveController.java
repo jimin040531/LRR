@@ -4,8 +4,12 @@
  */
 package deu.cse.lectureroomreservation2.server.control;
 
-import deu.cse.lectureroomreservation2.common.*;
+import deu.cse.lectureroomreservation2.server.control.ReserveManager;
+import deu.cse.lectureroomreservation2.common.ReserveResult;
+import deu.cse.lectureroomreservation2.common.ReserveRequest;
+
 import java.util.List;
+
 
 /**
  *
@@ -15,7 +19,7 @@ public class receiveController {
 
     // 파일 경로 및 이름 지정
     private static final String filePath = "src/main/resources/";
-    private static final String UserFileName = "UserInfotest.txt";
+    private static final String UserFileName = "UserInfo.txt";
     private static final String noticeFileName = "noticeSave.txt";
 
     public static String getFilepath() {
