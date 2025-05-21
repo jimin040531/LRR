@@ -239,4 +239,53 @@ public class ReserveManager {
         }
         return count;
     }
+
+    // id와 예약 정보로 예약 취소
+    public static ReserveResult cancelReserve(String id, String reserveInfo) {
+        List<String> lines = new ArrayList<>();
+        boolean updated = false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 6 && parts[0].equals(id)) {
+                    List<String> reserves = new ArrayList<>();
+                    for (int i = 5; i < parts.length; i++)
+                        reserves.add(parts[i].trim());
+                    if (!reserves.contains(reserveInfo.trim())) {
+                        return new ReserveResult(false, "해당 예약 정보를 찾을 수 없습니다.");
+                    }
+                    reserves.remove(reserveInfo.trim());
+                    // 라인 재구성
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < 5; i++)
+                        sb.append(parts[i]).append(i < 4 ? "," : "");
+                    for (String r : reserves)
+                        sb.append(",").append(r);
+                    lines.add(sb.toString());
+                    updated = true;
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ReserveResult(false, "파일 읽기 오류");
+        }
+
+        if (updated) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(USER_FILE))) {
+                for (String l : lines) {
+                    bw.write(l);
+                    bw.newLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ReserveResult(false, "파일 저장 오류");
+            }
+            return new ReserveResult(true, "예약이 취소되었습니다.");
+        }
+        return new ReserveResult(false, "사용자 정보를 찾을 수 없습니다.");
+    }
 }

@@ -129,6 +129,37 @@ public class ClientHandler implements Runnable {
                             out.writeInt(userCount);
                             out.flush();
                         }
+                        // 클라이언트 요청 - 예약 취소 요청 받는 부분
+                        if ("CANCEL_RESERVE".equals(command)) {
+                            String userId = in.readUTF();
+                            String reserveInfo = in.readUTF();
+                            ReserveResult result = ReserveManager.cancelReserve(userId, reserveInfo);
+                            out.writeObject(result);
+                            out.flush();
+                        }
+                        // 클라이언트 요청 - 기존 예약 정보를 새 예약 정보로 변경
+                        if ("MODIFY_RESERVE".equals(command)) {
+                            String userId = in.readUTF();
+                            String oldReserveInfo = in.readUTF();
+                            String newRoomNumber = in.readUTF();
+                            String newDate = in.readUTF();
+                            String newDay = in.readUTF();
+
+                            // 1. 기존 예약 취소
+                            ReserveResult cancelResult = ReserveManager.cancelReserve(userId, oldReserveInfo);
+                            if (!cancelResult.getResult()) {
+                                out.writeObject(cancelResult);
+                                out.flush();
+                                continue;
+                            }
+                            // 2. 새 예약 시도 (role은 기존 예약에서 추출하거나, 클라이언트에서 같이 보내도 됨)
+                            // 여기서는 클라이언트에서 role도 같이 보내는 것이 안전하다고 판단단
+                            String giverole = in.readUTF();
+                            ReserveResult reserveResult = ReserveManager.reserve(userId, giverole, newRoomNumber, newDate,
+                                    newDay);
+                            out.writeObject(reserveResult);
+                            out.flush();
+                        }
                     } catch (IOException e) {
                         System.out.println("클라이언트 연결 오류 또는 종료됨.");
                         break;

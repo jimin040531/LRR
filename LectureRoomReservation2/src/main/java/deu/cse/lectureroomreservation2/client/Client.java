@@ -80,6 +80,18 @@ public class Client {
         out.flush();
         return (CheckMaxTimeResult) in.readObject();
     }
+    
+     // 예약 취소 요청 처리
+    public ReserveResult sendCancelReserveRequest(String id, String reserveInfo)
+            throws IOException, ClassNotFoundException {
+        out.writeUTF("CANCEL_RESERVE");
+        out.flush();
+        out.writeUTF(id);
+        out.flush();
+        out.writeUTF(reserveInfo);
+        out.flush();
+        return (ReserveResult) in.readObject();
+    }
 
     // 공지사항 수신 및 확인 처리
     public void checkAndShowNotices(javax.swing.JFrame parentFrame) throws IOException {
