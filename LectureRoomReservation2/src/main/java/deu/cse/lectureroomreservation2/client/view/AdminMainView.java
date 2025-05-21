@@ -19,24 +19,13 @@ public class AdminMainView extends javax.swing.JFrame {
     private final Client client;
 
     public AdminMainView(String userId, Client client) {
-
+        
         this.userId = userId;
         this.client = client;
 
         initComponents();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(235, 309);
         setLocationRelativeTo(null);
-
-        this.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                if (client != null) {
-                    client.logout(); // 서버에 로그아웃 알리기
-                }
-            }
-        });
-
     }
 
     /**
@@ -48,16 +37,14 @@ public class AdminMainView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblTitle = new javax.swing.JLabel();
         btnUserManagement = new javax.swing.JButton();
         btnReservationHistory = new javax.swing.JButton();
-        btnLogout = new javax.swing.JButton();
         btnTimetableManagement = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        prof_pass_change = new javax.swing.JButton();
+        prof_LogOut = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        lblTitle.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
-        lblTitle.setText("관리자");
 
         btnUserManagement.setText("👤 사용자 관리");
         btnUserManagement.addActionListener(new java.awt.event.ActionListener() {
@@ -73,17 +60,28 @@ public class AdminMainView extends javax.swing.JFrame {
             }
         });
 
-        btnLogout.setText("🚪");
-        btnLogout.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLogoutActionPerformed(evt);
-            }
-        });
-
         btnTimetableManagement.setText("🕒 강의실 일정 관리");
         btnTimetableManagement.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTimetableManagementActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("맑은 고딕", 1, 24)); // NOI18N
+        jLabel1.setText("Admin Main");
+        jLabel1.setToolTipText("");
+
+        prof_pass_change.setText("비밀번호 변경");
+        prof_pass_change.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                prof_pass_changeActionPerformed(evt);
+            }
+        });
+
+        prof_LogOut.setText("로그아웃");
+        prof_LogOut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                prof_LogOutActionPerformed(evt);
             }
         });
 
@@ -95,31 +93,38 @@ public class AdminMainView extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(btnLogout)
-                        .addGap(62, 62, 62)
-                        .addComponent(lblTitle))
+                        .addComponent(prof_pass_change)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+                        .addComponent(prof_LogOut, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnTimetableManagement, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnReservationHistory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnUserManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(45, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(46, 46, 46)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnUserManagement, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnReservationHistory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnTimetableManagement, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblTitle)
-                    .addComponent(btnLogout))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(33, 33, 33)
                 .addComponent(btnUserManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnReservationHistory, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnTimetableManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(prof_pass_change, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(prof_LogOut, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         pack();
@@ -143,20 +148,26 @@ public class AdminMainView extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_btnTimetableManagementActionPerformed
 
-    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+    private void prof_pass_changeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prof_pass_changeActionPerformed
         // TODO add your handling code here:
-        // 서버에 로그아웃 요청 전송
-        if (client != null && client.isConnected()) {
-            try {
-                client.logout(); // 서버에 "LOGOUT" 전송 및 소켓 종료
-            } catch (Exception e) {
-                System.err.println("로그아웃 중 오류 발생: " + e.getMessage());
-            }
-        }
+        ChangePassView frame = new ChangePassView();
+        frame.setSize(300, 450);           // 창 크기 설정 (적당히 보기 좋은 크기)
+        frame.setLocationRelativeTo(null); // 화면 가운데 정렬
+        frame.setVisible(true);            // 화면에 보이게 만들기
+    }//GEN-LAST:event_prof_pass_changeActionPerformed
 
-        new LoginFrame().setVisible(true); // 로그인 화면 띄우기
-        dispose(); // 현재 관리자 창 닫기
-    }//GEN-LAST:event_btnLogoutActionPerformed
+    private void prof_LogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prof_LogOutActionPerformed
+        // TODO add your handling code here:
+        int choice = javax.swing.JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", javax.swing.JOptionPane.YES_NO_OPTION);
+
+        if (choice == javax.swing.JOptionPane.YES_OPTION) {
+            if (client != null) {
+                client.logout();
+            }
+            this.dispose();  // 현재 창 닫기
+            new LoginFrame().setVisible(true); // 로그인 화면 띄우기
+        }
+    }//GEN-LAST:event_prof_LogOutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -188,16 +199,17 @@ public class AdminMainView extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminMainView("A", null).setVisible(true);
+                new AdminMainView("A",null).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnReservationHistory;
     private javax.swing.JButton btnTimetableManagement;
     private javax.swing.JButton btnUserManagement;
-    private javax.swing.JLabel lblTitle;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton prof_LogOut;
+    private javax.swing.JButton prof_pass_change;
     // End of variables declaration//GEN-END:variables
 }

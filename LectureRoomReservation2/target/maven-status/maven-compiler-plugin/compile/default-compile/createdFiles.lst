@@ -20,6 +20,7 @@ deu\cse\lectureroomreservation2\server\model\User.class
 deu\cse\lectureroomreservation2\client\view\ViewRoom$10.class
 deu\cse\lectureroomreservation2\server\control\LoginController.class
 deu\cse\lectureroomreservation2\client\view\LRCompleteCheck$4.class
+deu\cse\lectureroomreservation2\client\view\StudentMainMenu$4.class
 deu\cse\lectureroomreservation2\client\view\ErrorMessage.class
 deu\cse\lectureroomreservation2\client\view\ViewRoom$4.class
 deu\cse\lectureroomreservation2\client\view\ViewRoom$13.class
@@ -39,6 +40,7 @@ deu\cse\lectureroomreservation2\client\view\ViewRoom$12.class
 deu\cse\lectureroomreservation2\server\control\UserRequestController.class
 deu\cse\lectureroomreservation2\client\view\StudentMainMenu$3.class
 deu\cse\lectureroomreservation2\client\Client.class
+deu\cse\lectureroomreservation2\client\view\ProfessorMainMenu$4.class
 deu\cse\lectureroomreservation2\client\Student.class
 deu\cse\lectureroomreservation2\client\view\LRCompleteCheck$3.class
 deu\cse\lectureroomreservation2\client\view\ProfessorMainMenu$3.class
@@ -53,6 +55,7 @@ deu\cse\lectureroomreservation2\client\view\LRCompleteAlert$2.class
 deu\cse\lectureroomreservation2\client\view\StudentMainMenu.class
 deu\cse\lectureroomreservation2\client\view\StudentMainMenu$2.class
 deu\cse\lectureroomreservation2\client\view\ViewRoom$6.class
+deu\cse\lectureroomreservation2\client\view\AdminMainView$6.class
 deu\cse\lectureroomreservation2\client\view\ChangePassView.class
 deu\cse\lectureroomreservation2\server\control\LoginStatus.class
 deu\cse\lectureroomreservation2\client\view\ChangePassView$3.class

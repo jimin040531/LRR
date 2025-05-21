@@ -8,6 +8,9 @@ package deu.cse.lectureroomreservation2.server;
  *
  * @author SAMSUNG
  */
+import deu.cse.lectureroomreservation2.server.control.*;
+import deu.cse.lectureroomreservation2.common.*;
+import java.util.List;
 import deu.cse.lectureroomreservation2.server.control.LoginStatus;
 import java.io.*;
 import java.net.Socket;
@@ -26,6 +29,7 @@ public class ClientHandler implements Runnable {
     public void run() {
         boolean acquired = false;
         String id = null;
+        boolean isLoggedIn = false;
 
         try {
             System.out.println("클라이언트 연결 요청 수신됨: " + socket.getInetAddress());
@@ -36,37 +40,57 @@ public class ClientHandler implements Runnable {
             String password = in.readUTF();
             String role = in.readUTF();
 
+            // 최대 동시 접속 수 확인
             acquired = server.getConnectionLimiter().tryAcquire();
             if (!acquired) {
-                System.out.println("접속 거부됨 (최대 인원 초과): " + id);
                 out.writeObject(new LoginStatus(false, "WAIT", "현재 접속 인원이 가득 찼습니다."));
                 out.flush();
                 return;
             }
 
-            // 1. 인증 먼저
-            LoginStatus status = server.requestAuth(id, password, role);
+            // 중복 로그인 확인
+            synchronized (server.getLoggedInUsers()) {
+                if (server.isUserLoggedIn(id)) {
+                    out.writeObject(new LoginStatus(false, "DUPLICATE", "이미 로그인 중인 계정입니다."));
+                    out.flush();
+                    return;
+                }
+            }
 
-            // 2. 인증 성공한 경우에만 중복 로그인 체크
+            // 인증 처리
+            LoginStatus status = server.requestAuth(id, password, role);
             if (status.isLoginSuccess()) {
                 synchronized (server.getLoggedInUsers()) {
-                    if (server.isUserLoggedIn(id)) {
-                        System.out.println("접속 거부(중복 로그인): " + id);
-                        out.writeObject(new LoginStatus(false, "DUPLICATE", "이미 로그인 중인 계정입니다."));
+                    if(server.isUserLoggedIn(id)){
+                        System.out.println("중복 로그인 : "+id);
+                        out.writeObject(new LoginStatus(false,"DUPLICATE","이미 로그인 중인 계정입니다."));
                         out.flush();
                         return;
-                    } else {
-                        server.addLoggedInUser(id, socket);  // ✅ 인증 완료 후에만 등록
+                    }else{
+                        server.addLoggedInUser(id);
                     }
                 }
             }
 
-            // 3. 로그인 결과 전송
             out.writeObject(status);
             out.flush();
 
-            // 4. 로그인 성공한 경우 명령 수신 루프
+            // 로그인 성공 시 명령 루프 시작
             if (status.isLoginSuccess()) {
+                // 공지사항 처리 (학생용)
+                if ("STUDENT".equals(status.getRole())) {
+                    List<String> notices = noticeController.getNotices(id);
+                    for (String notice : notices) {
+                        out.writeUTF("NOTICE");
+                        out.writeUTF(notice);
+                        out.flush();
+                        noticeController.removeNotice(id, notice);
+                    }
+                    out.writeUTF("NOTICE_END");
+                    out.flush();
+                }
+
+                // 명령 루프
                 while (true) {
                     try {
                         String command = in.readUTF();
@@ -74,6 +98,8 @@ public class ClientHandler implements Runnable {
                             System.out.println("사용자 로그아웃됨: " + id);
                             break;
                         }
+
+                        handleClientCommand(command, in, out, id);
                     } catch (IOException e) {
                         System.out.println("클라이언트 연결 오류 또는 종료됨.");
                         break;
@@ -87,19 +113,83 @@ public class ClientHandler implements Runnable {
             if (acquired) {
                 server.getConnectionLimiter().release();
             }
-
-            // 세션 종료 후 항상 상태 정리
-            if (id != null) {
+            if (id != null && isLoggedIn) {
                 synchronized (server.getLoggedInUsers()) {
                     server.removeLoggedInUser(id);
                 }
             }
-
             try {
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void handleClientCommand(String command, ObjectInputStream in, ObjectOutputStream out, String id) throws IOException, ClassNotFoundException {
+        switch (command) {
+            case "RESERVE":
+                ReserveRequest req = (ReserveRequest) in.readObject();
+                ReserveResult result = new receiveController().handleReserve(req);
+                out.writeObject(result);
+                out.flush();
+                break;
+
+            case "CHECK_MAX_TIME":
+                CheckMaxTimeRequest maxReq = (CheckMaxTimeRequest) in.readObject();
+                boolean exceeded = new CheckMaxTime(maxReq.getId()).check();
+                out.writeObject(new CheckMaxTimeResult(exceeded, exceeded ? "최대 예약 개수 초과" : "예약 가능"));
+                out.flush();
+                break;
+
+            case "RETRIEVE_MY_RESERVE":
+                List<String> reserves = ReserveManager.getReserveInfoById(in.readUTF());
+                out.writeObject(reserves);
+                out.flush();
+                break;
+
+            case "COUNT_RESERVE_USERS":
+                int count = ReserveManager.countUsersByReserveInfo(in.readUTF());
+                out.writeInt(count);
+                out.flush();
+                break;
+
+            case "CANCEL_RESERVE":
+                String userId = in.readUTF();
+                String reserveInfo = in.readUTF();
+                ReserveResult cancelResult = ReserveManager.cancelReserve(userId, reserveInfo);
+                out.writeObject(cancelResult);
+                out.flush();
+                break;
+
+            case "MODIFY_RESERVE":
+                handleModifyReserve(in, out);
+                break;
+        }
+    }
+
+    private void handleModifyReserve(ObjectInputStream in, ObjectOutputStream out) throws IOException {
+        try {
+            String userId = in.readUTF();
+            String oldReserveInfo = in.readUTF();
+            String newRoomNumber = in.readUTF();
+            String newDate = in.readUTF();
+            String newDay = in.readUTF();
+            String role = in.readUTF();
+
+            ReserveResult cancelResult = ReserveManager.cancelReserve(userId, oldReserveInfo);
+            if (!cancelResult.getResult()) {
+                out.writeObject(cancelResult);
+                out.flush();
+                return;
+            }
+
+            ReserveResult reserveResult = ReserveManager.reserve(userId, role, newRoomNumber, newDate, newDay);
+            out.writeObject(reserveResult);
+            out.flush();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
