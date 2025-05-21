@@ -153,7 +153,7 @@ public class ClientHandler implements Runnable {
                                 continue;
                             }
                             // 2. 새 예약 시도 (role은 기존 예약에서 추출하거나, 클라이언트에서 같이 보내도 됨)
-                            // 여기서는 클라이언트에서 role도 같이 보내는 것이 안전하다고 판단단
+                            // 여기서는 클라이언트에서 role도 같이 보내는 것이 안전하다고 판단
                             String giverole = in.readUTF();
                             ReserveResult reserveResult = ReserveManager.reserve(userId, giverole, newRoomNumber, newDate,
                                     newDay);
