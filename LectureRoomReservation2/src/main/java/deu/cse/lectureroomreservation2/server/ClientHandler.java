@@ -58,18 +58,10 @@ public class ClientHandler implements Runnable {
             }
 
             // 인증 처리
-            LoginStatus status = server.requestAuth(id, password, role);
+            LoginStatus status = server.requestAuth(id, password, role);    // 인증
             if (status.isLoginSuccess()) {
                 synchronized (server.getLoggedInUsers()) {
-                    if (server.isUserLoggedIn(id)) {
-                        System.out.println("중복 로그인 : " + id);
-                        out.writeObject(new LoginStatus(false, "DUPLICATE", "이미 로그인 중인 계정입니다."));
-                        out.flush();
-                        return;
-                    } else {
-                        server.addLoggedInUser(id, socket); // 여기 반드시 socket 넣어야 함
-                        isLoggedIn = true;
-                    }
+                    server.getLoggedInUsers().add(id);  // 로그인 성공한 사용자 등록
                 }
             }
 
@@ -79,10 +71,12 @@ public class ClientHandler implements Runnable {
             // 로그인 성공 시 명령 루프 시작
             if (status.isLoginSuccess()) {
                 // 공지사항 처리 (학생용)
+                System.out.println("로그인 성공 하여 역할 " + status.getRole() + "를 가집니다.");
                 if ("STUDENT".equals(status.getRole())) {
                     List<String> notices = noticeController.getNotices(id);
                     for (String notice : notices) {
                         out.writeUTF("NOTICE");
+                        out.flush();
                         out.writeUTF(notice);
                         out.flush();
                         noticeController.removeNotice(id, notice);
@@ -100,7 +94,72 @@ public class ClientHandler implements Runnable {
                             break;
                         }
 
-                        handleClientCommand(command, in, out, id);
+                        // 예약 요청 처리
+                        if ("RESERVE".equals(command)) {
+                            // 클라이언트로부터 예약 요청 객체를 받음
+                            ReserveRequest req = (ReserveRequest) in.readObject();
+                            // 예약 처리 결과를 받아옴
+                            ReserveResult result = new receiveController().handleReserve(req);
+                            // 결과를 클라이언트에 전송
+                            out.writeObject(result);
+                            out.flush();
+                        }
+                        // CHECK_MAX_TIME 명령 처리 추가
+                        if ("CHECK_MAX_TIME".equals(command)) {
+                            CheckMaxTimeRequest req = (CheckMaxTimeRequest) in.readObject();
+                            boolean exceeded = new CheckMaxTime(req.getId()).check();
+
+                            String reason = exceeded ? "최대 예약 가능 개수를 초과했습니다." : "예약 가능";
+
+                            CheckMaxTimeResult result = new CheckMaxTimeResult(exceeded, reason);
+                            out.writeObject(result);
+                            out.flush();
+                        }
+                        // 클라이언트 요청 - id로 예약 정보 조회 요청 받는 부분
+                        if ("RETRIEVE_MY_RESERVE".equals(command)) {
+                            String userId = in.readUTF();
+                            List<String> reserves = ReserveManager.getReserveInfoById(userId);
+                            out.writeObject(reserves);
+                            out.flush();
+                        }
+                        // 클라이언트 요청 - 예약 정보로 총 예약자 수 조회 요청 받는 부분
+                        if ("COUNT_RESERVE_USERS".equals(command)) {
+                            String reserveInfo = in.readUTF();
+                            int userCount = ReserveManager.countUsersByReserveInfo(reserveInfo);
+                            out.writeInt(userCount);
+                            out.flush();
+                        }
+                        // 클라이언트 요청 - 예약 취소 요청 받는 부분
+                        if ("CANCEL_RESERVE".equals(command)) {
+                            String userId = in.readUTF();
+                            String reserveInfo = in.readUTF();
+                            ReserveResult result = ReserveManager.cancelReserve(userId, reserveInfo);
+                            out.writeObject(result);
+                            out.flush();
+                        }
+                        // 클라이언트 요청 - 기존 예약 정보를 새 예약 정보로 변경
+                        if ("MODIFY_RESERVE".equals(command)) {
+                            String userId = in.readUTF();
+                            String oldReserveInfo = in.readUTF();
+                            String newRoomNumber = in.readUTF();
+                            String newDate = in.readUTF();
+                            String newDay = in.readUTF();
+
+                            // 1. 기존 예약 취소
+                            ReserveResult cancelResult = ReserveManager.cancelReserve(userId, oldReserveInfo);
+                            if (!cancelResult.getResult()) {
+                                out.writeObject(cancelResult);
+                                out.flush();
+                                continue;
+                            }
+                            // 2. 새 예약 시도 (role은 기존 예약에서 추출하거나, 클라이언트에서 같이 보내도 됨)
+                            // 여기서는 클라이언트에서 role도 같이 보내는 것이 안전하다고 판단
+                            String giverole = in.readUTF();
+                            ReserveResult reserveResult = ReserveManager.reserve(userId, giverole, newRoomNumber, newDate,
+                                    newDay);
+                            out.writeObject(reserveResult);
+                            out.flush();
+                        }
                     } catch (IOException e) {
                         System.out.println("클라이언트 연결 오류 또는 종료됨.");
                         break;
@@ -114,11 +173,13 @@ public class ClientHandler implements Runnable {
             if (acquired) {
                 server.getConnectionLimiter().release();
             }
-            if (id != null && isLoggedIn) {
+
+            if (id != null) {
                 synchronized (server.getLoggedInUsers()) {
-                    server.removeLoggedInUser(id);
+                    server.getLoggedInUsers().remove(id);  // 로그아웃 처리
                 }
             }
+
             try {
                 socket.close();
             } catch (IOException e) {
@@ -127,70 +188,5 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void handleClientCommand(String command, ObjectInputStream in, ObjectOutputStream out, String id) throws IOException, ClassNotFoundException {
-        switch (command) {
-            case "RESERVE":
-                ReserveRequest req = (ReserveRequest) in.readObject();
-                ReserveResult result = new receiveController().handleReserve(req);
-                out.writeObject(result);
-                out.flush();
-                break;
 
-            case "CHECK_MAX_TIME":
-                CheckMaxTimeRequest maxReq = (CheckMaxTimeRequest) in.readObject();
-                boolean exceeded = new CheckMaxTime(maxReq.getId()).check();
-                out.writeObject(new CheckMaxTimeResult(exceeded, exceeded ? "최대 예약 개수 초과" : "예약 가능"));
-                out.flush();
-                break;
-
-            case "RETRIEVE_MY_RESERVE":
-                List<String> reserves = ReserveManager.getReserveInfoById(in.readUTF());
-                out.writeObject(reserves);
-                out.flush();
-                break;
-
-            case "COUNT_RESERVE_USERS":
-                int count = ReserveManager.countUsersByReserveInfo(in.readUTF());
-                out.writeInt(count);
-                out.flush();
-                break;
-
-            case "CANCEL_RESERVE":
-                String userId = in.readUTF();
-                String reserveInfo = in.readUTF();
-                ReserveResult cancelResult = ReserveManager.cancelReserve(userId, reserveInfo);
-                out.writeObject(cancelResult);
-                out.flush();
-                break;
-
-            case "MODIFY_RESERVE":
-                handleModifyReserve(in, out);
-                break;
-        }
-    }
-
-    private void handleModifyReserve(ObjectInputStream in, ObjectOutputStream out) throws IOException {
-        try {
-            String userId = in.readUTF();
-            String oldReserveInfo = in.readUTF();
-            String newRoomNumber = in.readUTF();
-            String newDate = in.readUTF();
-            String newDay = in.readUTF();
-            String role = in.readUTF();
-
-            ReserveResult cancelResult = ReserveManager.cancelReserve(userId, oldReserveInfo);
-            if (!cancelResult.getResult()) {
-                out.writeObject(cancelResult);
-                out.flush();
-                return;
-            }
-
-            ReserveResult reserveResult = ReserveManager.reserve(userId, role, newRoomNumber, newDate, newDay);
-            out.writeObject(reserveResult);
-            out.flush();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
