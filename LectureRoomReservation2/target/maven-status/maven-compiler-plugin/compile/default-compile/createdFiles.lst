@@ -28,6 +28,7 @@ deu\cse\lectureroomreservation2\server\ClientHandler.class
 deu\cse\lectureroomreservation2\client\view\RoomScheduleManagementView$5.class
 deu\cse\lectureroomreservation2\client\view\ErrorMessage$1.class
 deu\cse\lectureroomreservation2\client\view\LoginFrame$2.class
+deu\cse\lectureroomreservation2\client\view\UserManagementView$9.class
 deu\cse\lectureroomreservation2\client\view\ProfessorMainMenu.class
 deu\cse\lectureroomreservation2\client\view\AdminMainView.class
 deu\cse\lectureroomreservation2\client\view\UserManagementView$4.class
