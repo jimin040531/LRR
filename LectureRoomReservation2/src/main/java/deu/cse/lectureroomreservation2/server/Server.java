@@ -53,8 +53,7 @@ public class Server {
 
         if (status.isLoginSuccess()) {
             System.out.printf(">>> id = %s, password = %s, selected = %s%n%n", id, password, selectedRole);
-        }
-        else{
+        } else {
             System.out.println(">>> ID , PW, Role 재확인.");
         }
 
