@@ -174,7 +174,7 @@ public class ReservationHistoryView extends javax.swing.JFrame {
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         // TODO add your handling code here:
-        new AdminMainView().setVisible(true);
+        new AdminMainView("A", null).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 

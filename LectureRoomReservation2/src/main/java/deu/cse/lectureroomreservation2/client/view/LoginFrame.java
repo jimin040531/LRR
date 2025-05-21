@@ -201,7 +201,7 @@ public class LoginFrame extends javax.swing.JFrame {
                     case "PROFESSOR" ->
                         new ProfessorMainMenu(id, client).setVisible(true);
                     case "ADMIN" ->
-                        javax.swing.JOptionPane.showMessageDialog(this, "관리자 메뉴는 아직 구현되지 않았습니다.");
+                        new AdminMainView(id, client).setVisible(true);
                     default -> {
                         javax.swing.JOptionPane.showMessageDialog(this, "알 수 없는 사용자 유형입니다.");
                         return;
