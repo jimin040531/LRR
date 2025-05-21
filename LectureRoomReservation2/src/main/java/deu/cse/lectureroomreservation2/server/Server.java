@@ -24,7 +24,7 @@ public class Server {
     private static final int MAX_CLIENTS = 3;   // 최대 동시접속 가능 인원 수 3명.
     private final Semaphore connectionLimiter = new Semaphore(MAX_CLIENTS); // 최대 3명까지
 
-    private final Map<String, Socket> loggedInUsers = Collections.synchronizedMap(new HashMap<>());
+    private final Set<String> loggedInUsers = Collections.synchronizedSet(new HashSet<>());
 
     public Server() {
         controller = new LoginController();
@@ -34,17 +34,16 @@ public class Server {
         new AutoReserveCleaner().start();
     }
 
-    public Map<String, Socket> getLoggedInUsers() {
+    public Set<String> getLoggedInUsers() {
         return loggedInUsers;
     }
 
     public boolean isUserLoggedIn(String id) {
-        Socket s = loggedInUsers.get(id);
-        return s != null && !s.isClosed(); // 소켓이 열려있으면 로그인 중
+        return loggedInUsers.contains(id);
     }
 
-    public void addLoggedInUser(String id, Socket socket) {
-        loggedInUsers.put(id, socket);
+    public void addLoggedInUser(String id) {
+        loggedInUsers.add(id);
     }
 
     public void removeLoggedInUser(String id) {
