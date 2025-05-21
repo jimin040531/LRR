@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: deu.cse.lectureroomreservation2.server.control.TimeTableControllerTest
--------------------------------------------------------------------------------
-Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.113 s -- in deu.cse.lectureroomreservation2.server.control.TimeTableControllerTest
