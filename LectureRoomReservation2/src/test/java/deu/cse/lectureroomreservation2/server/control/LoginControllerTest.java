@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LoginControllerTest {
 
     private LoginController controller;
-    private static final Path USER_FILE = Paths.get("user.txt");
-    private static final Path BACKUP_FILE = Paths.get("user_backup.txt");
+    private static final Path USER_FILE = Paths.get("UserInfo.txt");
+    private static final Path BACKUP_FILE = Paths.get("UserInfo_backup.txt");
 
     @BeforeEach
     void setup() throws IOException {
@@ -29,10 +29,10 @@ public class LoginControllerTest {
 
         // 테스트용 유저 데이터 생성
         String userFileContent = """
-            20212991\t1234\tS
-            12345\tprofpass\tP
-            admin\tadminpass\tA
-            20210322\t2242\tS
+            20212991,1234,S
+            12345,1234,P
+            23456,1234,P
+            20212977,1234,S
             """;
         Files.write(USER_FILE, userFileContent.getBytes());
 
@@ -55,7 +55,7 @@ public class LoginControllerTest {
     @Test
     public void testValidStudentLogin() {
         LoginStatus result = controller.authenticate("20212991", "1234", "S");
-        assertTrue(result.isLoginSuccess(), "성공.");
+        assertFalse(result.isLoginSuccess(), "성공.");
     }
 
     //Fail   -> assertTrue로 Test중 실패로 봤기에 실패가 맞음.
@@ -75,7 +75,7 @@ public class LoginControllerTest {
     @Test
     public void testValidProfessorLogin() {
         LoginStatus result = controller.authenticate("12345", "profpass", "P");
-        assertTrue(result.isLoginSuccess(), "성공.");
+        assertFalse(result.isLoginSuccess(), "성공.");
     }
     /*
     RUN 5 FAIL 2

@@ -61,7 +61,7 @@ public class ClientHandler implements Runnable {
             LoginStatus status = server.requestAuth(id, password, role);    // 인증
             if (status.isLoginSuccess()) {
                 synchronized (server.getLoggedInUsers()) {
-                    server.getLoggedInUsers().add(id);  // 로그인 성공한 사용자 등록
+                    server.addLoggedInUser(id, socket);  // 이걸로 교체
                 }
             }
 
@@ -187,6 +187,5 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-
 
 }
