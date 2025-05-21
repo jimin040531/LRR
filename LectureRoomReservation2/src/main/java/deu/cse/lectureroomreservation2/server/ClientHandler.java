@@ -61,13 +61,14 @@ public class ClientHandler implements Runnable {
             LoginStatus status = server.requestAuth(id, password, role);
             if (status.isLoginSuccess()) {
                 synchronized (server.getLoggedInUsers()) {
-                    if(server.isUserLoggedIn(id)){
-                        System.out.println("중복 로그인 : "+id);
-                        out.writeObject(new LoginStatus(false,"DUPLICATE","이미 로그인 중인 계정입니다."));
+                    if (server.isUserLoggedIn(id)) {
+                        System.out.println("중복 로그인 : " + id);
+                        out.writeObject(new LoginStatus(false, "DUPLICATE", "이미 로그인 중인 계정입니다."));
                         out.flush();
                         return;
-                    }else{
-                        server.addLoggedInUser(id);
+                    } else {
+                        server.addLoggedInUser(id, socket); // 여기 반드시 socket 넣어야 함
+                        isLoggedIn = true;
                     }
                 }
             }
