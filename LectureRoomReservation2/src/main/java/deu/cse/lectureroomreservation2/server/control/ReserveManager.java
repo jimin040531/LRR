@@ -18,7 +18,8 @@ public class ReserveManager {
      * @param id         사용자 ID
      * @param role       사용자 역할(학생/교수)
      * @param roomNumber 강의실 번호
-     * @param date       예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00 13:00"
+     * @param date       예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00
+     *                   13:00"
      * @param day        예약 요일
      * @return ReserveResult(예약 성공/실패 및 사유)
      */
@@ -27,18 +28,21 @@ public class ReserveManager {
         try {
             // date 예시: "2025 / 05 / 21 / 12:00 13:00"
             String[] dateParts = date.split("/");
-            if (dateParts.length >= 4) {
-                String year = dateParts[0].trim();
-                String month = dateParts[1].trim();
-                String dayOfMonth = dateParts[2].trim();
-                String[] times = dateParts[3].trim().split(" ");
-                if (times.length < 2) {
-                    return new ReserveResult(false, "시작/끝 시간이 올바르지 않습니다.");
-                }
-                String startTime = times[0]; // "12:00"
-                String endTime = times[1]; // "13:00" 등
+            if (dateParts.length != 4) {
+                return new ReserveResult(false, "예약 날짜/시간 형식이 올바르지 않습니다. (예: 2025 / 05 / 21 / 12:00 13:00)");
+            }
+            String year = dateParts[0].trim();
+            String month = dateParts[1].trim();
+            String dayOfMonth = dateParts[2].trim();
+            String[] times = dateParts[3].trim().split(" ");
+            if (times.length != 2) {
+                return new ReserveResult(false, "시작/끝 시간이 올바르지 않습니다. (예: 12:00 13:00)");
+            }
+            String startTime = times[0];
+            String endTime = times[1];
 
-                // 예약 시작/끝 시각 파싱
+            // 날짜와 시간 형식이 올바른지 추가로 체크
+            try {
                 LocalDateTime startDateTime = LocalDateTime.parse(
                         year + "-" + month + "-" + dayOfMonth + "T" + startTime,
                         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
@@ -56,6 +60,8 @@ public class ReserveManager {
                 if (!(minutes == 50 || minutes == 60)) {
                     return new ReserveResult(false, "예약은 50분 또는 1시간 단위로만 가능합니다.");
                 }
+            } catch (Exception e) {
+                return new ReserveResult(false, "예약 날짜/시간 정보가 올바르지 않습니다. (예: 2025 / 05 / 21 / 12:00 13:00)");
             }
         } catch (Exception e) {
             return new ReserveResult(false, "예약 날짜/시간 정보가 올바르지 않습니다.");
