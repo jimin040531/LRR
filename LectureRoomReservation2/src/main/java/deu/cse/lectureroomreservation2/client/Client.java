@@ -57,9 +57,10 @@ public class Client {
     public boolean isConnected() {
         return socket != null && socket.isConnected() && !socket.isClosed();
     }
-    
+
     // 예약 요청 처리
-    public ReserveResult sendReserveRequest(String id, String role, String roomNumber, String date, String day, String notice)
+    public ReserveResult sendReserveRequest(String id, String role, String roomNumber, String date, String day,
+            String notice)
             throws IOException, ClassNotFoundException {
         // 예약 요청 객체 생성
         ReserveRequest req = new ReserveRequest(id, role, roomNumber, date, day, notice);
@@ -80,8 +81,8 @@ public class Client {
         out.flush();
         return (CheckMaxTimeResult) in.readObject();
     }
-    
-     // 예약 취소 요청 처리
+
+    // 기존 예약 취소 요청 처리
     public ReserveResult sendCancelReserveRequest(String id, String reserveInfo)
             throws IOException, ClassNotFoundException {
         out.writeUTF("CANCEL_RESERVE");
@@ -93,12 +94,74 @@ public class Client {
         return (ReserveResult) in.readObject();
     }
 
+    // 클라이언트에서 예약 취소 요청 사용 예시, 응답 예시
+    /*
+     * String id = "20212991";
+     * String reserveInfo = "915 / 2025 / 06 / 03 / 09:00 10:00 / 화요일";
+     * 
+     * ReserveResult result = client.sendCancelReserveRequest(id, reserveInfo);
+     * 
+     * if (result.getResult()) {
+     * System.out.println("예약 취소 성공: " + result.getReason());
+     * } else {
+     * System.out.println("예약 취소 실패: " + result.getReason());
+     * }
+     * // 응답 예시
+     * //예약 취소 성공: 예약이 취소되었습니다.
+     * //예약 취소 실패: 해당 예약 정보를 찾을 수 없습니다.
+     */
+
+    // 예약 변경 요청 처리(사용자 id, 기존 예약 정보, 새로운 강의실 번호, 새로운 날짜, 새로운 요일)
+    public ReserveResult sendModifyReserveRequest(String id, String oldReserveInfo, String newRoomNumber,
+            String newDate, String newDay, String role)
+            throws IOException, ClassNotFoundException {
+        out.writeUTF("MODIFY_RESERVE");
+        out.flush();
+        out.writeUTF(id);
+        out.flush();
+        out.writeUTF(oldReserveInfo);
+        out.flush();
+        out.writeUTF(newRoomNumber);
+        out.flush();
+        out.writeUTF(newDate);
+        out.flush();
+        out.writeUTF(newDay);
+        out.flush();
+        out.writeUTF(role);
+        out.flush();
+        return (ReserveResult) in.readObject();
+    }
+
+    // 클라이언트에서 예약 변경 요청 사용 예시, 응답 예시
+    /*
+     * // 예약 변경 요청 예시
+     * String id = "20212991";
+     * String oldReserveInfo = "915 / 2025 / 06 / 03 / 09:00 10:00 / 화요일";
+     * String newRoomNumber = "916";
+     * String newDate = "2025 / 06 / 04 / 10:00 11:00";
+     * String newDay = "수요일";
+     * String role = "S"; // 학생이면 "S", 교수면 "P"
+     * 
+     * ReserveResult result = client.sendModifyReserveRequest(id, oldReserveInfo,
+     * newRoomNumber, newDate, newDay, role);
+     * 
+     * if (result.getResult()) {
+     * System.out.println("예약 변경 성공: " + result.getReason());
+     * } else {
+     * System.out.println("예약 변경 실패: " + result.getReason());
+     * }
+     * // 응답 예시
+     * //예약 변경 성공: 예약 성공
+     * //예약 변경 실패: 해당 예약 정보를 찾을 수 없습니다.
+     */
+
     // 공지사항 수신 및 확인 처리
     public void checkAndShowNotices(javax.swing.JFrame parentFrame) throws IOException {
         while (true) {
             String msgType = in.readUTF();
-            if ("NOTICE_END".equals(msgType))
+            if ("NOTICE_END".equals(msgType)) {
                 break;
+            }
             if ("NOTICE".equals(msgType)) {
                 String noticeText = in.readUTF();
                 javax.swing.JOptionPane.showMessageDialog(parentFrame, noticeText, "공지사항",
@@ -106,7 +169,7 @@ public class Client {
             }
         }
     }
-    
+
     // 클라이언트의 예약 정보 조회 요청 처리
     @SuppressWarnings("unchecked")
     public List<String> retrieveMyReserveInfo(String id) throws IOException, ClassNotFoundException {
@@ -116,7 +179,8 @@ public class Client {
         out.flush();
         return (List<String>) in.readObject();
     }
-    // 클라이언트에서 사용예시, 응답예시시
+
+    // 클라이언트에서 사용예시, 응답예시
     /*
      * List<String> myReserves = client.retrieveMyReserveInfo(id);
      * for (String reserve : myReserves) {
@@ -129,7 +193,7 @@ public class Client {
      * ]
      */
 
-     // 예약 정보로 예약한 총 사용자 수 요청 처리
+    // 예약 정보로 예약한 총 사용자 수 요청 처리
     public int requestReserveUserCount(String reserveInfo) throws IOException {
         out.writeUTF("COUNT_RESERVE_USERS");
         out.flush();
@@ -137,6 +201,7 @@ public class Client {
         out.flush();
         return in.readInt();
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * String reserveInfo = "915 / 2025 / 05 / 21 / 00:00 01:00 / 화요일";
@@ -150,8 +215,7 @@ public class Client {
             if (c.isConnected()) {
                 LoginStatus status = c.receiveLoginStatus();
                 c.logout();
-            }
-            else{
+            } else {
                 System.err.println("서버에 연결되지 않았습니다.");
             }
         } catch (Exception e) {
