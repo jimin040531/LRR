@@ -26,47 +26,46 @@ public class LRCompleteCheck extends javax.swing.JFrame {
         String tRole = "S";
 
         String troomNumber = "915";
-        String tdate = "2025 05 15";
+        String tdate = "2025 05 15 15:00 16:00";
         String tday = "목요일";
-        showDate = tdate + " " + tday;
-
-        viewSelectRoom.setText(troomNumber);
-        viewSelectTime.setText(showDate);
-
-        viewSelectRoom.setEditable(false);
-        viewSelectTime.setEditable(false);
+        showDate = tdate + " / " + tday;
 
         this.id = tID;
         this.role = tRole;
         this.roomNumber = troomNumber;
         this.date = tdate;
         this.day = tday;
-    }
 
-    public LRCompleteCheck(String id, String role, String roomNumber, String date, String day, Client client) {
-        //id : 사용자 아이디, role : 사용자 역할("P" 또는 "S"), roomNumber : 강의실 번호, date : 년 월 일 시작(시간:분) 끝(시간:분), day : 요일, client 클라이언트 넘겨주기
-        this.client = client;
-
-        initComponents();
-
-        setLocationRelativeTo(null);
-
-        viewSelectRoom.setText(date);
-        viewSelectTime.setText(roomNumber);
+        viewSelectRoom.setText(troomNumber);
+        viewSelectTime.setText(showDate);
 
         viewSelectRoom.setEditable(false);
         viewSelectTime.setEditable(false);
+    }
 
+    public LRCompleteCheck(String id, String role, String roomNumber, String date, String day, Client client) {
+        // id : 사용자 아이디, role : 사용자 역할("P" 또는 "S"), roomNumber : 강의실 번호, date : 년 월 일
+        // 시작(시간:분) 끝(시간:분), day : 요일, client 클라이언트 넘겨주기
+        this.client = client;
+
+        initComponents();
         this.id = id;
         this.role = role;
         this.roomNumber = roomNumber;
         this.date = date;
         this.day = day;
 
-        showDate = date + " " + day;
+        showDate = date + " / " + day;
+
+        setLocationRelativeTo(null);
+
+        viewSelectRoom.setText(roomNumber);
+        viewSelectTime.setText(showDate);
+
+        viewSelectRoom.setEditable(false);
+        viewSelectTime.setEditable(false);
     }
 
-    
     @SuppressWarnings("unchecked")
     private void initComponents() {
 
@@ -117,44 +116,57 @@ public class LRCompleteCheck extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(viewSelectRoom)
-                            .addComponent(viewSelectTime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(61, 61, 61)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(58, 58, 58)
-                                .addComponent(LastLRButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(LastLRCancel))
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(94, 94, 94))))
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(viewSelectRoom)
+                                                        .addComponent(viewSelectTime,
+                                                                javax.swing.GroupLayout.Alignment.TRAILING,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE, 441,
+                                                                Short.MAX_VALUE))
+                                                .addContainerGap())
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout
+                                                .createSequentialGroup()
+                                                .addGap(61, 61, 61)
+                                                .addGroup(layout
+                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGap(58, 58, 58)
+                                                                .addComponent(LastLRButton1)
+                                                                .addPreferredGap(
+                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(LastLRCancel))
+                                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                                264, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGap(94, 94, 94)))));
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(viewSelectRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(viewSelectTime, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(LastLRCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(LastLRButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(viewSelectRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 50,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(viewSelectTime, javax.swing.GroupLayout.PREFERRED_SIZE, 50,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(LastLRCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 38,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(LastLRButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap()));
 
         pack();
     }
@@ -165,7 +177,7 @@ public class LRCompleteCheck extends javax.swing.JFrame {
 
     private void LastLRCancelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_LastLRCancelActionPerformed
         // TODO add your handling code here: 취소 버튼
-        if (role.equals("s")) {
+        if (role.equals("S")) {
             new StudentMainMenu(id, client).setVisible(true);
         }
         if (role.equals("P")) {

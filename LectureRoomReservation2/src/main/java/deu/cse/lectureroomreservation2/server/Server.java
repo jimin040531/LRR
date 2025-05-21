@@ -27,7 +27,7 @@ public class Server {
 
     public Server() {
         controller = new LoginController();
-
+        
         // 예약 정보 자동 삭제 스레드 시작
         new AutoReserveCleaner().start();
     }
