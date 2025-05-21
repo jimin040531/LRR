@@ -5,10 +5,9 @@
 package deu.cse.lectureroomreservation2.server.control;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+import java.nio.file.*;
+import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -17,17 +16,36 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class LoginControllerTest {
 
-    LoginController controller = new LoginController();
+    private LoginController controller;
+    private static final Path USER_FILE = Paths.get("user.txt");
+    private static final Path BACKUP_FILE = Paths.get("user_backup.txt");
 
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() throws IOException {
+        // 기존 user.txt 백업
+        if (Files.exists(USER_FILE)) {
+            Files.copy(USER_FILE, BACKUP_FILE, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        // 테스트용 유저 데이터 생성
         String userFileContent = """
-        20212991\t1234\tS
-        12345\tprofpass\tP
-        admin\tadminpass\tA
-        20210322\t2242\tS
-        """;
-        Files.write(Paths.get("user.txt"), userFileContent.getBytes());
+            20212991\t1234\tS
+            12345\tprofpass\tP
+            admin\tadminpass\tA
+            20210322\t2242\tS
+            """;
+        Files.write(USER_FILE, userFileContent.getBytes());
+
+        controller = new LoginController(); // LoginController는 기본 생성자 사용
+    }
+
+    @AfterEach
+    void restore() throws IOException {
+        if (Files.exists(BACKUP_FILE)) {
+            Files.copy(BACKUP_FILE, USER_FILE, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            Files.deleteIfExists(USER_FILE); // 백업이 없다면 그냥 삭제
+        }
     }
 
     /**
@@ -44,20 +62,14 @@ public class LoginControllerTest {
     @Test
     public void testInvalidRoleWordShouldFail() {
         LoginStatus result = controller.authenticate("20210322", "2242", "STUDENT");
-        assertTrue(result.isLoginSuccess(), "실패");
-    }
-
-    @Test
-    public void testWrongPassword() {
-        LoginStatus result = controller.authenticate("20212991", "1234", "S");
-        assertTrue(result.isLoginSuccess(), "성공.");
+        assertFalse(result.isLoginSuccess(), "실패");
     }
 
     //Fail   -> assertTrue로 Test중 실패로 봤기에 실패가 맞음.    
     @Test
     public void testInvalidIdLength() {
         LoginStatus result = controller.authenticate("shortid", "1234", "S");
-        assertTrue(result.isLoginSuccess(), "실패.");
+        assertFalse(result.isLoginSuccess(), "실패.");
     }
 
     @Test
