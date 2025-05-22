@@ -4,8 +4,9 @@
  */
 package deu.cse.lectureroomreservation2.server;
 
-import deu.cse.lectureroomreservation2.server.control.LoginController;
+import deu.cse.lectureroomreservation2.server.control.AutoReserveCleaner;
 import deu.cse.lectureroomreservation2.server.control.LoginStatus;
+import deu.cse.lectureroomreservation2.server.control.LoginController;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,6 +27,9 @@ public class Server {
 
     public Server() {
         controller = new LoginController();
+        
+        // 예약 정보 자동 삭제 스레드 시작
+        new AutoReserveCleaner().start();
     }
 
     public Set<String> getLoggedInUsers() {
@@ -49,8 +53,7 @@ public class Server {
 
         if (status.isLoginSuccess()) {
             System.out.printf(">>> id = %s, password = %s, selected = %s%n%n", id, password, selectedRole);
-        }
-        else{
+        } else {
             System.out.println(">>> ID , PW, Role 재확인.");
         }
 
@@ -65,11 +68,11 @@ public class Server {
     public void start() {
         int port = 5000;
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("서버가 포트 " + port + "번에서 대기 중입니다...");
+            System.out.println("Server port : " + port + " Waiting now...");
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // 클라이언트 접속 대기
-                //System.out.println("새 클라이언트 연결됨: " + clientSocket.getInetAddress());
+                System.out.println("new client connect : " + clientSocket.getInetAddress());
 
                 // 클라이언트 하나를 처리할 스레드 생성
                 new Thread(new ClientHandler(clientSocket, this)).start();
