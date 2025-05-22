@@ -578,11 +578,8 @@ public class ViewRoom extends javax.swing.JFrame {
     private void reservationButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_reservationButtonActionPerformed
         // TODO add your handling code here:
         LastUsedButton = " ";
-        /*
-         * LRCompleteCheck Lcheck = new LRCompleteCheck("20211234", "S", "915",
-         * "2025 / 05 / 21 12:00 13:00", "수요일", client);
-         * Lcheck.setVisible(true);
-         */
+        //LRCompleteCheck Lcheck = new LRCompleteCheck(userid, role, "강의실 번호", "2025 / 06 / 03 / 09:00 10:00", "화요일", client);
+        //Lcheck.setVisible(true);
         this.dispose();
 
     }// GEN-LAST:event_reservationButtonActionPerformed

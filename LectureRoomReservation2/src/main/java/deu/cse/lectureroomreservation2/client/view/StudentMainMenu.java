@@ -47,10 +47,14 @@ public class StudentMainMenu extends javax.swing.JFrame {
         stu_pass_change = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(305, 428));
 
         lecture_reser.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
         lecture_reser.setText("강의실 예약");
+        lecture_reser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                lecture_reserActionPerformed(evt);
+            }
+        });
 
         reservat_check.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
         reservat_check.setText("예약 확인");
@@ -158,6 +162,13 @@ public class StudentMainMenu extends javax.swing.JFrame {
         frame.setLocationRelativeTo(null); // ✨ 화면 가운데 정렬
         frame.setVisible(true);            // ✨ 화면에 보이게 만들기
     }//GEN-LAST:event_stu_pass_changeActionPerformed
+
+    private void lecture_reserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lecture_reserActionPerformed
+        // TODO add your handling code here:
+        ViewRoom viewroom = new ViewRoom(client, userId, "S");
+        viewroom.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_lecture_reserActionPerformed
 
     /**
      * @param args the command line arguments
