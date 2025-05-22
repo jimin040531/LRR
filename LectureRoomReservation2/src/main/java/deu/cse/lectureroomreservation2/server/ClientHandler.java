@@ -187,7 +187,7 @@ public class ClientHandler implements Runnable {
                             boolean found = ReserveManager.hasProfessorReserve(reserveInfo);
                             out.writeBoolean(found);
                             out.flush();
-                        }
+                       }
 
                         if ("SCHEDULE".equals(command)) {
                             System.out.println(">> [서버] SCHEDULE 명령 수신됨");
@@ -230,30 +230,6 @@ public class ClientHandler implements Runnable {
                             out.flush();
                         }
 
-                        if ("USER".equals(command)) {
-                            System.out.println(">> [서버] USER 명령 수신됨");
-                            UserRequest req = (UserRequest) in.readObject();
-                            System.out.println(">> [서버] USER SEARCH 요청 수신: " + req);
-                            UserResult result;
-
-                            switch (req.getCommand()) {
-                                case "ADD":
-                                    result = new UserRequestController().handleAdd(req);
-                                    break;
-                                case "DELETE":
-                                    result = new UserRequestController().handleDelete(req);
-                                    break;
-                                case "SEARCH":
-                                    result = new UserRequestController().handleSearch(req);
-                                    break;
-                                default:
-                                    result = new UserResult(false, "알 수 없는 명령입니다", null);
-                            }
-
-                            out.writeObject(result);
-                            out.flush();
-                        }
-
                     } catch (IOException e) {
                         System.out.println("Client Connection Error or Terminated. " + e.getMessage());
                         e.printStackTrace();
@@ -282,7 +258,7 @@ public class ClientHandler implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
+    } 
     /*
      * private void handleStudent(ObjectInputStream in, ObjectOutputStream out,
      * String id) {

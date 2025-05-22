@@ -257,14 +257,6 @@ public class Client {
         return (ScheduleResult) in.readObject();
     }
     
-    public UserResult sendUserRequest(UserRequest request) throws IOException, ClassNotFoundException {
-        out.writeUTF("USER");
-        out.flush();
-        out.writeObject(request);
-        out.flush();
-        return (UserResult) in.readObject();
-    }
-    
     public static void main(String[] args) {
         try {
             Client c = new Client("localhost", 5000);

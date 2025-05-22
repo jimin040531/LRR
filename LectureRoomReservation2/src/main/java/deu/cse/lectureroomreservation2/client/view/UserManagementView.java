@@ -4,9 +4,6 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
-import deu.cse.lectureroomreservation2.client.Client;
-import deu.cse.lectureroomreservation2.common.UserRequest;
-import deu.cse.lectureroomreservation2.common.UserResult;
 import deu.cse.lectureroomreservation2.server.control.UserRequestController;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -21,27 +18,26 @@ public class UserManagementView extends javax.swing.JFrame {
     /**
      * Creates new form UserManagementView
      */
-    private final Client client;
+    
+    private UserRequestController handler = new UserRequestController();
 
-    public UserManagementView(Client client) {
-        this.client = client;
+    public UserManagementView() {
         initComponents();
         setLocationRelativeTo(null);
     }
-
+    
     private void updateUserTable(JTable table, List<String[]> users) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
         for (String[] user : users) {
-            model.addRow(new Object[]{
+            model.addRow(new Object[] {
                 user[0], // 권한
                 user[1], // 이름
                 user[2], // 아이디
-                user[3] // 비밀번호
+                user[3]  // 비밀번호
             });
         }
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -73,6 +69,7 @@ public class UserManagementView extends javax.swing.JFrame {
         lblStudentTitle = new javax.swing.JLabel();
         btnBack = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
         btnAdd = new javax.swing.JButton();
 
         lblRole.setText("권한");
@@ -218,6 +215,13 @@ public class UserManagementView extends javax.swing.JFrame {
             }
         });
 
+        btnEdit.setText("✏ 수정");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
         btnAdd.setText("➕ 등록");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -240,7 +244,9 @@ public class UserManagementView extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(lblStudentTitle)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -276,6 +282,7 @@ public class UserManagementView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnDelete)
+                    .addComponent(btnEdit)
                     .addComponent(btnAdd))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -285,22 +292,93 @@ public class UserManagementView extends javax.swing.JFrame {
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         // TODO add your handling code here:
-
+        new AdminMainView("A", null).setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        JTable targetTable = null;
 
+        int studentRow = tblStudents.getSelectedRow();
+        int professorRow = tblProfessors.getSelectedRow();
+
+        // 선택된 행이 있는 테이블을 판단
+        if (studentRow != -1) {
+            targetTable = tblStudents;
+        } else if (professorRow != -1) {
+            targetTable = tblProfessors;
+        } else {
+            JOptionPane.showMessageDialog(this, "삭제할 사용자를 테이블에서 선택해주세요.");
+            return;
+        }
+
+        int selectedRow = targetTable.getSelectedRow();
+
+        // 사용자 정보 추출
+        String role = (String) targetTable.getValueAt(selectedRow, 0);
+        String id = (String) targetTable.getValueAt(selectedRow, 2);
+
+        // 삭제 확인
+        int confirm = JOptionPane.showConfirmDialog(this,
+                String.format("사용자 [%s]를 삭제하시겠습니까?", id),
+                "삭제 확인",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        // 실제 삭제 수행
+        boolean success = handler.deleteUser(role, id);
+        if (success) {
+            JOptionPane.showMessageDialog(this, "삭제되었습니다.");
+
+            // 테이블 초기화
+            ((DefaultTableModel) tblProfessors.getModel()).setRowCount(0);
+            ((DefaultTableModel) tblStudents.getModel()).setRowCount(0);
+
+            // 역할별로 테이블 갱신
+            List<String[]> updatedList = handler.handleSearchRequest(role, "");
+            if ("P".equals(role)) {
+                updateUserTable(tblProfessors, updatedList);
+            } else {
+                updateUserTable(tblStudents, updatedList);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "삭제 실패: 사용자를 찾을 수 없습니다.");
+        }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        // 다이얼로그 표시
-        jDialog1.setLocationRelativeTo(this);
-        jDialog1.setSize(300, 300);
-        jDialog1.setVisible(true);
+    // 다이얼로그 표시
+    jDialog1.setLocationRelativeTo(this);
+    jDialog1.setSize(300, 300);
+    jDialog1.setVisible(true);
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        String roleLabel = cmbRoleFilter.getSelectedItem().toString();
+        String nameFilter = txtSearch.getText().trim();
+        String roleFilter = roleLabel.equals("교수") ? "P" : "S";
 
+        // 교수/학생 테이블 모델 가져오기
+        DefaultTableModel professorModel = (DefaultTableModel) tblProfessors.getModel();
+        DefaultTableModel studentModel = (DefaultTableModel) tblStudents.getModel();
+
+        // 두 테이블 모두 초기화
+        professorModel.setRowCount(0);
+        studentModel.setRowCount(0);
+
+        // 검색 수행
+        List<String[]> result = handler.handleSearchRequest(roleFilter, nameFilter);
+
+        // 결과에 따라 해당 테이블에만 데이터 채우기
+        if (roleFilter.equals("P")) {
+            updateUserTable(tblProfessors, result);
+        } else {
+            updateUserTable(tblStudents, result);
+        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
@@ -312,22 +390,86 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbRoleFilterActionPerformed
 
     private void btnADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnADDActionPerformed
+        // TODO add your handling code here:
+        String roleLabel = cmbRole.getSelectedItem().toString();
+        String name = txtName.getText().trim();
+        String id = txtId.getText().trim();
+        String password = txtPw.getText().trim();
 
+        if (name.isEmpty() || id.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "모든 필드를 입력하세요.");
+            return;
+        }
+        
+        String roleCode = roleLabel.equals("교수") ? "P" : "S";
+        String[] newUser = new String[] { roleCode, name, id, password };
+
+        try {
+            List<String[]> updatedList = handler.saveUserAndGetSingleUser(newUser);
+            if (roleCode.equals("P")) {
+                updateUserTable(tblProfessors, updatedList);
+            } else {
+                updateUserTable(tblStudents, updatedList);
+            }
+            // 입력 필드 초기화 및 다이얼로그 닫기
+            txtName.setText("");
+            txtId.setText("");
+            txtPw.setText("");
+            jDialog1.setVisible(false);
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
     }//GEN-LAST:event_btnADDActionPerformed
 
     private void cmbRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoleActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbRoleActionPerformed
 
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEditActionPerformed
+
     /**
      * @param args the command line arguments
      */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(UserManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(UserManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(UserManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(UserManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new UserManagementView().setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnADD;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cmbRole;
     private javax.swing.JComboBox<String> cmbRoleFilter;
