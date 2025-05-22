@@ -103,6 +103,9 @@ public class ClientHandler implements Runnable {
                 while (true) {
                     try {
                         String command = in.readUTF();
+                        
+                        System.out.println(">> 수신 명령: " + command); // 여기 추가
+                        
                         if ("LOGOUT".equalsIgnoreCase(command)) {
                             System.out.println("User has log-out: " + id);
                             break;
@@ -187,7 +190,7 @@ public class ClientHandler implements Runnable {
                             boolean found = ReserveManager.hasProfessorReserve(reserveInfo);
                             out.writeBoolean(found);
                             out.flush();
-                       }
+                        }
 
                         if ("SCHEDULE".equals(command)) {
                             System.out.println(">> [서버] SCHEDULE 명령 수신됨");
@@ -230,6 +233,41 @@ public class ClientHandler implements Runnable {
                             out.flush();
                         }
 
+                        if ("USER".equals(command)) {
+                            UserRequest req = (UserRequest) in.readObject();
+                            UserRequestController controller = new UserRequestController();
+                            UserResult result;
+
+                            switch (req.getCommand()) {
+                                case "ADD":
+                                    try {
+                                        controller.saveUserAndGetSingleUser(new String[]{
+                                            req.getRole(), req.getName(), req.getId(), req.getPassword()
+                                        });
+                                        result = new UserResult(true, "등록 성공", null);
+                                    } catch (Exception e) {
+                                        result = new UserResult(false, e.getMessage(), null);
+                                    }
+                                    break;
+
+                                case "DELETE":
+                                    boolean deleted = controller.deleteUser(req.getRole(), req.getId());
+                                    result = new UserResult(deleted, deleted ? "삭제 성공" : "삭제 실패", null);
+                                    break;
+
+                                case "SEARCH":
+                                    List<String[]> list = controller.handleSearchRequest(req.getRole(), req.getNameFilter());
+                                    result = new UserResult(true, "조회 성공", list);
+                                    break;
+
+                                default:
+                                    result = new UserResult(false, "알 수 없는 명령입니다", null);
+                            }
+
+                            out.writeObject(result);
+                            out.flush();
+                        }
+
                     } catch (IOException e) {
                         System.out.println("Client Connection Error or Terminated. " + e.getMessage());
                         e.printStackTrace();
@@ -258,7 +296,7 @@ public class ClientHandler implements Runnable {
                 e.printStackTrace();
             }
         }
-    } 
+    }
     /*
      * private void handleStudent(ObjectInputStream in, ObjectOutputStream out,
      * String id) {

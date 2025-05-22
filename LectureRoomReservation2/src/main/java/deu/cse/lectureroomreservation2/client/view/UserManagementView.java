@@ -4,6 +4,9 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
+import deu.cse.lectureroomreservation2.client.Client;
+import deu.cse.lectureroomreservation2.common.UserRequest;
+import deu.cse.lectureroomreservation2.common.UserResult;
 import deu.cse.lectureroomreservation2.server.control.UserRequestController;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -18,26 +21,43 @@ public class UserManagementView extends javax.swing.JFrame {
     /**
      * Creates new form UserManagementView
      */
-    
     private UserRequestController handler = new UserRequestController();
 
-    public UserManagementView() {
+    private final Client client;
+
+    public UserManagementView(Client client) {
+        this.client = client;
         initComponents();
         setLocationRelativeTo(null);
     }
-    
+
     private void updateUserTable(JTable table, List<String[]> users) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
         for (String[] user : users) {
-            model.addRow(new Object[] {
+            model.addRow(new Object[]{
                 user[0], // 권한
                 user[1], // 이름
                 user[2], // 아이디
-                user[3]  // 비밀번호
+                user[3] // 비밀번호
             });
         }
     }
+
+    private void refreshTable(String roleCode) {
+        try {
+            UserRequest req = new UserRequest("SEARCH", roleCode, null, null, null, "");
+            UserResult result = client.sendUserRequest(req);
+            if ("P".equals(roleCode)) {
+                updateUserTable(tblProfessors, result.getUserList());
+            } else {
+                updateUserTable(tblStudents, result.getUserList());
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "테이블 갱신 실패: " + e.getMessage());
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -286,87 +306,84 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
-        JTable targetTable = null;
 
+        if (!client.isConnected()) {
+            JOptionPane.showMessageDialog(this, "서버에 연결되지 않았습니다.");
+            return;
+        }
+
+        JTable targetTable = null;
         int studentRow = tblStudents.getSelectedRow();
         int professorRow = tblProfessors.getSelectedRow();
 
-        // 선택된 행이 있는 테이블을 판단
         if (studentRow != -1) {
             targetTable = tblStudents;
         } else if (professorRow != -1) {
             targetTable = tblProfessors;
         } else {
-            JOptionPane.showMessageDialog(this, "삭제할 사용자를 테이블에서 선택해주세요.");
+            JOptionPane.showMessageDialog(this, "삭제할 사용자를 선택해주세요.");
             return;
         }
 
         int selectedRow = targetTable.getSelectedRow();
-
-        // 사용자 정보 추출
-        String role = (String) targetTable.getValueAt(selectedRow, 0);
+        String rawRole = (String) targetTable.getValueAt(selectedRow, 0);
+        String role = rawRole.equals("교수") ? "P" : "S";
         String id = (String) targetTable.getValueAt(selectedRow, 2);
 
-        // 삭제 확인
         int confirm = JOptionPane.showConfirmDialog(this,
                 String.format("사용자 [%s]를 삭제하시겠습니까?", id),
-                "삭제 확인",
-                JOptionPane.YES_NO_OPTION);
-
+                "삭제 확인", JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION) {
             return;
         }
 
-        // 실제 삭제 수행
-        boolean success = handler.deleteUser(role, id);
-        if (success) {
-            JOptionPane.showMessageDialog(this, "삭제되었습니다.");
-
-            // 테이블 초기화
-            ((DefaultTableModel) tblProfessors.getModel()).setRowCount(0);
-            ((DefaultTableModel) tblStudents.getModel()).setRowCount(0);
-
-            // 역할별로 테이블 갱신
-            List<String[]> updatedList = handler.handleSearchRequest(role, "");
-            if ("P".equals(role)) {
-                updateUserTable(tblProfessors, updatedList);
+        try {
+            UserRequest req = new UserRequest("DELETE", role, null, id, null, null);
+            UserResult result = client.sendUserRequest(req);
+            if (result.isSuccess()) {
+                refreshTable(role);
+                JOptionPane.showMessageDialog(this, "삭제되었습니다.");
             } else {
-                updateUserTable(tblStudents, updatedList);
+                JOptionPane.showMessageDialog(this, result.getMessage());
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "삭제 실패: 사용자를 찾을 수 없습니다.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "서버 오류: " + e.getMessage());
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-    // 다이얼로그 표시
-    jDialog1.setLocationRelativeTo(this);
-    jDialog1.setSize(300, 300);
-    jDialog1.setVisible(true);
+        // 다이얼로그 표시
+        jDialog1.setLocationRelativeTo(this);
+        jDialog1.setSize(300, 300);
+        jDialog1.setVisible(true);
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+
+        if (!client.isConnected()) {
+            JOptionPane.showMessageDialog(this, "서버에 연결되지 않았습니다.");
+            return;
+        }
+
         String roleLabel = cmbRoleFilter.getSelectedItem().toString();
         String nameFilter = txtSearch.getText().trim();
-        String roleFilter = roleLabel.equals("교수") ? "P" : "S";
+        String roleCode = roleLabel.equals("교수") ? "P" : "S";
 
-        // 교수/학생 테이블 모델 가져오기
-        DefaultTableModel professorModel = (DefaultTableModel) tblProfessors.getModel();
-        DefaultTableModel studentModel = (DefaultTableModel) tblStudents.getModel();
+        try {
+            UserRequest req = new UserRequest("SEARCH", roleCode, null, null, null, nameFilter);
+            UserResult result = client.sendUserRequest(req);
 
-        // 두 테이블 모두 초기화
-        professorModel.setRowCount(0);
-        studentModel.setRowCount(0);
-
-        // 검색 수행
-        List<String[]> result = handler.handleSearchRequest(roleFilter, nameFilter);
-
-        // 결과에 따라 해당 테이블에만 데이터 채우기
-        if (roleFilter.equals("P")) {
-            updateUserTable(tblProfessors, result);
-        } else {
-            updateUserTable(tblStudents, result);
+            if (result.isSuccess()) {
+                if ("P".equals(roleCode)) {
+                    updateUserTable(tblProfessors, result.getUserList());
+                } else {
+                    updateUserTable(tblStudents, result.getUserList());
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, result.getMessage());
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "서버 오류: " + e.getMessage());
         }
     }//GEN-LAST:event_btnSearchActionPerformed
 
@@ -379,6 +396,12 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbRoleFilterActionPerformed
 
     private void btnADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnADDActionPerformed
+
+        if (!client.isConnected()) {
+            JOptionPane.showMessageDialog(this, "서버에 연결되지 않았습니다.");
+            return;
+        }
+
         String roleLabel = cmbRole.getSelectedItem().toString();
         String name = txtName.getText().trim();
         String id = txtId.getText().trim();
@@ -389,30 +412,24 @@ public class UserManagementView extends javax.swing.JFrame {
             return;
         }
 
-        // ✅ 중복 검사: 전체 사용자 대상으로 ID 중복 확인
-        if (handler.isIdDuplicate(id)) {
-            JOptionPane.showMessageDialog(this, "이미 존재하는 아이디입니다.");
-            return;
-        }
-
         String roleCode = roleLabel.equals("교수") ? "P" : "S";
-        String[] newUser = new String[] { roleCode, name, id, password };
 
         try {
-            List<String[]> updatedList = handler.saveUserAndGetSingleUser(newUser);
-            if (roleCode.equals("P")) {
-                updateUserTable(tblProfessors, updatedList);
-            } else {
-                updateUserTable(tblStudents, updatedList);
-            }
+            UserRequest req = new UserRequest("ADD", roleCode, name, id, password, null);
+            UserResult result = client.sendUserRequest(req);
 
-            // 입력 필드 초기화 및 다이얼로그 닫기
-            txtName.setText("");
-            txtId.setText("");
-            txtPw.setText("");
-            jDialog1.setVisible(false);
-        } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
+            if (result.isSuccess()) {
+                refreshTable(roleCode);
+                JOptionPane.showMessageDialog(this, "사용자가 등록되었습니다.");
+                txtName.setText("");
+                txtId.setText("");
+                txtPw.setText("");
+                jDialog1.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(this, result.getMessage());
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "서버 오류: " + e.getMessage());
         }
     }//GEN-LAST:event_btnADDActionPerformed
 
@@ -423,37 +440,6 @@ public class UserManagementView extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UserManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UserManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UserManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UserManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserManagementView().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnADD;

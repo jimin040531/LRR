@@ -12,14 +12,15 @@ import java.util.List;
  * @author Jimin
  */
 public class UserResult implements Serializable {
+
     private boolean success;
     private String message;
-    private List<String[]> data;
+    private List<String[]> userList; // 각 항목은 [role, name, id, password]
 
-    public UserResult(boolean success, String message, List<String[]> data) {
+    public UserResult(boolean success, String message, List<String[]> userList) {
         this.success = success;
         this.message = message;
-        this.data = data;
+        this.userList = userList;
     }
 
     public boolean isSuccess() {
@@ -30,11 +31,7 @@ public class UserResult implements Serializable {
         return message;
     }
 
-    public List<String[]> getData() {
-        return data;
-    }
-    
     public List<String[]> getUserList() {
-        return data;
+        return userList;
     }
 }

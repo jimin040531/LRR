@@ -16,13 +16,14 @@ public class UserFileManager {
     private static final String filePath = System.getProperty("user.dir") + "/src/main/resources/UserInfo.txt";
 
     public List<UserManage> searchUsers(String roleFilter, String nameFilter) {
-        List<UserManage> result = new ArrayList<>();
+    List<UserManage> result = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length != 4) {
+                String[] parts = line.split(",", 5);  // 최대 5개까지만 자름 (예약정보까지 포함 가능)
+
+                if (parts.length < 4) {
                     continue;
                 }
 
@@ -31,8 +32,9 @@ public class UserFileManager {
                 String id = parts[2].trim();
                 String password = parts[3].trim();
 
+                // 필터 조건에 맞으면 추가
                 if (role.equals(roleFilter) && name.contains(nameFilter)) {
-                    result.add(new UserManage(role, name, id, password));  // UserManage 사용
+                    result.add(new UserManage(role, name, id, password));
                 }
             }
         } catch (IOException e) {

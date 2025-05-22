@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: deu.cse.lectureroomreservation2.server.control.TableRearrangeTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.238 s <<< FAILURE! -- in deu.cse.lectureroomreservation2.server.control.TableRearrangeTest
-deu.cse.lectureroomreservation2.server.control.TableRearrangeTest.testQuickInsertTable2 -- Time elapsed: 0.080 s <<< FAILURE!
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.230 s <<< FAILURE! -- in deu.cse.lectureroomreservation2.server.control.TableRearrangeTest
+deu.cse.lectureroomreservation2.server.control.TableRearrangeTest.testQuickInsertTable2 -- Time elapsed: 0.071 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <25/05/21> but was: <25/05/23>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
