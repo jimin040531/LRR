@@ -28,9 +28,12 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel1" min="-2" pref="74" max="-2" attributes="0"/>
-                          <Component id="viewSelectRoom" alignment="0" max="32767" attributes="0"/>
-                          <Component id="viewSelectTime" alignment="1" pref="441" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="jLabel1" min="-2" pref="74" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="viewSelectTime" alignment="0" max="32767" attributes="0"/>
+                          <Component id="viewSelectRoom" alignment="1" pref="441" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -57,9 +60,9 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" pref="23" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="viewSelectRoom" min="-2" pref="50" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
               <Component id="viewSelectTime" min="-2" pref="50" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="viewSelectRoom" min="-2" pref="50" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel4" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -78,14 +81,20 @@
         <Property name="text" type="java.lang.String" value="&#xc608;&#xc57d; &#xd655;&#xc778;"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="viewSelectRoom">
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewSelectRoomActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JTextField" name="viewSelectTime">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="915"/>
+      </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewSelectTimeActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JTextField" name="viewSelectRoom">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="2025 / 05 / 15 &#xbaa9;&#xc694;&#xc77c; "/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewSelectRoomActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="LastLRCancel">

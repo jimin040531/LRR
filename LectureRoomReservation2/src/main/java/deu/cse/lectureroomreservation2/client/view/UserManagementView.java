@@ -18,23 +18,22 @@ public class UserManagementView extends javax.swing.JFrame {
     /**
      * Creates new form UserManagementView
      */
-    
     private UserRequestController handler = new UserRequestController();
 
     public UserManagementView() {
         initComponents();
         setLocationRelativeTo(null);
     }
-    
+
     private void updateUserTable(JTable table, List<String[]> users) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
         for (String[] user : users) {
-            model.addRow(new Object[] {
+            model.addRow(new Object[]{
                 user[0], // 권한
                 user[1], // 이름
                 user[2], // 아이디
-                user[3]  // 비밀번호
+                user[3] // 비밀번호
             });
         }
     }
@@ -81,12 +80,7 @@ public class UserManagementView extends javax.swing.JFrame {
 
         lblPw.setText("비밀번호");
 
-        cmbRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "교수", "학생" }));
-        cmbRole.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbRoleActionPerformed(evt);
-            }
-        });
+        cmbRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "F", "S" }));
 
         txtName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -115,13 +109,16 @@ public class UserManagementView extends javax.swing.JFrame {
                             .addComponent(lblName)
                             .addComponent(lblRole))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtId, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-                            .addComponent(txtName)
-                            .addComponent(cmbRole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtPw)))
-                    .addComponent(btnADD))
-                .addContainerGap(26, Short.MAX_VALUE))
+                        .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtPw, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
+                            .addComponent(cmbRole, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(txtId, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
+                                .addComponent(txtName, javax.swing.GroupLayout.Alignment.LEADING))))
+                    .addGroup(jDialog1Layout.createSequentialGroup()
+                        .addComponent(btnADD)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jDialog1Layout.setVerticalGroup(
             jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -142,7 +139,7 @@ public class UserManagementView extends javax.swing.JFrame {
                 .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtPw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPw))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnADD)
                 .addContainerGap())
         );
@@ -297,10 +294,10 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-    // 다이얼로그 표시
-    jDialog1.setLocationRelativeTo(this);
-    jDialog1.setSize(300, 300);
-    jDialog1.setVisible(true);
+        // 다이얼로그 표시
+        jDialog1.setLocationRelativeTo(this);
+        jDialog1.setSize(300, 200);
+        jDialog1.setVisible(true);
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
@@ -308,23 +305,8 @@ public class UserManagementView extends javax.swing.JFrame {
         String nameFilter = txtSearch.getText().trim();
         String roleFilter = roleLabel.equals("교수") ? "P" : "S";
 
-        // 교수/학생 테이블 모델 가져오기
-        DefaultTableModel professorModel = (DefaultTableModel) tblProfessors.getModel();
-        DefaultTableModel studentModel = (DefaultTableModel) tblStudents.getModel();
-
-        // 두 테이블 모두 초기화
-        professorModel.setRowCount(0);
-        studentModel.setRowCount(0);
-
-        // 검색 수행
         List<String[]> result = handler.handleSearchRequest(roleFilter, nameFilter);
-
-        // 결과에 따라 해당 테이블에만 데이터 채우기
-        if (roleFilter.equals("P")) {
-            updateUserTable(tblProfessors, result);
-        } else {
-            updateUserTable(tblStudents, result);
-        }
+        updateUserTable(roleFilter.equals("P") ? tblProfessors : tblStudents, result);
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
@@ -348,10 +330,10 @@ public class UserManagementView extends javax.swing.JFrame {
         }
 
         String roleCode = roleLabel.equals("교수") ? "P" : "S";
-        String[] newUser = new String[] { roleCode, name, id, password };
+        String[] newUser = new String[]{roleCode, name, id, password};
 
         List<String[]> updatedList = handler.saveUserAndGetUpdatedList(newUser);
-        
+
         if (roleCode.equals("P")) {
             updateUserTable(tblProfessors, updatedList);
         } else {
@@ -363,10 +345,6 @@ public class UserManagementView extends javax.swing.JFrame {
         txtPw.setText("");
         jDialog1.setVisible(false);
     }//GEN-LAST:event_btnADDActionPerformed
-
-    private void cmbRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoleActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbRoleActionPerformed
 
     /**
      * @param args the command line arguments

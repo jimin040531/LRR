@@ -379,16 +379,12 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         }
 
         try {
-            if (controller.isScheduleExists(selectedRoom, dayOfWeek, startTime, endTime)) {
-                // 시간표 삭제
-                controller.deleteScheduleFromFile(selectedRoom, dayOfWeek, startTime, endTime);
-                // 수정된 값으로 시간표 추가
-                controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject, type);
-                loadTimetable(selectedRoom);
-                JOptionPane.showMessageDialog(this, "시간표가 수정되었습니다.");
-            } else {
-                JOptionPane.showMessageDialog(this, "해당 시간표가 존재하지 않습니다. 시간표를 등록해주세요.");
-            }
+            // 시간표 삭제
+            controller.deleteScheduleFromFile(selectedRoom, dayOfWeek, startTime, endTime);
+            // 수정된 값으로 시간표 추가
+            controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject, type);
+            loadTimetable(selectedRoom);
+            JOptionPane.showMessageDialog(this, "시간표가 수정되었습니다.");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "시간표 수정 중 오류가 발생했습니다.");
         }
