@@ -26,12 +26,12 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
     private final Client client;
 
     public RoomScheduleManagementView(Client client) {
-        initComponents();
-        this.client = client;
+        this.client = client;             // ⭐ 먼저 client 설정
+        initComponents();                // 그다음 UI 초기화
         setLocationRelativeTo(null);
-        loadTimetableOnRoomSelect();
+        loadTimetableOnRoomSelect();     // 이 시점부터 client 사용 가능
     }
-    
+
     // 강의실 선택 시 시간표 자동 로드
     private void loadTimetableOnRoomSelect() {
         cmbRoomSelect.addActionListener(evt -> {
@@ -51,7 +51,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
 
     // 시간표를 메모장에서 불러오기
     private void loadTimetable(String selectedRoom) {
-        initializeTimetable();  
+        initializeTimetable();
         String type = rbLecture.isSelected() ? "수업" : "제한";
 
         try {
