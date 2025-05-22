@@ -9,7 +9,7 @@ import java.awt.*;
 import javax.swing.table.*;
 import deu.cse.lectureroomreservation2.client.*;
 import deu.cse.lectureroomreservation2.server.model.GetReservation;
-import deu.cse.lectureroomreservation2.server.control.TableRearrange;
+import deu.cse.lectureroomreservation2.client.TableRearrange;
 
 /**
  *

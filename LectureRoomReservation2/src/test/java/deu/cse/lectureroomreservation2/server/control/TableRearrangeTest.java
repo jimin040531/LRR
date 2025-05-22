@@ -8,6 +8,7 @@ package deu.cse.lectureroomreservation2.server.control;
  *
  * @author namw2
  */
+import deu.cse.lectureroomreservation2.client.TableRearrange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

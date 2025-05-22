@@ -10,7 +10,7 @@ package deu.cse.lectureroomreservation2.client.view;
  */
 import deu.cse.lectureroomreservation2.client.Student;
 import deu.cse.lectureroomreservation2.server.model.GetReservation;
-import deu.cse.lectureroomreservation2.server.control.TableRearrange;
+import deu.cse.lectureroomreservation2.client.TableRearrange;
 
 public class QuickViewRoom extends javax.swing.JFrame {
 
