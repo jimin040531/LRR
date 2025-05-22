@@ -9,6 +9,10 @@ import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
 import deu.cse.lectureroomreservation2.common.ReserveResult;
 import deu.cse.lectureroomreservation2.common.LoginStatus;
+import deu.cse.lectureroomreservation2.common.ScheduleRequest;
+import deu.cse.lectureroomreservation2.common.ScheduleResult;
+import deu.cse.lectureroomreservation2.common.UserRequest;
+import deu.cse.lectureroomreservation2.common.UserResult;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
@@ -245,6 +249,22 @@ public class Client {
      * }
      */
 
+    public ScheduleResult sendScheduleRequest(ScheduleRequest req) throws IOException, ClassNotFoundException {
+        out.writeUTF("SCHEDULE");
+        out.flush();
+        out.writeObject(req);
+        out.flush();
+        return (ScheduleResult) in.readObject();
+    }
+    
+    public UserResult sendUserRequest(UserRequest request) throws IOException, ClassNotFoundException {
+        out.writeUTF("USER");
+        out.flush();
+        out.writeObject(request);
+        out.flush();
+        return (UserResult) in.readObject();
+    }
+    
     public static void main(String[] args) {
         try {
             Client c = new Client("localhost", 5000);

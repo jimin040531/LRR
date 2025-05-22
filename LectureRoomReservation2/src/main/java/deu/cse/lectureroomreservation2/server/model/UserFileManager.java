@@ -12,6 +12,7 @@ import java.util.*;
  * @author Jimin
  */
 public class UserFileManager {
+
     private static final String filePath = System.getProperty("user.dir") + "/src/main/resources/UserInfo.txt";
 
     public List<UserManage> searchUsers(String roleFilter, String nameFilter) {
@@ -21,7 +22,9 @@ public class UserFileManager {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length != 4) continue;
+                if (parts.length != 4) {
+                    continue;
+                }
 
                 String role = parts[0].trim();
                 String name = parts[1].trim();
@@ -47,7 +50,7 @@ public class UserFileManager {
             e.printStackTrace();
         }
     }
-    
+
     public void overwriteAll(List<UserManage> users) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
             for (UserManage user : users) {
@@ -58,13 +61,15 @@ public class UserFileManager {
             e.printStackTrace();
         }
     }
-    
+
     public boolean isIdDuplicate(String id) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length != 4) continue;
+                if (parts.length != 4) {
+                    continue;
+                }
 
                 String existingId = parts[2].trim();
                 if (existingId.equals(id)) {
@@ -75,5 +80,14 @@ public class UserFileManager {
             e.printStackTrace();
         }
         return false;  // 중복 없음
+    }
+
+    public boolean deleteUser(String role, String id) {
+        List<UserManage> users = searchUsers(role, "");
+        boolean removed = users.removeIf(user -> user.getId().equals(id));
+        if (removed) {
+            overwriteAll(users);
+        }
+        return removed;
     }
 }

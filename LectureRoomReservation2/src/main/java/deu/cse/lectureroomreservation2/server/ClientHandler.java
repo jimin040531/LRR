@@ -17,10 +17,17 @@ import deu.cse.lectureroomreservation2.common.ReserveResult;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
 import deu.cse.lectureroomreservation2.common.ReserveRequest;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
+import deu.cse.lectureroomreservation2.common.ScheduleRequest;
+import deu.cse.lectureroomreservation2.common.ScheduleResult;
+import deu.cse.lectureroomreservation2.common.UserRequest;
+import deu.cse.lectureroomreservation2.common.UserResult;
+import deu.cse.lectureroomreservation2.server.control.TimeTableController;
+import deu.cse.lectureroomreservation2.server.control.UserRequestController;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 
 public class ClientHandler implements Runnable {
 
@@ -182,13 +189,80 @@ public class ClientHandler implements Runnable {
                             out.flush();
                         }
 
+                        if ("SCHEDULE".equals(command)) {
+                            System.out.println(">> [서버] SCHEDULE 명령 수신됨");
+                            ScheduleRequest req = (ScheduleRequest) in.readObject();
+
+                            ScheduleResult result;
+                            TimeTableController controller = new TimeTableController();
+
+                            switch (req.getCommand()) {
+                                case "LOAD":
+                                    Map<String, String> schedule = controller.getScheduleForRoom(
+                                            req.getRoom(), req.getDay(), req.getType());
+                                    result = new ScheduleResult(true, "조회 성공", schedule);
+                                    break;
+
+                                case "ADD":
+                                    try {
+                                        controller.addScheduleToFile(req.getRoom(), req.getDay(), req.getStart(), req.getEnd(), req.getSubject(), req.getType());
+                                        result = new ScheduleResult(true, "등록 성공", null);
+                                    } catch (Exception e) {
+                                        result = new ScheduleResult(false, "등록 실패: " + e.getMessage(), null);
+                                    }
+                                    break;
+
+                                case "DELETE":
+                                    boolean deleted = controller.deleteScheduleFromFile(req.getRoom(), req.getDay(), req.getStart(), req.getEnd());
+                                    result = new ScheduleResult(deleted, deleted ? "삭제 성공" : "삭제 실패", null);
+                                    break;
+
+                                case "UPDATE":
+                                    boolean updated = controller.updateSchedule(req.getRoom(), req.getDay(), req.getStart(), req.getEnd(), req.getSubject(), req.getType());
+                                    result = new ScheduleResult(updated, updated ? "수정 성공" : "수정 실패", null);
+                                    break;
+
+                                default:
+                                    result = new ScheduleResult(false, "알 수 없는 명령입니다", null);
+                            }
+
+                            out.writeObject(result);
+                            out.flush();
+                        }
+
+                        if ("USER".equals(command)) {
+                            System.out.println(">> [서버] USER 명령 수신됨");
+                            UserRequest req = (UserRequest) in.readObject();
+                            System.out.println(">> [서버] USER SEARCH 요청 수신: " + req);
+                            UserResult result;
+
+                            switch (req.getCommand()) {
+                                case "ADD":
+                                    result = new UserRequestController().handleAdd(req);
+                                    break;
+                                case "DELETE":
+                                    result = new UserRequestController().handleDelete(req);
+                                    break;
+                                case "SEARCH":
+                                    result = new UserRequestController().handleSearch(req);
+                                    break;
+                                default:
+                                    result = new UserResult(false, "알 수 없는 명령입니다", null);
+                            }
+
+                            out.writeObject(result);
+                            out.flush();
+                        }
+
                     } catch (IOException e) {
                         System.out.println("Client Connection Error or Terminated. " + e.getMessage());
                         e.printStackTrace();
                         break;
                     }
+
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

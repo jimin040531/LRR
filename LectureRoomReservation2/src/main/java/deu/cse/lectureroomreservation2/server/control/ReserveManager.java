@@ -365,4 +365,43 @@ public class ReserveManager {
             return affectedStudentIds;
         }
     }
+    
+    
+    // 예약 수정 : 기존 예약을 삭제하고 새로운 예약으로 교체
+    // 실패 시 기존 예약 복원
+    public static ReserveResult updateReserve(String id, String role, String oldReserveInfo, String newRoom, String newDate, String newDay) {
+       synchronized (FILE_LOCK) {
+           // 기존 예약 삭제 시도
+           ReserveResult cancelResult = cancelReserve(id, oldReserveInfo);
+           if (!cancelResult.getResult()) {
+               return new ReserveResult(false, "기존 예약 삭제 실패: " + cancelResult.getReason());
+           }
+
+           // 교수 예약 시 학생 예약 강제 취소 로직 적용
+           if ("P".equals(role)) {
+               cancelStudentReservesForProfessor(newRoom, newDate, newDay);
+           }
+
+           // 새로운 예약 시도
+           ReserveResult reserveResult = reserve(id, role, newRoom, newDate, newDay);
+           if (!reserveResult.getResult()) {
+               // 실패 시 기존 예약 복구
+               String[] tokens = oldReserveInfo.split("/");
+               if (tokens.length >= 6) {
+                   String oldRoom = tokens[0].trim();
+                   String year = tokens[1].trim();
+                   String month = tokens[2].trim();
+                   String day = tokens[3].trim();
+                   String[] times = tokens[4].trim().split(" ");
+                   String oldDay = tokens[5].trim();
+                   String restoreDate = year + " / " + month + " / " + day + " / " + times[0] + " " + times[1];
+                   reserve(id, role, oldRoom, restoreDate, oldDay);
+               }
+               return new ReserveResult(false, "새 예약 실패: " + reserveResult.getReason() + " (기존 예약 복원됨)");
+           }
+
+           return new ReserveResult(true, "예약이 성공적으로 수정되었습니다.");
+       }
+   }
+    
 }

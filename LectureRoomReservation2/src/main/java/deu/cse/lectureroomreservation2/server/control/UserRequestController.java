@@ -4,58 +4,57 @@
  */
 package deu.cse.lectureroomreservation2.server.control;
 
+import deu.cse.lectureroomreservation2.common.UserRequest;
+import deu.cse.lectureroomreservation2.common.UserResult;
 import deu.cse.lectureroomreservation2.server.model.UserManage;
 import deu.cse.lectureroomreservation2.server.model.UserFileManager;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  *
  * @author Jimin
  */
 public class UserRequestController {
-    private final UserFileManager FileManager = new UserFileManager();
 
-    public List<String[]> handleSearchRequest(String roleFilter, String nameFilter) {
-        List<UserManage> users = FileManager.searchUsers(roleFilter, nameFilter);     
-        List<String[]> result = new ArrayList<>();
+    private final UserFileManager fileManager = new UserFileManager();
 
+    // 사용자 검색 처리
+    public UserResult handleSearch(UserRequest request) {
+        List<UserManage> users = fileManager.searchUsers(request.getRole(), request.getName());
+        List<String[]> data = new ArrayList<>();
         for (UserManage user : users) {
-            result.add(new String[] {
+            data.add(new String[]{
                 user.getRole(), user.getName(), user.getId(), user.getPassword()
             });
         }
-
-        return result;
+        return new UserResult(true, "조회 성공", data);
     }
 
-    public void saveUser(String[] userData) {
-        String role = userData[0];
-        String name = userData[1];
-        String id = userData[2];
-        String password = userData[3];
-        
-        // 아이디 중복 검사
-        if (FileManager.isIdDuplicate(id)) {
-            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+    // 사용자 등록 처리
+    public UserResult handleAdd(UserRequest request) {
+        if (fileManager.isIdDuplicate(request.getId())) {
+            return new UserResult(false, "이미 존재하는 아이디입니다.", null);
         }
 
-        UserManage user = new UserManage(role, name, id, password);  // 통합된 UserManage 사용
-        FileManager.saveUser(user);
-    }
-    
-    public List<String[]> saveUserAndGetSingleUser(String[] userData) {
-        saveUser(userData);
-        List<String[]> singleUserList = new ArrayList<>();
-        singleUserList.add(userData);
-        return singleUserList;
+        UserManage newUser = new UserManage(
+                request.getRole(), request.getName(), request.getId(), request.getPassword()
+        );
+        fileManager.saveUser(newUser);
+
+        List<String[]> data = new ArrayList<>();
+        data.add(new String[]{
+            newUser.getRole(), newUser.getName(), newUser.getId(), newUser.getPassword()
+        });
+
+        return new UserResult(true, "등록 성공", data);
     }
 
-    public boolean deleteUser(String role, String id) {
-        List<UserManage> users = FileManager.searchUsers(role, ""); // 해당 권한 모든 사용자 불러오기
-        boolean removed = users.removeIf(user -> user.getId().equals(id));
-        if (removed) {
-            FileManager.overwriteAll(users); // 변경 사항 저장
-        }
-        return removed;
+    // 사용자 삭제 처리
+    public UserResult handleDelete(UserRequest request) {
+        boolean removed = fileManager.deleteUser(request.getRole(), request.getId());
+        String message = removed ? "삭제 성공" : "삭제 실패: 사용자를 찾을 수 없음";
+        return new UserResult(removed, message, null);
     }
+
 }

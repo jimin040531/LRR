@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.095" tests="5" errors="0" skipped="0" failures="4">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.067" tests="4" errors="0" skipped="0" failures="2">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
     <property name="sun.jnu.encoding" value="MS949"/>
-    <property name="java.class.path" value="C:\Users\namw2\Desktop\LRR\LRR\LectureRoomReservation2\target\test-classes;C:\Users\namw2\Desktop\LRR\LRR\LectureRoomReservation2\target\classes;C:\JDK_related\maven_repos\org\projectlombok\lombok\1.18.36\lombok-1.18.36.jar;C:\JDK_related\maven_repos\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\JDK_related\maven_repos\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\JDK_related\maven_repos\ch\qos\logback\logback-classic\1.5.17\logback-classic-1.5.17.jar;C:\JDK_related\maven_repos\ch\qos\logback\logback-core\1.5.17\logback-core-1.5.17.jar;C:\JDK_related\maven_repos\org\junit\jupiter\junit-jupiter-engine\5.11.0-M1\junit-jupiter-engine-5.11.0-M1.jar;C:\JDK_related\maven_repos\org\junit\platform\junit-platform-engine\1.11.0-M1\junit-platform-engine-1.11.0-M1.jar;C:\JDK_related\maven_repos\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\JDK_related\maven_repos\org\junit\platform\junit-platform-commons\1.11.0-M1\junit-platform-commons-1.11.0-M1.jar;C:\JDK_related\maven_repos\org\junit\jupiter\junit-jupiter-api\5.11.0-M1\junit-jupiter-api-5.11.0-M1.jar;C:\JDK_related\maven_repos\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\JDK_related\maven_repos\com\toedter\jcalendar\1.4\jcalendar-1.4.jar;"/>
+    <property name="java.class.path" value="C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\test-classes;C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\classes;C:\Users\Jimin\.m2\repository\org\projectlombok\lombok\1.18.36\lombok-1.18.36.jar;C:\Users\Jimin\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\Jimin\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-classic\1.5.17\logback-classic-1.5.17.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-core\1.5.17\logback-core-1.5.17.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.11.0-M1\junit-jupiter-engine-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-engine\1.11.0-M1\junit-platform-engine-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-commons\1.11.0-M1\junit-platform-commons-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.11.0-M1\junit-jupiter-api-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Jimin\.m2\repository\com\toedter\jcalendar\1.4\jcalendar-1.4.jar;"/>
     <property name="java.vm.vendor" value="Azul Systems, Inc."/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="user.variant" value=""/>
@@ -14,28 +14,27 @@
     <property name="java.vm.specification.version" value="21"/>
     <property name="user.country" value="KR"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
-    <property name="sun.boot.library.path" value="C:\JDK_related\ZULU\zulu21.36.17-ca-fx-jdk21.0.4-win_x64\bin"/>
-    <property name="sun.java.command" value="C:\Users\namw2\AppData\Local\Temp\surefire14373847098976795066\surefirebooter-20250521005541756_3.jar C:\Users\namw2\AppData\Local\Temp\surefire14373847098976795066 2025-05-21T00-55-41_650-jvmRun1 surefire-20250521005541756_1tmp surefire_0-20250521005541756_2tmp"/>
+    <property name="sun.boot.library.path" value="C:\jdk_related\zulu21.36.17-ca-jdk21.0.4-win_x64\bin"/>
+    <property name="sun.java.command" value="C:\Users\Jimin\AppData\Local\Temp\surefire16940448901214474566\surefirebooter-20250523013219145_3.jar C:\Users\Jimin\AppData\Local\Temp\surefire16940448901214474566 2025-05-23T01-32-18_781-jvmRun1 surefire-20250523013219145_1tmp surefire_0-20250523013219145_2tmp"/>
     <property name="jdk.debug" value="release"/>
-    <property name="test" value="deu.cse.lectureroomreservation2.server.control.LoginControllerTest"/>
-    <property name="surefire.test.class.path" value="C:\Users\namw2\Desktop\LRR\LRR\LectureRoomReservation2\target\test-classes;C:\Users\namw2\Desktop\LRR\LRR\LectureRoomReservation2\target\classes;C:\JDK_related\maven_repos\org\projectlombok\lombok\1.18.36\lombok-1.18.36.jar;C:\JDK_related\maven_repos\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\JDK_related\maven_repos\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\JDK_related\maven_repos\ch\qos\logback\logback-classic\1.5.17\logback-classic-1.5.17.jar;C:\JDK_related\maven_repos\ch\qos\logback\logback-core\1.5.17\logback-core-1.5.17.jar;C:\JDK_related\maven_repos\org\junit\jupiter\junit-jupiter-engine\5.11.0-M1\junit-jupiter-engine-5.11.0-M1.jar;C:\JDK_related\maven_repos\org\junit\platform\junit-platform-engine\1.11.0-M1\junit-platform-engine-1.11.0-M1.jar;C:\JDK_related\maven_repos\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\JDK_related\maven_repos\org\junit\platform\junit-platform-commons\1.11.0-M1\junit-platform-commons-1.11.0-M1.jar;C:\JDK_related\maven_repos\org\junit\jupiter\junit-jupiter-api\5.11.0-M1\junit-jupiter-api-5.11.0-M1.jar;C:\JDK_related\maven_repos\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\JDK_related\maven_repos\com\toedter\jcalendar\1.4\jcalendar-1.4.jar;"/>
+    <property name="surefire.test.class.path" value="C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\test-classes;C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\classes;C:\Users\Jimin\.m2\repository\org\projectlombok\lombok\1.18.36\lombok-1.18.36.jar;C:\Users\Jimin\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\Jimin\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-classic\1.5.17\logback-classic-1.5.17.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-core\1.5.17\logback-core-1.5.17.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.11.0-M1\junit-jupiter-engine-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-engine\1.11.0-M1\junit-platform-engine-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-commons\1.11.0-M1\junit-platform-commons-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.11.0-M1\junit-jupiter-api-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Jimin\.m2\repository\com\toedter\jcalendar\1.4\jcalendar-1.4.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
-    <property name="user.home" value="C:\Users\namw2"/>
+    <property name="user.home" value="C:\Users\Jimin"/>
     <property name="user.language" value="ko"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="java.version.date" value="2024-07-16"/>
-    <property name="java.home" value="C:\JDK_related\ZULU\zulu21.36.17-ca-fx-jdk21.0.4-win_x64"/>
+    <property name="java.home" value="C:\jdk_related\zulu21.36.17-ca-jdk21.0.4-win_x64"/>
     <property name="file.separator" value="\"/>
-    <property name="basedir" value="C:\Users\namw2\Desktop\LRR\LRR\LectureRoomReservation2"/>
+    <property name="basedir" value="C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2"/>
     <property name="java.vm.compressedOopsMode" value="Zero based"/>
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\namw2\AppData\Local\Temp\surefire14373847098976795066\surefirebooter-20250521005541756_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\Jimin\AppData\Local\Temp\surefire16940448901214474566\surefirebooter-20250523013219145_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="21.0.4+7-LTS"/>
-    <property name="user.name" value="namw2"/>
+    <property name="user.name" value="Jimin"/>
     <property name="stdout.encoding" value="MS949"/>
     <property name="path.separator" value=";"/>
     <property name="os.version" value="10.0"/>
@@ -43,17 +42,17 @@
     <property name="file.encoding" value="UTF-8"/>
     <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
     <property name="java.vendor.version" value="Zulu21.36+17-CA"/>
-    <property name="maven.ext.class.path" value="C:\JDK_related\NETBEANS\netbeans22\java\maven-nblib\netbeans-eventspy.jar"/>
-    <property name="localRepository" value="C:\JDK_related\maven_repos"/>
+    <property name="maven.ext.class.path" value="C:\jdk_related\netbeans22\java\maven-nblib\netbeans-eventspy.jar"/>
+    <property name="localRepository" value="C:\Users\Jimin\.m2\repository"/>
     <property name="java.vendor.url.bug" value="http://www.azul.com/support/"/>
-    <property name="java.io.tmpdir" value="C:\Users\namw2\AppData\Local\Temp\"/>
+    <property name="java.io.tmpdir" value="C:\Users\Jimin\AppData\Local\Temp\"/>
     <property name="java.version" value="21.0.4"/>
-    <property name="user.dir" value="C:\Users\namw2\Desktop\LRR\LRR\LectureRoomReservation2"/>
+    <property name="user.dir" value="C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2"/>
     <property name="os.arch" value="amd64"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="native.encoding" value="MS949"/>
-    <property name="java.library.path" value="C:\JDK_related\ZULU\zulu21.36.17-ca-fx-jdk21.0.4-win_x64\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Users\namw2\anaconda3;C:\Users\namw2\anaconda3\Library\mingw-w64\bin;C:\Users\namw2\anaconda3\Library\usr\bin;C:\Users\namw2\anaconda3\Library\bin;C:\Users\namw2\anaconda3\Scripts;C:\Users\namw2\AppData\Local\Microsoft\WindowsApps;C:\Users\namw2\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\namw2\AppData\Local\GitHubDesktop\bin;."/>
+    <property name="java.library.path" value="C:\jdk_related\zulu21.36.17-ca-jdk21.0.4-win_x64\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\Common Files\Oracle\Java\javapath;C:\jdk_related\zulu21.36.17-ca-jdk21.0.4-win_x64\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Bandizip\;C:\Program Files\PuTTY\;C:\Program Files\Git\cmd;C:\Users\Jimin\AppData\Local\Programs\Python\Python313\;C:\Users\Jimin\AppData\Local\Programs\Python\Python313\Scripts\;C:\mingw64\bin;C:\Users\Jimin\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\Jimin\AppData\Local\Programs\Python\Python313\;C:\Users\Jimin\AppData\Local\Microsoft\WindowsApps;C:\Users\Jimin\AppData\Local\GitHubDesktop\bin;C:\Users\Jimin\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\Java\jdk-21\bin;;."/>
     <property name="java.vm.info" value="mixed mode, sharing"/>
     <property name="stderr.encoding" value="MS949"/>
     <property name="java.vendor" value="Azul Systems, Inc."/>
@@ -61,57 +60,32 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testInvalidRoleWordShouldFail" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.037">
-    <failure message="실패 ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 실패 ==> expected: <true> but was: <false>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
-	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
-	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
-	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testInvalidRoleWordShouldFail(LoginControllerTest.java:47)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-]]></failure>
-  </testcase>
-  <testcase name="testValidStudentLogin" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.013">
+  <testcase name="testInvalidRoleWordShouldFail" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.019"/>
+  <testcase name="testValidStudentLogin" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.014">
     <failure message="성공. ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 성공. ==> expected: <true> but was: <false>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
 	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
 	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
 	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
-	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testValidStudentLogin(LoginControllerTest.java:40)
+	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testValidStudentLogin(LoginControllerTest.java:59)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 ]]></failure>
   </testcase>
-  <testcase name="testWrongPassword" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.004">
+  <testcase name="testValidProfessorLogin" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.013">
     <failure message="성공. ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 성공. ==> expected: <true> but was: <false>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
 	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
 	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
 	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
-	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testWrongPassword(LoginControllerTest.java:53)
+	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testValidProfessorLogin(LoginControllerTest.java:79)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 ]]></failure>
   </testcase>
-  <testcase name="testValidProfessorLogin" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.011"/>
-  <testcase name="testInvalidIdLength" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.002">
-    <failure message="실패. ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 실패. ==> expected: <true> but was: <false>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
-	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
-	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
-	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testInvalidIdLength(LoginControllerTest.java:60)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-]]></failure>
-  </testcase>
+  <testcase name="testInvalidIdLength" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.009"/>
 </testsuite>
