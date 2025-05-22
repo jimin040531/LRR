@@ -55,7 +55,7 @@ public class LoginControllerTest {
     @Test
     public void testValidStudentLogin() {
         LoginStatus result = controller.authenticate("20212991", "1234", "S");
-        assertFalse(result.isLoginSuccess(), "성공.");
+        assertTrue(result.isLoginSuccess(), "성공.");
     }
 
     //Fail   -> assertTrue로 Test중 실패로 봤기에 실패가 맞음.
@@ -74,10 +74,7 @@ public class LoginControllerTest {
 
     @Test
     public void testValidProfessorLogin() {
-        LoginStatus result = controller.authenticate("12345", "profpass", "P");
-        assertFalse(result.isLoginSuccess(), "성공.");
+        LoginStatus result = controller.authenticate("12345", "1234", "P");
+        assertTrue(result.isLoginSuccess(), "성공.");
     }
-    /*
-    RUN 5 FAIL 2
-     */
 }
