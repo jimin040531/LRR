@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="deu.cse.lectureroomreservation2.server.control.TableRearrangeTest" time="0.23" tests="2" errors="0" skipped="0" failures="1">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="deu.cse.lectureroomreservation2.server.model.ScheduleManagerTest" time="0.007" tests="2" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -61,115 +61,6 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testInsertTable" classname="deu.cse.lectureroomreservation2.server.control.TableRearrangeTest" time="0.152">
-    <system-out><![CDATA[확인용09:00
-확인용09:50
-확인용908
-확인용학생예약
-확인용25/05/26
-확인용10:00
-확인용10:50
-확인용null
-확인용공실
-확인용null
-확인용11:00
-확인용11:50
-확인용null
-확인용공실
-확인용null
-확인용12:00
-확인용12:50
-확인용null
-확인용공실
-확인용null
-확인용13:00
-확인용13:50
-확인용null
-확인용공실
-확인용null
-확인용14:00
-확인용14:50
-확인용null
-확인용공실
-확인용null
-확인용15:00
-확인용15:50
-확인용null
-확인용공실
-확인용null
-확인용16:00
-확인용16:50
-확인용null
-확인용공실
-확인용null
-확인용17:00
-확인용17:50
-확인용null
-확인용공실
-확인용null
-]]></system-out>
-  </testcase>
-  <testcase name="testQuickInsertTable2" classname="deu.cse.lectureroomreservation2.server.control.TableRearrangeTest" time="0.071">
-    <failure message="expected: &lt;25/05/21&gt; but was: &lt;25/05/23&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <25/05/21> but was: <25/05/23>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
-	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
-	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
-	at deu.cse.lectureroomreservation2.server.control.TableRearrangeTest.testQuickInsertTable2(TableRearrangeTest.java:120)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-]]></failure>
-    <system-out><![CDATA[[09:00, 09:50, 908, 1, 25/05/20]
-[10:00, 10:50, 908, 1, 25/05/20]
-[null, null, null, null, null]
-[null, null, null, null, null]
-[09:00, 09:50, 908, 1, 25/05/20]
-[10:00, 10:50, 908, 1, 25/05/20]
-[11:00, 11:50, 908, error, 화]
-[15:00, 15:50, 911, error, 월]
-현재 시간: 04:26+25/05/23, 요일: 금
-11:00
-25/05/30
-금
-test입니다1:FinalReservations출력
-test입니다1-1:정렬및 공백 삭제후FinalReservations출력
-test입니다2:finalReservationsArray출력
-test입니다3:정렬후finalReservationsArray출력
-남은 예약 정보:필요없는 값 제거
-가능한 예약 정보:가장 빠른 시간대의 강의실 5개
-[12:00, 12:50, 908]
-[12:00, 12:50, 911]
-[12:00, 12:50, 912]
-[12:00, 12:50, 913]
-[12:00, 12:50, 914]
-확인용12:00
-확인용12:50
-확인용908
-확인용공실
-확인용25/05/23
-확인용12:00
-확인용12:50
-확인용911
-확인용공실
-확인용25/05/23
-확인용12:00
-확인용12:50
-확인용912
-확인용공실
-확인용25/05/23
-확인용12:00
-확인용12:50
-확인용913
-확인용공실
-확인용25/05/23
-확인용12:00
-확인용12:50
-확인용914
-확인용공실
-확인용25/05/23
-]]></system-out>
-  </testcase>
+  <testcase name="testGetSchedule_empty" classname="deu.cse.lectureroomreservation2.server.model.ScheduleManagerTest" time="0.002"/>
+  <testcase name="testAddSchedule" classname="deu.cse.lectureroomreservation2.server.model.ScheduleManagerTest" time="0.002"/>
 </testsuite>

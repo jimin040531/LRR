@@ -1,51 +1,15 @@
 -------------------------------------------------------------------------------
 Test set: deu.cse.lectureroomreservation2.server.control.LoginControllerTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 4, Errors: 0, Skipped: 0, Time elapsed: 0.095 s <<< FAILURE! -- in deu.cse.lectureroomreservation2.server.control.LoginControllerTest
-deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testInvalidRoleWordShouldFail -- Time elapsed: 0.037 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: 실패 ==> expected: <true> but was: <false>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
-	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
-	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
-	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testInvalidRoleWordShouldFail(LoginControllerTest.java:47)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-
-deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testValidStudentLogin -- Time elapsed: 0.013 s <<< FAILURE!
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.063 s <<< FAILURE! -- in deu.cse.lectureroomreservation2.server.control.LoginControllerTest
+deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testValidProfessorLogin -- Time elapsed: 0.006 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: 성공. ==> expected: <true> but was: <false>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
 	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
 	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
 	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
-	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testValidStudentLogin(LoginControllerTest.java:40)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-
-deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testWrongPassword -- Time elapsed: 0.004 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: 성공. ==> expected: <true> but was: <false>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
-	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
-	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
-	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testWrongPassword(LoginControllerTest.java:53)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-
-deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testInvalidIdLength -- Time elapsed: 0.002 s <<< FAILURE!
-org.opentest4j.AssertionFailedError: 실패. ==> expected: <true> but was: <false>
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
-	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
-	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
-	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
-	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testInvalidIdLength(LoginControllerTest.java:60)
+	at deu.cse.lectureroomreservation2.server.control.LoginControllerTest.testValidProfessorLogin(LoginControllerTest.java:79)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)

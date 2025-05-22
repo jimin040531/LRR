@@ -42,4 +42,37 @@ public class UserRequestController {
         saveUser(userData);
         return handleSearchRequest(userData[0], ""); // 같은 권한 전체 리스트 반환
     }
+
+    public boolean deleteUser(String role, String id) {
+        return FileManager.deleteUser(role, id);
+    }
+
+    public List<String[]> saveUserAndGetSingleUser(String[] newUser) {
+        String role = newUser[0];
+        String name = newUser[1];
+        String id = newUser[2];
+        String password = newUser[3];
+
+        // 중복 검사
+        List<UserManage> existingUsers = FileManager.searchUsers(role, "");
+        for (UserManage user : existingUsers) {
+            if (user.getId().equals(id)) {
+                throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+            }
+        }
+
+        // 저장
+        UserManage user = new UserManage(role, name, id, password);
+        FileManager.saveUser(user); // 반환형은 void여도 OK
+
+        // 1명만 리스트로 반환
+        List<String[]> result = new ArrayList<>();
+        result.add(new String[] { role, name, id, password });
+        return result;
+    }
+
+    public boolean isIdDuplicate(String id) {
+        return FileManager.isIdDuplicate(id);
+    }
+
 }
