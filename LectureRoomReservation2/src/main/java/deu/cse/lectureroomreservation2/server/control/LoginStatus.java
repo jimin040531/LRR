@@ -78,4 +78,5 @@ public class LoginStatus implements Serializable {
         return Objects.equals(loginSuccess, other.loginSuccess)
                 && Objects.equals(role, other.role);
     }
+
 }

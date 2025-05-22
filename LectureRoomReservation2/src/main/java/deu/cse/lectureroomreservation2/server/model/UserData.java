@@ -6,6 +6,9 @@ package deu.cse.lectureroomreservation2.server.model;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -14,101 +17,70 @@ import java.util.*;
  */
 public class UserData {
 
-    private final String USER_FILE = "UserInfo.txt";
+    private static final Path filePath = Paths.get("src/main/resources/UserInfo.txt");
 
-    /**
-     * 사용자 ID에 해당하는 암호를 반환한다. 이런 식으로 암호를 plain text로 취급하면 안 되므로 추후 수정해야 함.
-     *
-     * @param userId 사용자 ID
-     * @return 올바른 사용자 ID일 경우 암호를 반환하지만, 아닌 경우 ull을 반환한다.
-     */
     public Optional<User> getUser(String id, String password, String role) {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(USER_FILE); BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-
+        try (BufferedReader reader = Files.newBufferedReader(filePath)) {
             String line;
-
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.trim().split(",");
                 if (tokens.length != 4) {
                     continue;
                 }
 
-                //  UserInfo.txt 기준 (Role, 이름 , ID, PW)
-                String fileRole = tokens[0].trim().toUpperCase(); // 역할 (S, P, A)
-                String fileId = tokens[2].trim();               // ID
-                String filePw = tokens[3].trim();               // Password
+                String fileRole = tokens[0].trim().toUpperCase();
+                String fileId = tokens[2].trim();
+                String filePw = tokens[3].trim();
 
-                if (!(fileRole.equals("S") || fileRole.equals("P") || fileRole.equals("A"))) {
-                    continue;
-                }
-
-                if (fileId.equals(id.trim())
-                        && filePw.equals(password.trim())
-                        && fileRole.equals(role.trim().toUpperCase())) {
+                if (fileRole.equals(role.trim().toUpperCase())
+                        && fileId.equals(id.trim())
+                        && filePw.equals(password.trim())) {
                     return Optional.of(new User(fileId, filePw, fileRole));
                 }
             }
-
-        } catch (IOException | NullPointerException e) {
-            System.err.println("userInfo.txt 파일 읽기 오류: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("UserInfo.txt 읽기 오류: " + e.getMessage());
         }
 
         return Optional.empty();
     }
 
-    /**
-     * 주어진 ID와 현재 비밀번호가 일치하면 새 비밀번호로 업데이트
-     *
-     * @param id 사용자 ID
-     * @param currentPw 현재 비밀번호
-     * @param newPw 새 비밀번호
-     * @return 변경 성공 시 true, 실패 시 false
-     */
+    // 비밀번호 변경
     public boolean updatePassword(String id, String currentPw, String newPw) {
         try {
-            URL resourceUrl = getClass().getClassLoader().getResource(USER_FILE);
-            if (resourceUrl == null) {
-                System.err.println("userinfo.txt 파일 경로를 찾을 수 없습니다.");
+            if (!Files.exists(filePath)) {
+                System.err.println("파일이 존재하지 않습니다: " + filePath);
                 return false;
             }
 
-            File file = new File(resourceUrl.toURI());
-            List<String> lines = new ArrayList<>();
+            List<String> lines = Files.readAllLines(filePath);
+            List<String> updatedLines = new ArrayList<>();
             boolean updated = false;
 
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(",");
+            for (String line : lines) {
+                String[] parts = line.split(",");
+                if (parts.length == 4) {
+                    String fileId = parts[2].trim();
+                    String filePw = parts[3].trim();
 
-                    if (parts.length == 4) {
-                        String fileId = parts[2].trim();
-                        String filePW = parts[3].trim();
-
-                        if (fileId.equals(id) && filePW.equals(currentPw)) {
-                            parts[3] = newPw;
-                            updated = true;
-                        }
-
-                        lines.add(String.join(",", parts));
-                    } else {
-                        lines.add(line);
+                    if (fileId.equals(id.trim()) && filePw.equals(currentPw.trim())) {
+                        parts[3] = newPw;
+                        updated = true;
                     }
+
+                    updatedLines.add(String.join(",", parts));
+                } else {
+                    updatedLines.add(line);
                 }
             }
 
             if (updated) {
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                    for (String l : lines) {
-                        writer.write(l);
-                        writer.newLine();
-                    }
-                }
+                Files.write(filePath, updatedLines);
             }
 
             return updated;
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("비밀번호 변경 오류: " + e.getMessage());
             return false;
         }
