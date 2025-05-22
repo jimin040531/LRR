@@ -47,4 +47,33 @@ public class UserFileManager {
             e.printStackTrace();
         }
     }
+    
+    public void overwriteAll(List<UserManage> users) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
+            for (UserManage user : users) {
+                writer.write(String.join(",", user.getRole(), user.getName(), user.getId(), user.getPassword()));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public boolean isIdDuplicate(String id) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length != 4) continue;
+
+                String existingId = parts[2].trim();
+                if (existingId.equals(id)) {
+                    return true;  // 중복 발견
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;  // 중복 없음
+    }
 }

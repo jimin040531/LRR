@@ -16,7 +16,7 @@ public class UserRequestController {
     private final UserFileManager FileManager = new UserFileManager();
 
     public List<String[]> handleSearchRequest(String roleFilter, String nameFilter) {
-        List<UserManage> users = FileManager.searchUsers(roleFilter, nameFilter);
+        List<UserManage> users = FileManager.searchUsers(roleFilter, nameFilter);     
         List<String[]> result = new ArrayList<>();
 
         for (UserManage user : users) {
@@ -33,13 +33,29 @@ public class UserRequestController {
         String name = userData[1];
         String id = userData[2];
         String password = userData[3];
+        
+        // 아이디 중복 검사
+        if (FileManager.isIdDuplicate(id)) {
+            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+        }
 
         UserManage user = new UserManage(role, name, id, password);  // 통합된 UserManage 사용
         FileManager.saveUser(user);
     }
     
-    public List<String[]> saveUserAndGetUpdatedList(String[] userData) {
+    public List<String[]> saveUserAndGetSingleUser(String[] userData) {
         saveUser(userData);
-        return handleSearchRequest(userData[0], ""); // 같은 권한 전체 리스트 반환
+        List<String[]> singleUserList = new ArrayList<>();
+        singleUserList.add(userData);
+        return singleUserList;
+    }
+
+    public boolean deleteUser(String role, String id) {
+        List<UserManage> users = FileManager.searchUsers(role, ""); // 해당 권한 모든 사용자 불러오기
+        boolean removed = users.removeIf(user -> user.getId().equals(id));
+        if (removed) {
+            FileManager.overwriteAll(users); // 변경 사항 저장
+        }
+        return removed;
     }
 }
