@@ -23,6 +23,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
+import deu.cse.lectureroomreservation2.server.model.GetReservation;
+import deu.cse.lectureroomreservation2.client.view.*;
+
+import javax.swing.table.DefaultTableModel;  // JTable 모델 관련
+import java.util.List;                       // List 사용
+import java.util.ArrayList;                 // ArrayList 사용
+import java.util.Arrays;                    // Arrays.copyOf 등 사용
+
+
 public abstract class User {
 
     protected String Name;          //이름
@@ -70,11 +79,51 @@ public abstract class User {
     public void setPassWord(String PassWord) {
         this.PassWord = PassWord;
     }
+
+    public List<String[]> getMyReservation(String userID) {
+        String[][] ReservationInfo = GetReservation.GetTime("reservation");
+        List<String[]> MyReservations = new ArrayList<>();
+
+        for (String[] row : ReservationInfo) {
+            if (row[5].equals(userID)) {
+                MyReservations.add(Arrays.copyOf(row, row.length)); // 동적으로 리스트에 추가
+            }
+        }
+
+        for (String[] row : MyReservations) {
+            System.out.println(userID + "님의 예약:");
+            System.out.println(Arrays.toString(row));
+        }
+        
+        return MyReservations;
+    }
+
+    public void myInsertTable(List<String[]> MyReservations,JTable MyReservationTable) {
+        // JTable 모델 가져오기
+        DefaultTableModel model = (DefaultTableModel) MyReservationTable.getModel();
+        model.setRowCount(0); // 기존 데이터 초기화
+
+        // JTable에 MyReservations 추가
+        for (String[] row : MyReservations) {
+            String startTime = row[2];
+            String endTime = row[3];
+            String room = row[0];
+            String day = row[1];
+
+            model.addRow(new Object[]{startTime, endTime, room, day});
+        }
+    }
+    
+    public String[] DeleteReservation(String UserID, String[][] ReservationInfo,String[][] MyReservation){
+    String[] deleteReservation = {" "," "," "," ","1",UserID," "}; //908,월,11:00,11:50,1,20230001,25/05/30
     
     
-    public void MyReservation(){
+    
+        
     
     
+    
+    return deleteReservation;
     }
     
 }

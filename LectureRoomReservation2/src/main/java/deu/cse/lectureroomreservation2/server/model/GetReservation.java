@@ -68,6 +68,24 @@ public class GetReservation {
 
         return Rresult;
     }
+    
+    public static List<String[]> getMyReservation(String userID) {
+        String[][] ReservationInfo = GetReservation.GetTime("reservation");
+        List<String[]> MyReservations = new ArrayList<>();
+
+        for (String[] row : ReservationInfo) {
+            if (row[5].equals(userID)) {
+                MyReservations.add(Arrays.copyOf(row, row.length)); // 동적으로 리스트에 추가
+            }
+        }
+
+        for (String[] row : MyReservations) {
+            System.out.println(userID + "님의 예약:");
+            System.out.println(Arrays.toString(row));
+        }
+        
+        return MyReservations;
+    }
 
     public static String[] getPCTime() {
         LocalDateTime now = LocalDateTime.now();

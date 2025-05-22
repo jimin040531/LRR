@@ -335,7 +335,7 @@ public class TableRearrange {
             System.out.println(Arrays.toString(reservation));
         }
 
-        //루프를 72번 돌려야할듯 RoomSlots X timeSlots
+     
         int stack = 0;
         outerloop:
         for (int i = 0; i < timeslots.length; i++) { // time
@@ -385,4 +385,5 @@ public class TableRearrange {
         }
     }
 
+    
 }
