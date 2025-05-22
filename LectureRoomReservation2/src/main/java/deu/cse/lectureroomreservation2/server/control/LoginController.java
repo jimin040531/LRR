@@ -6,13 +6,14 @@ package deu.cse.lectureroomreservation2.server.control;
 
 import deu.cse.lectureroomreservation2.server.model.UserData;
 import deu.cse.lectureroomreservation2.server.model.User;
+
 /**
  *
  * @author skylo
  */
 public class LoginController {
 
-    private final UserData userData = new UserData(); // 모델 호출
+    private final UserData userData = new UserData();
 
     public LoginStatus authenticate(String id, String password, String selectedRole) {
         LoginStatus status = new LoginStatus();
@@ -30,7 +31,6 @@ public class LoginController {
             return status;
         }
 
-        // 모델에서 사용자 정보 가져오기
         var optionalUser = userData.getUser(id, password, selectedRole);
 
         if (optionalUser.isEmpty()) {
