@@ -4,6 +4,7 @@
  */
 package deu.cse.lectureroomreservation2.server.control;
 
+import deu.cse.lectureroomreservation2.common.LoginStatus;
 import java.io.IOException;
 import java.nio.file.*;
 import org.junit.jupiter.api.*;

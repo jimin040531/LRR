@@ -6,6 +6,13 @@ package deu.cse.lectureroomreservation2.client.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Locale;
+import java.util.List;
+import java.util.ArrayList;
+
 import javax.swing.table.*;
 import deu.cse.lectureroomreservation2.client.*;
 import deu.cse.lectureroomreservation2.server.model.GetReservation;
@@ -15,15 +22,22 @@ import deu.cse.lectureroomreservation2.client.TableRearrange;
  *
  * @author namw2
  */
-//TODO 그거 요일을 어떻게 수정 필요할거같음 -- 좀 큰 수정필요
+// TODO 그거 요일을 어떻게 수정 필요할거같음 -- 좀 큰 수정필요
 public class ViewRoom extends javax.swing.JFrame {
 
-    private static String LastUsedButton = " "; //새로고침 기능을 위해 마지막으로 선택한 버튼 정보를 저장
+    Client client;
+    String userid;
+    String role;
+    private static String LastUsedButton = " "; // 새로고침 기능을 위해 마지막으로 선택한 버튼 정보를 저장
 
     /**
      * Creates new form viewRoom
      */
-    public ViewRoom() {
+    public ViewRoom(Client client, String userid, String role) {
+        this.client = client;
+        this.userid = userid;
+        this.role = role;
+
         initComponents();
 
         ImageIcon stairIcon = new ImageIcon(getClass().getResource("/images/stairs.jpg"));
@@ -34,7 +48,27 @@ public class ViewRoom extends javax.swing.JFrame {
         stair2.setText("");
 
         addDateComboBoxListeners();
-        updateChoosedDate(); // 초기 선택 날짜 표시
+        //updateChoosedDate(); // 초기 선택 날짜 표시
+
+        LocalDate now = LocalDate.now();
+
+        for (int y = now.getYear(); y <= now.getYear() + 1; y++) {
+            Year.addItem(String.valueOf(y));
+        }
+        for (int m = 1; m <= 12; m++) {
+            Month.addItem(String.format("%02d", m));
+        }
+        for (int d = 1; d <= 31; d++) {
+            day.addItem(String.format("%02d", d));
+        }
+        Year.setSelectedItem(String.valueOf(now.getYear()));
+        Month.setSelectedItem(String.format("%02d", now.getMonthValue()));
+        day.setSelectedItem(String.format("%02d", now.getDayOfMonth()));
+
+        // 요일 설정 (예시 : 월)
+        DayOfWeek dayOfWeek = now.getDayOfWeek();
+        DayComboBox.setSelectedItem(dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()));
+
     }
 
     private void addDateComboBoxListeners() {
@@ -61,17 +95,18 @@ public class ViewRoom extends javax.swing.JFrame {
         }
     }
 
-    public void insertValue(String roomNum) { //테이블에 값을 집어넣는다.
+    public void insertValue(String roomNum) { // 테이블에 값을 집어넣는다.
 
-        //Student temp = new Student("20213066", "남성우", "01076241028"); //TODO이거도 나중에수정
+        // Student temp = new Student("20213066", "남성우", "01076241028"); //TODO이거도 나중에수정
         String[][] tempResult = GetReservation.GetTime("reservation");
         String[][] tempResult2 = GetReservation.GetTime("schedule");
 
-        TableRearrange.InsertTable(roomNum, (String) DayComboBox.getSelectedItem(), ViewTimeTable, tempResult, tempResult2);
+        TableRearrange.InsertTable(roomNum, (String) DayComboBox.getSelectedItem(), ViewTimeTable, tempResult,
+                tempResult2);
 
     }
 
-    public void updateColumnValues(JTable table) { //비어있는 칸은 공실로 처리
+    public void updateColumnValues(JTable table) { // 비어있는 칸은 공실로 처리
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         int rowCount = model.getRowCount();
 
@@ -80,29 +115,71 @@ public class ViewRoom extends javax.swing.JFrame {
         }
     }
 
-    public void loadData() { //새로고침 기능을 위해 만든 내용 불러오기 함수
-        int rowCount = ViewTimeTable.getRowCount(); // 전체 행 개수
+    public void loadData() {
+        // SwingWorker로 서버 통신을 비동기로 처리
+        SwingWorker<List<Object[]>, Void> worker = new SwingWorker<List<Object[]>, Void>() {
+            @Override
+            protected List<Object[]> doInBackground() {
+                List<Object[]> rowDataList = new ArrayList<>();
+                String year = (String) Year.getSelectedItem();
+                String month = (String) Month.getSelectedItem();
+                String dayOfMonth = (String) day.getSelectedItem();
+                String dayOfWeek = (String) DayComboBox.getSelectedItem();
+                String roomNum = LastUsedButton.trim().isEmpty() ? "908" : LastUsedButton;
 
-        for (int row = 0; row < rowCount; row++) {
-            ViewTimeTable.setValueAt(LastUsedButton, row, 2); // 열 인덱스 1번 (두 번째 열)
-        }
+                try {
+                    // 서버에서 슬롯(시작,끝시간) 리스트 받아오기
+                    java.util.List<String[]> slots = client.getRoomSlots(roomNum, dayOfWeek);
 
-        this.updateColumnValues(ViewTimeTable);
-        this.insertValue(LastUsedButton);
+                    for (String[] slot : slots) {
+                        String start = slot[0];
+                        String end = slot[1];
 
+                        // 날짜 포맷: yyyy / MM / dd / HH:mm HH:mm
+                        String date = year + " / " + month + " / " + dayOfMonth + " / " + start + " " + end;
+
+                        // 서버에서 상태 받아오기
+                        String state = client.getRoomState(roomNum, dayOfWeek, start, end, date);
+
+                        rowDataList.add(new Object[]{start, end, roomNum, state, dayOfWeek});
+                    }
+                } catch (Exception e) {
+                    // 예외는 done()에서 처리
+                    rowDataList.clear();
+                    rowDataList.add(new Object[]{"서버 오류", "", "", "", ""});
+                }
+                return rowDataList;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    List<Object[]> rowDataList = get();
+                    DefaultTableModel model = (DefaultTableModel) ViewTimeTable.getModel();
+                    model.setRowCount(0);
+                    for (Object[] row : rowDataList) {
+                        model.addRow(row);
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(ViewRoom.this, "서버와 통신 중 오류가 발생했습니다.\n" + e.getMessage(), "오류",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        worker.execute();
     }
 
     private Timer refreshTimer;
 
-    public void refreshPage() { //TODO 버튼 누를때마다 새로운 새로고침 함수를 불러옴 갑자기 새로고침을 한번에 함 
+    public void refreshPage() { // TODO 버튼 누를때마다 새로운 새로고침 함수를 불러옴 갑자기 새로고침을 한번에 함
         if (refreshTimer != null && refreshTimer.isRunning()) {
-            //System.out.println("이미 새로고침이 실행 중입니다.");
+            // System.out.println("이미 새로고침이 실행 중입니다.");
             return; // 이미 실행 중이면 중복 실행 방지
         }
 
         this.loadData();
         refreshTimer = new Timer(30_000, e -> {
-            System.out.println("30초 경과 - 새로고침 중..."); //TODO 나중에 지우기
+            System.out.println("30초 경과 - 새로고침 중..."); // TODO 나중에 지우기
             this.loadData(); // 새로고침 동작
         });
         refreshTimer.setRepeats(true);
@@ -115,6 +192,7 @@ public class ViewRoom extends javax.swing.JFrame {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -148,14 +226,12 @@ public class ViewRoom extends javax.swing.JFrame {
         day = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(896, 803));
         setMinimumSize(new java.awt.Dimension(896, 803));
 
         reservationPanel.setBackground(new java.awt.Color(255, 255, 255));
         reservationPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 3));
 
         room908.setBackground(new java.awt.Color(204, 153, 255));
-        room908.setForeground(new java.awt.Color(0, 0, 0));
         room908.setText("<html><center><b>908</b><br>세미나실</center></html>");
         room908.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -164,7 +240,6 @@ public class ViewRoom extends javax.swing.JFrame {
         });
 
         room911.setBackground(new java.awt.Color(255, 204, 204));
-        room911.setForeground(new java.awt.Color(0, 0, 0));
         room911.setText("<html><center><b>911</b><br>실습실</center></html>");
         room911.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -173,7 +248,6 @@ public class ViewRoom extends javax.swing.JFrame {
         });
 
         room912.setBackground(new java.awt.Color(204, 153, 255));
-        room912.setForeground(new java.awt.Color(0, 0, 0));
         room912.setText("<html><center><b>912</b><br>강의실</center></html>");
         room912.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -182,7 +256,6 @@ public class ViewRoom extends javax.swing.JFrame {
         });
 
         room918.setBackground(new java.awt.Color(255, 204, 204));
-        room918.setForeground(new java.awt.Color(0, 0, 0));
         room918.setText("<html><center><b>918</b><br>실습실</center></html>");
         room918.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,7 +264,6 @@ public class ViewRoom extends javax.swing.JFrame {
         });
 
         room916.setBackground(new java.awt.Color(255, 204, 204));
-        room916.setForeground(new java.awt.Color(0, 0, 0));
         room916.setText("<html><center><b>916</b><br>실습실</center></html>");
         room916.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -200,7 +272,6 @@ public class ViewRoom extends javax.swing.JFrame {
         });
 
         room915.setBackground(new java.awt.Color(255, 204, 204));
-        room915.setForeground(new java.awt.Color(0, 0, 0));
         room915.setText("<html><center><b>915</b><br>실습실</center></html>");
         room915.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -209,7 +280,6 @@ public class ViewRoom extends javax.swing.JFrame {
         });
 
         room914.setBackground(new java.awt.Color(204, 153, 255));
-        room914.setForeground(new java.awt.Color(0, 0, 0));
         room914.setText("<html><center><b>914</b><br>강의실</center></html>");
         room914.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -218,7 +288,6 @@ public class ViewRoom extends javax.swing.JFrame {
         });
 
         room913.setBackground(new java.awt.Color(204, 153, 255));
-        room913.setForeground(new java.awt.Color(0, 0, 0));
         room913.setText("<html><center><b>913</b><br>강의실</center></html>");
         room913.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -233,11 +302,9 @@ public class ViewRoom extends javax.swing.JFrame {
         stair1.setText("jLabel6");
 
         room917.setBackground(new java.awt.Color(255, 255, 204));
-        room917.setForeground(new java.awt.Color(0, 0, 0));
         room917.setText("917");
 
         room910.setBackground(new java.awt.Color(153, 204, 255));
-        room910.setForeground(new java.awt.Color(0, 0, 0));
         room910.setText("910");
 
         javax.swing.GroupLayout reservationPanelLayout = new javax.swing.GroupLayout(reservationPanel);
@@ -451,94 +518,102 @@ public class ViewRoom extends javax.swing.JFrame {
     pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void room916ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room916ActionPerformed
+    private void room916ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room916ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "916";
         this.loadData();
         this.refreshPage();
-    }//GEN-LAST:event_room916ActionPerformed
+    }// GEN-LAST:event_room916ActionPerformed
 
-    private void room918ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room918ActionPerformed
+    private void room918ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room918ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "918";
         this.loadData();
         this.refreshPage();
-    }//GEN-LAST:event_room918ActionPerformed
+    }// GEN-LAST:event_room918ActionPerformed
 
-    private void room908ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room908ActionPerformed
+    private void room908ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room908ActionPerformed
         // TODO add your handling code here:
 
         LastUsedButton = "908";
         this.loadData();
         this.refreshPage();
-    }//GEN-LAST:event_room908ActionPerformed
+    }// GEN-LAST:event_room908ActionPerformed
 
-    private void room911ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room911ActionPerformed
+    private void room911ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room911ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "911";
         this.loadData();
         this.refreshPage();
-    }//GEN-LAST:event_room911ActionPerformed
+    }// GEN-LAST:event_room911ActionPerformed
 
-    private void room912ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room912ActionPerformed
+    private void room912ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room912ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "912";
         this.loadData();
         this.refreshPage();
-    }//GEN-LAST:event_room912ActionPerformed
+    }// GEN-LAST:event_room912ActionPerformed
 
-    private void room913ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room913ActionPerformed
+    private void room913ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room913ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "913";
         this.loadData();
         this.refreshPage();
-    }//GEN-LAST:event_room913ActionPerformed
+    }// GEN-LAST:event_room913ActionPerformed
 
-    private void room914ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room914ActionPerformed
+    private void room914ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room914ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "914";
         this.loadData();
         this.refreshPage();
-    }//GEN-LAST:event_room914ActionPerformed
+    }// GEN-LAST:event_room914ActionPerformed
 
-    private void room915ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room915ActionPerformed
+    private void room915ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room915ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "915";
         this.loadData();
         this.refreshPage();
-    }//GEN-LAST:event_room915ActionPerformed
+    }// GEN-LAST:event_room915ActionPerformed
 
-    private void reservationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reservationButtonActionPerformed
+    private void reservationButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_reservationButtonActionPerformed
         // TODO add your handling code here:
         LastUsedButton = " ";
-        /*
-        LRCompleteCheck Lcheck = new LRCompleteCheck("20211234", "S", "915", "2025 / 05 / 21 12:00 13:00", "수요일", client);
-        Lcheck.setVisible(true);
-        */
+        //LRCompleteCheck Lcheck = new LRCompleteCheck(userid, role, "강의실 번호", "2025 / 06 / 03 / 09:00 10:00", "화요일", client);
+        //Lcheck.setVisible(true);
         this.dispose();
 
-    }//GEN-LAST:event_reservationButtonActionPerformed
+    }// GEN-LAST:event_reservationButtonActionPerformed
 
-    private void goBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goBackButtonActionPerformed
+    private void goBackButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_goBackButtonActionPerformed
         // TODO add your handling code here:
         // new tempMainpage().setVisible(true);
         LastUsedButton = " ";
+        if (role.equals("S")) {
+            new StudentMainMenu(userid, client).setVisible(true);
+        }
+        if (role.equals("P")) {
+            new ProfessorMainMenu(userid, client).setVisible(true);
+        }
         this.dispose();
-    }//GEN-LAST:event_goBackButtonActionPerformed
+    }// GEN-LAST:event_goBackButtonActionPerformed
 
-    private void RefreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshButtonActionPerformed
+    private void RefreshButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_RefreshButtonActionPerformed
         // TODO add your handling code here:
         this.refreshPage();
-    }//GEN-LAST:event_RefreshButtonActionPerformed
+    }// GEN-LAST:event_RefreshButtonActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
+        // (optional) ">
+        /*
+         * If Nimbus (introduced in Java SE 6) is not available, stay with the default
+         * look and feel.
+         * For details see
+         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -556,13 +631,19 @@ public class ViewRoom extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ViewRoom.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
+        // </editor-fold>
+        // </editor-fold>
+        // </editor-fold>
+        // </editor-fold>
+        // </editor-fold>
+        // </editor-fold>
+        // </editor-fold>
+        // </editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ViewRoom().setVisible(true);
+                new ViewRoom(null, null, null).setVisible(true);
             }
         });
     }

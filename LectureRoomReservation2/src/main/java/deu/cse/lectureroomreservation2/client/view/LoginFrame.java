@@ -181,7 +181,7 @@ public class LoginFrame extends javax.swing.JFrame {
             client.sendLoginRequest(id, pw, role);  // 로그인 요청 전송
 
             try {
-                deu.cse.lectureroomreservation2.server.control.LoginStatus status = client.receiveLoginStatus();  // 로그인 응답 수신
+                deu.cse.lectureroomreservation2.common.LoginStatus status = client.receiveLoginStatus();  // 로그인 응답 수신
 
                 if (!status.isLoginSuccess()) {
                     if ("WAIT".equals(status.getRole())) {
