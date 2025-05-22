@@ -20,14 +20,26 @@ public class ReserveManager {
     // 5번: 파일 접근 동기화용 락 객체 추가
     private static final Object FILE_LOCK = new Object();
 
+    // 요일 변환: "월" → "월요일" 등으로 변환
+    private static String toFullDayName(String shortDay) {
+        if (shortDay == null) return "";
+        switch (shortDay.trim()) {
+            case "월": return "월요일";
+            case "화": return "화요일";
+            case "수": return "수요일";
+            case "목": return "목요일";
+            case "금": return "금요일";
+            default: return shortDay.trim();
+        }
+    }
+
     /**
      * 예약 요청을 처리하는 메서드입니다.
      * 
      * @param id         사용자 ID (UserInfo.txt의 3번째 필드)
      * @param role       사용자 역할(학생/교수) (UserInfo.txt의 1번째 필드)
      * @param roomNumber 강의실 번호
-     * @param date       예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00
-     *                   13:00"
+     * @param date       예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00 13:00"
      * @param day        예약 요일
      * @return ReserveResult(예약 성공/실패 및 사유)
      */
@@ -158,7 +170,8 @@ public class ReserveManager {
 
     // 예약 정보 생성(포맷 일관성 보장)
     public static String makeReserveInfo(String roomNumber, String date, String day) {
-        return String.format("%s / %s / %s", roomNumber.trim(), date.trim(), day.trim());
+        // 요일을 항상 "월요일" 등으로 변환해서 저장/비교
+        return String.format("%s / %s / %s", roomNumber.trim(), date.trim(), toFullDayName(day));
     }
 
     // 예약 정보 비교(공백, 대소문자 무시)
@@ -381,7 +394,9 @@ public class ReserveManager {
                 while ((line = br.readLine()) != null) {
                     String[] parts = line.split(",");
                     if (parts.length >= 6) {
-                        if (parts[0].trim().equals(room) && parts[1].trim().equals(day)
+                        // ScheduleInfo.txt의 요일은 "월" 등 짧은 형식이므로 변환
+                        String fullDay = toFullDayName(parts[1].trim());
+                        if (parts[0].trim().equals(room) && fullDay.equals(toFullDayName(day))
                                 && parts[2].trim().equals(start) && parts[3].trim().equals(end)
                                 && parts[5].trim().equals("수업")) {
                             return "정규수업";
@@ -393,7 +408,8 @@ public class ReserveManager {
             }
 
             // 예약 정보 문자열 생성 (포맷 일치 주의)
-            String reserveInfo = room + " / " + date + " / " + day;
+            // ReservationInfo.txt의 요일도 "월" 등 짧은 형식이므로 변환
+            String reserveInfo = room + " / " + date + " / " + toFullDayName(day);
 
             // 2. 교수예약 체크
             if (hasProfessorReserve(reserveInfo)) {
@@ -418,7 +434,9 @@ public class ReserveManager {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length >= 4) {
-                    if (parts[0].trim().equals(room) && parts[1].trim().equals(day)) {
+                    // ReservationInfo.txt의 요일은 "월" 등 짧은 형식이므로 변환
+                    String fullDay = toFullDayName(parts[1].trim());
+                    if (parts[0].trim().equals(room) && fullDay.equals(toFullDayName(day))) {
                         String start = parts[2].trim();
                         String end = parts[3].trim();
                         slots.add(new String[] { start, end });
