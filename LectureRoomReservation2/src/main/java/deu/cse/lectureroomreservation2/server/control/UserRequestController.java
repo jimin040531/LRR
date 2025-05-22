@@ -53,23 +53,26 @@ public class UserRequestController {
         String id = newUser[2];
         String password = newUser[3];
 
-        // 1. 현재 사용자 목록 불러오기
-        List<UserManage> existingUsers = FileManager.searchUsers(role, ""); // 해당 역할 전체 조회
-
-        // 2. ID 중복 검사
+        // 중복 검사
+        List<UserManage> existingUsers = FileManager.searchUsers(role, "");
         for (UserManage user : existingUsers) {
             if (user.getId().equals(id)) {
                 throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
             }
         }
 
-        // 3. 중복 아니면 저장
+        // 저장
         UserManage user = new UserManage(role, name, id, password);
-        FileManager.saveUser(user);  // 반환값 신경 안 써도 됨
+        FileManager.saveUser(user); // 반환형은 void여도 OK
 
-        // 4. 새 사용자 1명만 포함된 리스트 반환
+        // 1명만 리스트로 반환
         List<String[]> result = new ArrayList<>();
         result.add(new String[] { role, name, id, password });
         return result;
     }
+
+    public boolean isIdDuplicate(String id) {
+        return FileManager.isIdDuplicate(id);
+    }
+
 }

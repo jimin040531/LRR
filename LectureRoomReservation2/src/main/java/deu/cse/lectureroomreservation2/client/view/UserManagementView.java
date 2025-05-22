@@ -69,7 +69,6 @@ public class UserManagementView extends javax.swing.JFrame {
         lblStudentTitle = new javax.swing.JLabel();
         btnBack = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
-        btnEdit = new javax.swing.JButton();
         btnAdd = new javax.swing.JButton();
 
         lblRole.setText("권한");
@@ -215,13 +214,6 @@ public class UserManagementView extends javax.swing.JFrame {
             }
         });
 
-        btnEdit.setText("✏ 수정");
-        btnEdit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditActionPerformed(evt);
-            }
-        });
-
         btnAdd.setText("➕ 등록");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -244,9 +236,7 @@ public class UserManagementView extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(lblStudentTitle)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -282,7 +272,6 @@ public class UserManagementView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnDelete)
-                    .addComponent(btnEdit)
                     .addComponent(btnAdd))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -390,7 +379,6 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbRoleFilterActionPerformed
 
     private void btnADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnADDActionPerformed
-        // TODO add your handling code here:
         String roleLabel = cmbRole.getSelectedItem().toString();
         String name = txtName.getText().trim();
         String id = txtId.getText().trim();
@@ -400,7 +388,13 @@ public class UserManagementView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "모든 필드를 입력하세요.");
             return;
         }
-        
+
+        // ✅ 중복 검사: 전체 사용자 대상으로 ID 중복 확인
+        if (handler.isIdDuplicate(id)) {
+            JOptionPane.showMessageDialog(this, "이미 존재하는 아이디입니다.");
+            return;
+        }
+
         String roleCode = roleLabel.equals("교수") ? "P" : "S";
         String[] newUser = new String[] { roleCode, name, id, password };
 
@@ -411,6 +405,7 @@ public class UserManagementView extends javax.swing.JFrame {
             } else {
                 updateUserTable(tblStudents, updatedList);
             }
+
             // 입력 필드 초기화 및 다이얼로그 닫기
             txtName.setText("");
             txtId.setText("");
@@ -424,10 +419,6 @@ public class UserManagementView extends javax.swing.JFrame {
     private void cmbRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoleActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbRoleActionPerformed
-
-    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnEditActionPerformed
 
     /**
      * @param args the command line arguments
@@ -469,7 +460,6 @@ public class UserManagementView extends javax.swing.JFrame {
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
-    private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cmbRole;
     private javax.swing.JComboBox<String> cmbRoleFilter;

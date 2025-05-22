@@ -83,11 +83,36 @@ public class UserFileManager {
     }
 
     public boolean deleteUser(String role, String id) {
-        List<UserManage> users = searchUsers(role, "");
-        boolean removed = users.removeIf(user -> user.getId().equals(id));
-        if (removed) {
-            overwriteAll(users);
+        List<UserManage> allUsers = new ArrayList<>();
+
+        // 파일 전체 읽기
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length != 4) continue;
+
+                String fileRole = parts[0].trim();
+                String name = parts[1].trim();
+                String fileId = parts[2].trim();
+                String password = parts[3].trim();
+
+                // 삭제할 조건이 아니면 리스트에 유지
+                if (!(fileRole.equals(role) && fileId.equals(id))) {
+                    allUsers.add(new UserManage(fileRole, name, fileId, password));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
+
+        // 삭제 여부 판단
+        boolean removed = true; // 파일에서 일치하는 걸 제거했으므로 제거 성공
+
+        // 다시 저장
+        overwriteAll(allUsers);
+
         return removed;
     }
 }
