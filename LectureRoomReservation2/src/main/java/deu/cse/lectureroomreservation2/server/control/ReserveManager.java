@@ -295,6 +295,7 @@ public class ReserveManager {
         }
     }
 
+    // 교수 예약 여부 조회 - 클라이언트 요청 시 사용
     public static boolean hasProfessorReserve(String reserveInfo) {
         synchronized (FILE_LOCK) {
             try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
@@ -363,6 +364,44 @@ public class ReserveManager {
                 e.printStackTrace();
             }
             return affectedStudentIds;
+        }
+    }
+
+    // 강의실 조회 - state (정규수업, 교수예약, 예약가능, 예약초과)
+    public static String getRoomState(String room, String day, String start, String end, String date) {
+        synchronized (FILE_LOCK) {
+            // 1. 정규수업 체크
+            try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/ScheduleInfo.txt"))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 6) {
+                        if (parts[0].trim().equals(room) && parts[1].trim().equals(day)
+                                && parts[2].trim().equals(start) && parts[3].trim().equals(end)
+                                && parts[5].trim().equals("수업")) {
+                            return "정규수업";
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // 예약 정보 문자열 생성 (포맷 일치 주의)
+            String reserveInfo = room + " / " + date + " / " + day;
+
+            // 2. 교수예약 체크
+            if (hasProfessorReserve(reserveInfo)) {
+                return "교수예약";
+            }
+
+            // 3. 예약 가능/초과 체크
+            int count = countUsersByReserveInfo(reserveInfo);
+            if (count <= 39) {
+                return "예약가능";
+            } else {
+                return "예약초과";
+            }
         }
     }
 }

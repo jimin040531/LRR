@@ -245,6 +245,38 @@ public class Client {
      * }
      */
 
+    // 강의실 조회 state 요청 처리
+    public String getRoomState(String room, String day, String start, String end, String date) throws IOException {
+        out.writeUTF("GET_ROOM_STATE");
+        out.flush();
+        out.writeUTF(room);
+        out.flush();
+        out.writeUTF(day);
+        out.flush();
+        out.writeUTF(start);
+        out.flush();
+        out.writeUTF(end);
+        out.flush();
+        out.writeUTF(date);
+        out.flush();
+        return in.readUTF();
+    }
+    // 클라이언트에서 사용예시, 응답예시
+    /*
+     * String room = "908";
+     * String day = "월";
+     * String start = "09:00";
+     * String end = "09:50";
+     * String date = "2025 / 05 / 21 / 09:00 09:50";
+     * 
+     * String state = client.getRoomState(room, day, start, end, date);
+     * 
+     * System.out.println("해당 시간대 상태: " + state);
+     * 
+     * // 응답 예시 
+     * // 정규수업, 교수예약, 예약 가능, 예약 초과
+     */
+
     public static void main(String[] args) {
         try {
             Client c = new Client("localhost", 5000);

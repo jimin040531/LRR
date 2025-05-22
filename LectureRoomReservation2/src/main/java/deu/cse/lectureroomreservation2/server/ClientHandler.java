@@ -181,6 +181,17 @@ public class ClientHandler implements Runnable {
                             out.writeBoolean(found);
                             out.flush();
                         }
+                        // 클라이언트 요청 - 강의실 조회 state 요청 받는 부분
+                        if ("GET_ROOM_STATE".equals(command)) {
+                            String room = in.readUTF();
+                            String day = in.readUTF();
+                            String start = in.readUTF();
+                            String end = in.readUTF();
+                            String date = in.readUTF(); // "yyyy / MM / dd / HH:mm HH:mm" 형식
+                            String state = ReserveManager.getRoomState(room, day, start, end, date);
+                            out.writeUTF(state);
+                            out.flush();
+                        }
 
                     } catch (IOException e) {
                         System.out.println("Client Connection Error or Terminated. " + e.getMessage());
