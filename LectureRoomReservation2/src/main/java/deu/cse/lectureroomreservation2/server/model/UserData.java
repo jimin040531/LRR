@@ -29,9 +29,9 @@ public class UserData {
 
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.trim().split(",");
-                if (tokens.length != 4) {
+                /* if (tokens.length != 4) {
                     continue;
-                }
+                }*/
 
                 //  UserInfo.txt 기준 (Role, 이름 , ID, PW)
                 String fileRole = tokens[0].trim().toUpperCase(); // 역할 (S, P, A)
