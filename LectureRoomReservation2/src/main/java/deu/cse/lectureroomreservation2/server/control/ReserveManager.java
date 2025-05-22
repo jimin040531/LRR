@@ -42,11 +42,11 @@ public class ReserveManager {
 
             // 날짜와 시간 형식이 올바른지 추가로 체크
             LocalDateTime startDateTime = LocalDateTime.parse(
-                year + "-" + month + "-" + dayOfMonth + "T" + startTime,
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+                    year + "-" + month + "-" + dayOfMonth + "T" + startTime,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
             LocalDateTime endDateTime = LocalDateTime.parse(
-                year + "-" + month + "-" + dayOfMonth + "T" + endTime,
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+                    year + "-" + month + "-" + dayOfMonth + "T" + endTime,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
 
             // 과거 예약 불가
             if (startDateTime.isBefore(LocalDateTime.now())) {
@@ -72,6 +72,27 @@ public class ReserveManager {
             return new ReserveResult(false, "동일 시간대 최대 예약 인원(40명) 초과");
         }
 
+        // 교수 예약 시, 다른 교수의 동일 예약 중복 체크
+        if ("P".equals(role)) {
+            try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    // UserInfo.txt: 역할,이름,ID,비번,예약1,예약2,...
+                    if (parts.length >= 4 && "P".equals(parts[0].trim()) && !parts[2].trim().equals(id)) {
+                        for (int i = 4; i < parts.length; i++) {
+                            if (parts[i].trim().equals(newReserve)) {
+                                return new ReserveResult(false, "이미 다른 교수가 해당 시간에 예약했습니다.");
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ReserveResult(false, "파일 읽기 오류");
+            }
+        }
+
         // 사용자 정보 파일에서 해당 id를 찾아 예약 추가
         try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
             String line;
@@ -85,7 +106,7 @@ public class ReserveManager {
                     if (reserves.contains(newReserve)) {
                         return new ReserveResult(false, "이미 동일한 예약이 존재합니다.");
                     }
-                    if (reserves.size() >= MAX_RESERVE) {
+                    if (reserves.size() >= MAX_RESERVE && !"P".equals(role)) {
                         return new ReserveResult(false, "최대 예약 개수 초과");
                     }
                     reserves.add(newReserve);
@@ -285,5 +306,30 @@ public class ReserveManager {
             return new ReserveResult(true, "예약이 취소되었습니다.");
         }
         return new ReserveResult(false, "사용자 정보를 찾을 수 없습니다.");
+    }
+
+    /**
+     * 예약 정보로 교수 예약 여부 확인
+     * 
+     * @param reserveInfo 예약 정보 문자열
+     * @return true: 교수 예약 존재, false: 교수 예약 없음
+     */
+    public static boolean hasProfessorReserve(String reserveInfo) {
+        try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 4 && parts[0].trim().equalsIgnoreCase("P")) {
+                    for (int i = 4; i < parts.length; i++) {
+                        if (parts[i].trim().equals(reserveInfo.trim())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

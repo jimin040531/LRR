@@ -8,12 +8,19 @@ package deu.cse.lectureroomreservation2.server;
  *
  * @author SAMSUNG
  */
-import deu.cse.lectureroomreservation2.server.control.*;
-import deu.cse.lectureroomreservation2.common.*;
-import java.util.List;
 import deu.cse.lectureroomreservation2.server.control.LoginStatus;
+import deu.cse.lectureroomreservation2.server.control.noticeController;
+import deu.cse.lectureroomreservation2.server.control.receiveController;
+import deu.cse.lectureroomreservation2.server.control.CheckMaxTime;
+import deu.cse.lectureroomreservation2.server.control.ReserveManager;
+import deu.cse.lectureroomreservation2.common.ReserveResult;
+import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
+import deu.cse.lectureroomreservation2.common.ReserveRequest;
+import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
+
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 
 public class ClientHandler implements Runnable {
 
@@ -29,48 +36,49 @@ public class ClientHandler implements Runnable {
     public void run() {
         boolean acquired = false;
         String id = null;
-        boolean isLoggedIn = false;
 
         try {
-            System.out.println("클라이언트 연결 요청 수신됨: " + socket.getInetAddress());
+            System.out.println("Client Connection request received: " + socket.getInetAddress());
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
+            // 사용자 정보 먼저 받음
             id = in.readUTF();
             String password = in.readUTF();
             String role = in.readUTF();
 
-            // 최대 동시 접속 수 확인
+            // 세마포어 체크는 로그인 정보 받고 나서 수행
             acquired = server.getConnectionLimiter().tryAcquire();
             if (!acquired) {
-                out.writeObject(new LoginStatus(false, "WAIT", "현재 접속 인원이 가득 찼습니다."));
+                System.out.println("Connection refused (Max count exceed): " + id);
+                out.writeObject(new LoginStatus(false, "WAIT", "현재 접속 인원이 가득 찼습니다. 잠시 후 다시 시도해 주세요."));
                 out.flush();
                 return;
             }
 
-            // 중복 로그인 확인
+            // 중복로그인 체크
             synchronized (server.getLoggedInUsers()) {
-                if (server.isUserLoggedIn(id)) {
+                if (server.getLoggedInUsers().contains(id)) {
+                    System.out.println("Connection refused (account already log-in): " + id);
                     out.writeObject(new LoginStatus(false, "DUPLICATE", "이미 로그인 중인 계정입니다."));
                     out.flush();
                     return;
                 }
             }
 
-            // 인증 처리
-            LoginStatus status = server.requestAuth(id, password, role);    // 인증
+            LoginStatus status = server.requestAuth(id, password, role); // 인증
             if (status.isLoginSuccess()) {
                 synchronized (server.getLoggedInUsers()) {
-                    server.getLoggedInUsers().add(id);  // 로그인 성공한 사용자 등록
+                    server.getLoggedInUsers().add(id); // 로그인 성공한 사용자 등록
                 }
             }
 
             out.writeObject(status);
             out.flush();
 
-            // 로그인 성공 시 명령 루프 시작
+            // 로그인 성공한 경우 명령 수신 루프
             if (status.isLoginSuccess()) {
-                // 공지사항 처리 (학생용)
+                // 공지사항 수신 및 표시
                 System.out.println("로그인 성공 하여 역할 " + status.getRole() + "를 가집니다.");
                 if ("STUDENT".equals(status.getRole())) {
                     List<String> notices = noticeController.getNotices(id);
@@ -85,15 +93,13 @@ public class ClientHandler implements Runnable {
                     out.flush();
                 }
 
-                // 명령 루프
                 while (true) {
                     try {
                         String command = in.readUTF();
                         if ("LOGOUT".equalsIgnoreCase(command)) {
-                            System.out.println("사용자 로그아웃됨: " + id);
+                            System.out.println("User has log-out: " + id);
                             break;
                         }
-
                         // 예약 요청 처리
                         if ("RESERVE".equals(command)) {
                             // 클라이언트로부터 예약 요청 객체를 받음
@@ -153,20 +159,29 @@ public class ClientHandler implements Runnable {
                                 continue;
                             }
                             // 2. 새 예약 시도 (role은 기존 예약에서 추출하거나, 클라이언트에서 같이 보내도 됨)
-                            // 여기서는 클라이언트에서 role도 같이 보내는 것이 안전하다고 판단
+                            // 여기서는 클라이언트에서 role도 같이 보내는 것이 안전하다고 판단단
                             String giverole = in.readUTF();
-                            ReserveResult reserveResult = ReserveManager.reserve(userId, giverole, newRoomNumber, newDate,
+                            ReserveResult reserveResult = ReserveManager.reserve(userId, giverole, newRoomNumber,
+                                    newDate,
                                     newDay);
                             out.writeObject(reserveResult);
                             out.flush();
                         }
+                        // 클라이언트 요청 - 예약 정보로 교수 예약 여부 조회 요청 받는 부분 - 교수 예약O true, 교수 예약X false
+                        if ("FIND_PROFESSOR_BY_RESERVE".equals(command)) {
+                            String reserveInfo = in.readUTF();
+                            boolean found = ReserveManager.hasProfessorReserve(reserveInfo);
+                            out.writeBoolean(found);
+                            out.flush();
+                        }
+
                     } catch (IOException e) {
-                        System.out.println("클라이언트 연결 오류 또는 종료됨.");
+                        System.out.println("Client Connection Error or Terminated. " + e.getMessage());
+                        e.printStackTrace();
                         break;
                     }
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -176,7 +191,7 @@ public class ClientHandler implements Runnable {
 
             if (id != null) {
                 synchronized (server.getLoggedInUsers()) {
-                    server.getLoggedInUsers().remove(id);  // 로그아웃 처리
+                    server.getLoggedInUsers().remove(id); // 로그아웃 처리
                 }
             }
 
@@ -187,6 +202,20 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-
-
+    /*
+     * private void handleStudent(ObjectInputStream in, ObjectOutputStream out,
+     * String id) {
+     * System.out.println("학생 기능 처리: " + id);
+     * }
+     * 
+     * private void handleProfessor(ObjectInputStream in, ObjectOutputStream out,
+     * String id) {
+     * System.out.println("교수 기능 처리: " + id);
+     * }
+     * 
+     * private void handleAdmin(ObjectInputStream in, ObjectOutputStream out, String
+     * id) {
+     * System.out.println("관리자 기능 처리: " + id);
+     * }
+     */
 }

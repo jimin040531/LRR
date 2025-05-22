@@ -4,8 +4,11 @@
  */
 package deu.cse.lectureroomreservation2.client;
 
+import deu.cse.lectureroomreservation2.common.ReserveRequest;
+import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
+import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
+import deu.cse.lectureroomreservation2.common.ReserveResult;
 import deu.cse.lectureroomreservation2.server.control.LoginStatus;
-import deu.cse.lectureroomreservation2.common.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
@@ -28,7 +31,7 @@ public class Client {
             this.out = new ObjectOutputStream(socket.getOutputStream());
             this.in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
-            System.err.println(" 서버 연결 실패: " + e.getMessage());
+            System.err.println(" Server Connection Error: " + e.getMessage());
         }
     }
 
@@ -50,7 +53,7 @@ public class Client {
             out.flush();
             socket.close();
         } catch (IOException e) {
-            System.err.println(" 로그아웃 중 오류 발생: " + e.getMessage());
+            System.err.println(" logout Error : " + e.getMessage());
         }
     }
 
@@ -93,7 +96,6 @@ public class Client {
         out.flush();
         return (ReserveResult) in.readObject();
     }
-
     // 클라이언트에서 예약 취소 요청 사용 예시, 응답 예시
     /*
      * String id = "20212991";
@@ -131,7 +133,6 @@ public class Client {
         out.flush();
         return (ReserveResult) in.readObject();
     }
-
     // 클라이언트에서 예약 변경 요청 사용 예시, 응답 예시
     /*
      * // 예약 변경 요청 예시
@@ -159,9 +160,8 @@ public class Client {
     public void checkAndShowNotices(javax.swing.JFrame parentFrame) throws IOException {
         while (true) {
             String msgType = in.readUTF();
-            if ("NOTICE_END".equals(msgType)) {
+            if ("NOTICE_END".equals(msgType))
                 break;
-            }
             if ("NOTICE".equals(msgType)) {
                 String noticeText = in.readUTF();
                 javax.swing.JOptionPane.showMessageDialog(parentFrame, noticeText, "공지사항",
@@ -179,7 +179,6 @@ public class Client {
         out.flush();
         return (List<String>) in.readObject();
     }
-
     // 클라이언트에서 사용예시, 응답예시
     /*
      * List<String> myReserves = client.retrieveMyReserveInfo(id);
@@ -201,7 +200,6 @@ public class Client {
         out.flush();
         return in.readInt();
     }
-
     // 클라이언트에서 사용예시, 응답예시
     /*
      * String reserveInfo = "915 / 2025 / 05 / 21 / 00:00 01:00 / 화요일";
@@ -209,17 +207,38 @@ public class Client {
      * System.out.println("해당 예약 정보로 예약한 사용자 수: " + userCount);
      */
 
+    // 예약 정보로 교수 예약 여부 조회 요청 처리
+    public boolean hasProfessorReserve(String reserveInfo) throws IOException {
+        out.writeUTF("FIND_PROFESSOR_BY_RESERVE");
+        out.flush();
+        out.writeUTF(reserveInfo);
+        out.flush();
+        return in.readBoolean();
+    }
+    // 클라이언트에서 사용예시, 응답예시
+    /*
+     * String reserveInfo = "915 / 2025 / 06 / 03 / 00:00 01:00 / 화요일";
+     * boolean isReservedByProfessor = client.hasProfessorReserve(reserveInfo);
+     * 
+     * if (isReservedByProfessor) {
+     * System.out.println("해당 시간대에 교수 예약이 있습니다.");
+     * } else {
+     * System.out.println("해당 시간대에 교수 예약이 없습니다.");
+     * }
+     */
+
     public static void main(String[] args) {
         try {
-            Client c = new Client("192.168.0.101", 5000);  // 서버 컴퓨터의 IP 주소
+            Client c = new Client("localhost", 5000);
             if (c.isConnected()) {
                 LoginStatus status = c.receiveLoginStatus();
                 c.logout();
             } else {
-                System.err.println("서버에 연결되지 않았습니다.");
+                System.err.println("Cannot Connect Server.");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }
