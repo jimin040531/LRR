@@ -285,39 +285,11 @@ public class UserManagementView extends javax.swing.JFrame {
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         // TODO add your handling code here:
-        new AdminMainView("A", client).setVisible(true);
-        dispose();
+
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        JTable targetTable = tblStudents.getSelectedRow() != -1 ? tblStudents : tblProfessors;
-        int selectedRow = targetTable.getSelectedRow();
 
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "삭제할 사용자를 선택하세요.");
-            return;
-        }
-
-        String role = (String) targetTable.getValueAt(selectedRow, 0);
-        String id = (String) targetTable.getValueAt(selectedRow, 2);
-
-        int confirm = JOptionPane.showConfirmDialog(this, "사용자 [" + id + "]를 삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        try {
-            UserRequest request = new UserRequest("DELETE", role, null, id, null, null);
-            UserResult result = client.sendUserRequest(request);
-            if (result.isSuccess()) {
-                JOptionPane.showMessageDialog(this, "삭제되었습니다.");
-                btnSearchActionPerformed(null);
-            } else {
-                JOptionPane.showMessageDialog(this, result.getMessage());
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "삭제 실패");
-        }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
@@ -328,28 +300,7 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        String roleLabel = cmbRoleFilter.getSelectedItem().toString();
-        String nameFilter = txtSearch.getText().trim();
-        String roleFilter = roleLabel.equals("교수") ? "P" : "S";
 
-        try {
-            UserRequest request = new UserRequest("SEARCH", roleFilter, nameFilter, null, null, null);
-            UserResult result = client.sendUserRequest(request);
-            List<String[]> userList = result.getUserList();
-
-            DefaultTableModel professorModel = (DefaultTableModel) tblProfessors.getModel();
-            DefaultTableModel studentModel = (DefaultTableModel) tblStudents.getModel();
-            professorModel.setRowCount(0);
-            studentModel.setRowCount(0);
-
-            if (roleFilter.equals("P")) {
-                updateUserTable(tblProfessors, userList);
-            } else {
-                updateUserTable(tblStudents, userList);
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "사용자 검색 실패");
-        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
@@ -361,31 +312,7 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbRoleFilterActionPerformed
 
     private void btnADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnADDActionPerformed
-        String roleLabel = cmbRole.getSelectedItem().toString();
-        String name = txtName.getText().trim();
-        String id = txtId.getText().trim();
-        String pw = txtPw.getText().trim();
 
-        if (name.isEmpty() || id.isEmpty() || pw.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "모든 필드를 입력하세요.");
-            return;
-        }
-
-        String role = roleLabel.equals("교수") ? "P" : "S";
-
-        try {
-            UserRequest request = new UserRequest("ADD", role, name, id, pw, null);
-            UserResult result = client.sendUserRequest(request);
-            if (result.isSuccess()) {
-                JOptionPane.showMessageDialog(this, "등록되었습니다.");
-                jDialog1.setVisible(false);
-                btnSearchActionPerformed(null);
-            } else {
-                JOptionPane.showMessageDialog(this, result.getMessage());
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "등록 실패");
-        }
     }//GEN-LAST:event_btnADDActionPerformed
 
     private void cmbRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoleActionPerformed
