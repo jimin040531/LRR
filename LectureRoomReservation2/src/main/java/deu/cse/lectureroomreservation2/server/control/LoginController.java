@@ -4,6 +4,7 @@
  */
 package deu.cse.lectureroomreservation2.server.control;
 
+import deu.cse.lectureroomreservation2.common.LoginStatus;
 import deu.cse.lectureroomreservation2.server.model.UserData;
 import deu.cse.lectureroomreservation2.server.model.User;
 /**

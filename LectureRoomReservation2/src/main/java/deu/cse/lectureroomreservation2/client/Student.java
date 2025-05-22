@@ -27,10 +27,5 @@ public class Student extends User{
         this.ReservationTime = 0;
     }
     
-    @Override
-    public void ViewRoom(){
-        System.out.print("필요없을듯.");
-    }
-
     
 }

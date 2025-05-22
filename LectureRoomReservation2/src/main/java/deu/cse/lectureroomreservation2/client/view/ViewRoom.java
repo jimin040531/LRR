@@ -8,11 +8,14 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.*;
 import deu.cse.lectureroomreservation2.client.*;
+import deu.cse.lectureroomreservation2.server.model.GetReservation;
+import deu.cse.lectureroomreservation2.server.control.TableRearrange;
 
 /**
  *
  * @author namw2
  */
+//TODO 그거 요일을 어떻게 수정 필요할거같음 -- 좀 큰 수정필요
 public class ViewRoom extends javax.swing.JFrame {
 
     private static String LastUsedButton = " "; //새로고침 기능을 위해 마지막으로 선택한 버튼 정보를 저장
@@ -29,16 +32,42 @@ public class ViewRoom extends javax.swing.JFrame {
         stair2.setIcon(new ImageIcon(stairImg));
         stair1.setText("");
         stair2.setText("");
+
+        addDateComboBoxListeners();
+        updateChoosedDate(); // 초기 선택 날짜 표시
+    }
+
+    private void addDateComboBoxListeners() {
+        Year.addActionListener(e -> updateChoosedDate());
+        Month.addActionListener(e -> updateChoosedDate());
+        day.addActionListener(e -> updateChoosedDate());
+    }
+
+    private void updateChoosedDate() {
+        String y = (String) Year.getSelectedItem();
+        String m = (String) Month.getSelectedItem();
+        String d = (String) day.getSelectedItem();
+
+        if (y != null && m != null && d != null) {
+            // 날짜 형식 맞추기 (월, 일이 한자리면 0 붙이기)
+            if (m.length() == 1) {
+                m = "0" + m;
+            }
+            if (d.length() == 1) {
+                d = "0" + d;
+            }
+
+            ChoosedDate.setText(y + "년 " + m + "월 " + d + "일");
+        }
     }
 
     public void insertValue(String roomNum) { //테이블에 값을 집어넣는다.
 
-        Student temp = new Student("20213066", "남성우", "01076241028");
+        //Student temp = new Student("20213066", "남성우", "01076241028"); //TODO이거도 나중에수정
+        String[][] tempResult = GetReservation.GetTime("reservation");
+        String[][] tempResult2 = GetReservation.GetTime("schedule");
 
-        String[][] tempResult = temp.GetTime("reservation");
-        String[][] tempResult2 = temp.GetTime("schedule");
-
-        temp.InsertTable(roomNum, (String) DayComboBox.getSelectedItem(), ViewTimeTable, tempResult, tempResult2);
+        TableRearrange.InsertTable(roomNum, (String) DayComboBox.getSelectedItem(), ViewTimeTable, tempResult, tempResult2);
 
     }
 
@@ -63,15 +92,21 @@ public class ViewRoom extends javax.swing.JFrame {
 
     }
 
-    public void refreshPage() {
+    private Timer refreshTimer;
+
+    public void refreshPage() { //TODO 버튼 누를때마다 새로운 새로고침 함수를 불러옴 갑자기 새로고침을 한번에 함 
+        if (refreshTimer != null && refreshTimer.isRunning()) {
+            //System.out.println("이미 새로고침이 실행 중입니다.");
+            return; // 이미 실행 중이면 중복 실행 방지
+        }
+
         this.loadData();
-        Timer timer = new Timer(30_000, e -> {
+        refreshTimer = new Timer(30_000, e -> {
             System.out.println("30초 경과 - 새로고침 중..."); //TODO 나중에 지우기
             this.loadData(); // 새로고침 동작
         });
-        timer.setRepeats(true);
-        timer.start();
-
+        refreshTimer.setRepeats(true);
+        refreshTimer.start();
     }
 
     /**
@@ -105,8 +140,16 @@ public class ViewRoom extends javax.swing.JFrame {
         DayComboBox = new javax.swing.JComboBox<>();
         DayLabel = new javax.swing.JLabel();
         RefreshButton = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        ChoosedDate = new javax.swing.JLabel();
+        Year = new javax.swing.JComboBox<>();
+        jLabel4 = new javax.swing.JLabel();
+        Month = new javax.swing.JComboBox<>();
+        day = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(896, 803));
+        setMinimumSize(new java.awt.Dimension(896, 803));
 
         reservationPanel.setBackground(new java.awt.Color(255, 255, 255));
         reservationPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 3));
@@ -297,7 +340,7 @@ public class ViewRoom extends javax.swing.JFrame {
                 {"17:00", "17:50", null, " 공실 "}
             },
             new String [] {
-                "Title Start", "Time End", "Room", "State"
+                "Title Start", "Time End", "Room", "State","Day"
             }
         )
         {
@@ -325,6 +368,18 @@ public class ViewRoom extends javax.swing.JFrame {
         }
     });
 
+    jLabel2.setText("선택날짜:");
+
+    ChoosedDate.setText("0000년00월00일");
+
+    Year.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2025", "추가예정.." }));
+
+    jLabel4.setText("날짜 변경");
+
+    Month.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+
+    day.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -346,13 +401,25 @@ public class ViewRoom extends javax.swing.JFrame {
                     .addComponent(reservationButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(goBackButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(16, 16, 16))))
-        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(DayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(DayComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap())
+                    .addGap(16, 16, 16))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGap(6, 6, 6)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(ChoosedDate, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(Year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(Month, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(day, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(DayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(DayComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())))
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -364,7 +431,13 @@ public class ViewRoom extends javax.swing.JFrame {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(DayComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(DayLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(DayLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(ChoosedDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(Year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(Month, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(day, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(ViewTimePane, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -381,12 +454,14 @@ public class ViewRoom extends javax.swing.JFrame {
     private void room916ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room916ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "916";
+        this.loadData();
         this.refreshPage();
     }//GEN-LAST:event_room916ActionPerformed
 
     private void room918ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room918ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "918";
+        this.loadData();
         this.refreshPage();
     }//GEN-LAST:event_room918ActionPerformed
 
@@ -394,43 +469,52 @@ public class ViewRoom extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         LastUsedButton = "908";
-
+        this.loadData();
         this.refreshPage();
     }//GEN-LAST:event_room908ActionPerformed
 
     private void room911ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room911ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "911";
+        this.loadData();
         this.refreshPage();
     }//GEN-LAST:event_room911ActionPerformed
 
     private void room912ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room912ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "912";
+        this.loadData();
         this.refreshPage();
     }//GEN-LAST:event_room912ActionPerformed
 
     private void room913ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room913ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "913";
+        this.loadData();
         this.refreshPage();
     }//GEN-LAST:event_room913ActionPerformed
 
     private void room914ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room914ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "914";
+        this.loadData();
         this.refreshPage();
     }//GEN-LAST:event_room914ActionPerformed
 
     private void room915ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_room915ActionPerformed
         // TODO add your handling code here:
         LastUsedButton = "915";
+        this.loadData();
         this.refreshPage();
     }//GEN-LAST:event_room915ActionPerformed
 
     private void reservationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reservationButtonActionPerformed
         // TODO add your handling code here:
         LastUsedButton = " ";
+        /*
+        LRCompleteCheck Lcheck = new LRCompleteCheck("20211234", "S", "915", "2025 / 05 / 21 12:00 13:00", "수요일", client);
+        Lcheck.setVisible(true);
+        */
         this.dispose();
 
     }//GEN-LAST:event_reservationButtonActionPerformed
@@ -484,14 +568,20 @@ public class ViewRoom extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel ChoosedDate;
     private javax.swing.JComboBox<String> DayComboBox;
     private javax.swing.JLabel DayLabel;
+    private javax.swing.JComboBox<String> Month;
     private javax.swing.JButton RefreshButton;
     private javax.swing.JScrollPane ViewTimePane;
     private javax.swing.JTable ViewTimeTable;
+    private javax.swing.JComboBox<String> Year;
+    private javax.swing.JComboBox<String> day;
     private javax.swing.JLabel elebator;
     private javax.swing.JButton goBackButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JButton reservationButton;
     private javax.swing.JPanel reservationPanel;
     private javax.swing.JButton room908;
