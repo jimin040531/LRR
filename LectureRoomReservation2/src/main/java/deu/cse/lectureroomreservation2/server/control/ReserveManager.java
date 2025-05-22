@@ -10,6 +10,11 @@ public class ReserveManager {
     // 사용자 정보 파일 경로 (예약 정보도 이 파일에 저장)
     private static final String USER_FILE = receiveController.getFilepath() + receiveController.getFileName();
     // src/main/resources/UserInfo.txt
+    private static final String RESERVE_FILE = receiveController.getFilepath()
+            + receiveController.getReservationInfoFileName();
+    // src/main/resources/ReservationInfo.txt
+    private static final String SCHEDULE_FILE = receiveController.getFilepath()
+            + receiveController.getScheduleInfoFileName();
     private static final int MAX_RESERVE = 4; // 최대 예약 개수
 
     // 5번: 파일 접근 동기화용 락 객체 추가
@@ -371,7 +376,7 @@ public class ReserveManager {
     public static String getRoomState(String room, String day, String start, String end, String date) {
         synchronized (FILE_LOCK) {
             // 1. 정규수업 체크
-            try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/ScheduleInfo.txt"))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(SCHEDULE_FILE))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     String[] parts = line.split(",");
@@ -403,5 +408,26 @@ public class ReserveManager {
                 return "예약초과";
             }
         }
+    }
+
+    // 강의실 조회 - 강의실 예약 시간대 조회
+    public static List<String[]> getRoomSlots(String room, String day) {
+        List<String[]> slots = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(RESERVE_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 4) {
+                    if (parts[0].trim().equals(room) && parts[1].trim().equals(day)) {
+                        String start = parts[2].trim();
+                        String end = parts[3].trim();
+                        slots.add(new String[] { start, end });
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return slots;
     }
 }

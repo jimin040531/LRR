@@ -273,8 +273,36 @@ public class Client {
      * 
      * System.out.println("해당 시간대 상태: " + state);
      * 
-     * // 응답 예시 
+     * // 응답 예시
      * // 정규수업, 교수예약, 예약 가능, 예약 초과
+     */
+
+    // 강의실 예약 가능 시간대 조회 요청 처리
+    public java.util.List<String[]> getRoomSlots(String room, String day) throws IOException {
+        out.writeUTF("GET_ROOM_SLOTS");
+        out.flush();
+        out.writeUTF(room);
+        out.flush();
+        out.writeUTF(day);
+        out.flush();
+        int size = in.readInt();
+        java.util.List<String[]> slots = new java.util.ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            String start = in.readUTF();
+            String end = in.readUTF();
+            slots.add(new String[] { start, end });
+        }
+        return slots;
+    }
+    // 클라이언트에서 사용예시, 응답예시
+    /*
+     * java.util.List<String[]> slots = client.getRoomSlots(selectedRoom,
+     * dayOfWeek);
+     * for (String[] slot : slots) {
+     * String start = slot[0];
+     * String end = slot[1];
+     * // ...
+     * }
      */
 
     public static void main(String[] args) {

@@ -21,6 +21,8 @@ public class receiveController {
     private static final String filePath = "src/main/resources/";
     private static final String UserFileName = "UserInfo.txt";
     private static final String noticeFileName = "noticeSave.txt";
+    private static final String ScheduleInfoFileName = "ScheduleInfo.txt";
+    private static final String ReservationInfoFileName = "ReservationInfo.txt";
 
     public static String getFilepath() {
         return filePath;
@@ -32,6 +34,14 @@ public class receiveController {
 
     public static String getNoticeFileName() {
         return noticeFileName;
+    }
+
+    public static String getScheduleInfoFileName() {
+        return ScheduleInfoFileName;
+    }
+
+    public static String getReservationInfoFileName() {
+        return ReservationInfoFileName;
     }
 
     // 예약 요청 처리
