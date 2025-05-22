@@ -8,7 +8,7 @@ package deu.cse.lectureroomreservation2.server;
  *
  * @author SAMSUNG
  */
-import deu.cse.lectureroomreservation2.server.control.LoginStatus;
+import deu.cse.lectureroomreservation2.common.LoginStatus;
 import deu.cse.lectureroomreservation2.server.control.noticeController;
 import deu.cse.lectureroomreservation2.server.control.receiveController;
 import deu.cse.lectureroomreservation2.server.control.CheckMaxTime;
@@ -135,6 +135,13 @@ public class ClientHandler implements Runnable {
                             out.writeInt(userCount);
                             out.flush();
                         }
+                        // 클라이언트 요청 - 예약 정보로 예약자 id 목록 조회 (6번 기능)
+                        if ("GET_USER_IDS_BY_RESERVE".equals(command)) {
+                            String reserveInfo = in.readUTF();
+                            List<String> userIds = ReserveManager.getUserIdsByReserveInfo(reserveInfo);
+                            out.writeObject(userIds);
+                            out.flush();
+                        }
                         // 클라이언트 요청 - 예약 취소 요청 받는 부분
                         if ("CANCEL_RESERVE".equals(command)) {
                             String userId = in.readUTF();
@@ -159,7 +166,7 @@ public class ClientHandler implements Runnable {
                                 continue;
                             }
                             // 2. 새 예약 시도 (role은 기존 예약에서 추출하거나, 클라이언트에서 같이 보내도 됨)
-                            // 여기서는 클라이언트에서 role도 같이 보내는 것이 안전하다고 판단단
+                            // 여기서는 클라이언트에서 role도 같이 보내는 것이 안전하다고 판단
                             String giverole = in.readUTF();
                             ReserveResult reserveResult = ReserveManager.reserve(userId, giverole, newRoomNumber,
                                     newDate,

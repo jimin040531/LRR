@@ -8,7 +8,7 @@ import deu.cse.lectureroomreservation2.common.ReserveRequest;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
 import deu.cse.lectureroomreservation2.common.ReserveResult;
-import deu.cse.lectureroomreservation2.server.control.LoginStatus;
+import deu.cse.lectureroomreservation2.common.LoginStatus;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
@@ -205,6 +205,24 @@ public class Client {
      * String reserveInfo = "915 / 2025 / 05 / 21 / 00:00 01:00 / 화요일";
      * int userCount = client.requestReserveUserCount(reserveInfo);
      * System.out.println("해당 예약 정보로 예약한 사용자 수: " + userCount);
+     */
+
+    // 예약 정보로 예약한 사용자 id 목록 요청 처리 (6번 기능)
+    @SuppressWarnings("unchecked")
+    public List<String> getUserIdsByReserveInfo(String reserveInfo) throws IOException, ClassNotFoundException {
+        out.writeUTF("GET_USER_IDS_BY_RESERVE");
+        out.flush();
+        out.writeUTF(reserveInfo);
+        out.flush();
+        return (List<String>) in.readObject();
+    }
+    // 사용 예시
+    /*
+     * String reserveInfo = "915 / 2025 / 05 / 21 / 00:00 01:00 / 화요일";
+     * List<String> userIds = client.getUserIdsByReserveInfo(reserveInfo);
+     * for (String userId : userIds) {
+     * System.out.println("예약자 ID: " + userId);
+     * }
      */
 
     // 예약 정보로 교수 예약 여부 조회 요청 처리

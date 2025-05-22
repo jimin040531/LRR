@@ -5,7 +5,7 @@
 package deu.cse.lectureroomreservation2.server;
 
 import deu.cse.lectureroomreservation2.server.control.AutoReserveCleaner;
-import deu.cse.lectureroomreservation2.server.control.LoginStatus;
+import deu.cse.lectureroomreservation2.common.LoginStatus;
 import deu.cse.lectureroomreservation2.server.control.LoginController;
 import java.io.*;
 import java.net.ServerSocket;
