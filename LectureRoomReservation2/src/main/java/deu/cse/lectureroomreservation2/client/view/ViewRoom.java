@@ -10,6 +10,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.table.*;
 import deu.cse.lectureroomreservation2.client.*;
@@ -22,6 +24,7 @@ import deu.cse.lectureroomreservation2.server.control.TableRearrange;
  */
 // TODO 그거 요일을 어떻게 수정 필요할거같음 -- 좀 큰 수정필요
 public class ViewRoom extends javax.swing.JFrame {
+
     Client client;
     String userid;
     String role;
@@ -49,9 +52,15 @@ public class ViewRoom extends javax.swing.JFrame {
 
         LocalDate now = LocalDate.now();
 
-        for (int y = now.getYear(); y <= now.getYear() + 1; y++) Year.addItem(String.valueOf(y));
-        for (int m = 1; m <= 12; m++) Month.addItem(String.format("%02d", m));
-        for (int d = 1; d <= 31; d++) day.addItem(String.format("%02d", d));
+        for (int y = now.getYear(); y <= now.getYear() + 1; y++) {
+            Year.addItem(String.valueOf(y));
+        }
+        for (int m = 1; m <= 12; m++) {
+            Month.addItem(String.format("%02d", m));
+        }
+        for (int d = 1; d <= 31; d++) {
+            day.addItem(String.format("%02d", d));
+        }
         Year.setSelectedItem(String.valueOf(now.getYear()));
         Month.setSelectedItem(String.format("%02d", now.getMonthValue()));
         day.setSelectedItem(String.format("%02d", now.getDayOfMonth()));
@@ -106,36 +115,58 @@ public class ViewRoom extends javax.swing.JFrame {
         }
     }
 
-    public void loadData() { // 새로고침 기능을 위해 만든 내용 불러오기 함수
-        DefaultTableModel model = (DefaultTableModel) ViewTimeTable.getModel();
-        model.setRowCount(0);
+    public void loadData() {
+        // SwingWorker로 서버 통신을 비동기로 처리
+        SwingWorker<List<Object[]>, Void> worker = new SwingWorker<List<Object[]>, Void>() {
+            @Override
+            protected List<Object[]> doInBackground() {
+                List<Object[]> rowDataList = new ArrayList<>();
+                String year = (String) Year.getSelectedItem();
+                String month = (String) Month.getSelectedItem();
+                String dayOfMonth = (String) day.getSelectedItem();
+                String dayOfWeek = (String) DayComboBox.getSelectedItem();
+                String roomNum = LastUsedButton.trim().isEmpty() ? "908" : LastUsedButton;
 
-        String year = (String) Year.getSelectedItem();
-        String month = (String) Month.getSelectedItem();
-        String dayOfMonth = (String) day.getSelectedItem();
-        String dayOfWeek = (String) DayComboBox.getSelectedItem();
-        String roomNum = LastUsedButton.trim().isEmpty() ? "908" : LastUsedButton;
+                try {
+                    // 서버에서 슬롯(시작,끝시간) 리스트 받아오기
+                    java.util.List<String[]> slots = client.getRoomSlots(roomNum, dayOfWeek);
 
-        try {
-            // 서버에서 슬롯(시작,끝시간) 리스트 받아오기
-            java.util.List<String[]> slots = client.getRoomSlots(roomNum, dayOfWeek);
+                    for (String[] slot : slots) {
+                        String start = slot[0];
+                        String end = slot[1];
 
-            for (String[] slot : slots) {
-                String start = slot[0];
-                String end = slot[1];
+                        // 날짜 포맷: yyyy / MM / dd / HH:mm HH:mm
+                        String date = year + " / " + month + " / " + dayOfMonth + " / " + start + " " + end;
 
-                // 날짜 포맷: yyyy / MM / dd / HH:mm HH:mm
-                String date = year + " / " + month + " / " + dayOfMonth + " / " + start + " " + end;
+                        // 서버에서 상태 받아오기
+                        String state = client.getRoomState(roomNum, dayOfWeek, start, end, date);
 
-                // 서버에서 상태 받아오기
-                String state = client.getRoomState(roomNum, dayOfWeek, start, end, date);
-
-                model.addRow(new Object[] { start, end, roomNum, state, dayOfWeek });
+                        rowDataList.add(new Object[]{start, end, roomNum, state, dayOfWeek});
+                    }
+                } catch (Exception e) {
+                    // 예외는 done()에서 처리
+                    rowDataList.clear();
+                    rowDataList.add(new Object[]{"서버 오류", "", "", "", ""});
+                }
+                return rowDataList;
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "서버와 통신 중 오류가 발생했습니다.\n" + e.getMessage(), "오류",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+
+            @Override
+            protected void done() {
+                try {
+                    List<Object[]> rowDataList = get();
+                    DefaultTableModel model = (DefaultTableModel) ViewTimeTable.getModel();
+                    model.setRowCount(0);
+                    for (Object[] row : rowDataList) {
+                        model.addRow(row);
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(ViewRoom.this, "서버와 통신 중 오류가 발생했습니다.\n" + e.getMessage(), "오류",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        worker.execute();
     }
 
     private Timer refreshTimer;
