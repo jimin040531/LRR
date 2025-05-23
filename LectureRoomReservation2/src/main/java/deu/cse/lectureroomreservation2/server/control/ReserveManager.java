@@ -10,10 +10,28 @@ public class ReserveManager {
     // 사용자 정보 파일 경로 (예약 정보도 이 파일에 저장)
     private static final String USER_FILE = receiveController.getFilepath() + receiveController.getFileName();
     // src/main/resources/UserInfo.txt
+    private static final String RESERVE_FILE = receiveController.getFilepath()
+            + receiveController.getReservationInfoFileName();
+    // src/main/resources/ReservationInfo.txt
+    private static final String SCHEDULE_FILE = receiveController.getFilepath()
+            + receiveController.getScheduleInfoFileName();
     private static final int MAX_RESERVE = 4; // 최대 예약 개수
 
     // 5번: 파일 접근 동기화용 락 객체 추가
     private static final Object FILE_LOCK = new Object();
+
+    // 요일 변환: "월" → "월요일" 등으로 변환
+    private static String toFullDayName(String shortDay) {
+        if (shortDay == null) return "";
+        switch (shortDay.trim()) {
+            case "월": return "월요일";
+            case "화": return "화요일";
+            case "수": return "수요일";
+            case "목": return "목요일";
+            case "금": return "금요일";
+            default: return shortDay.trim();
+        }
+    }
 
     /**
      * 예약 요청을 처리하는 메서드입니다.
@@ -21,8 +39,7 @@ public class ReserveManager {
      * @param id         사용자 ID (UserInfo.txt의 3번째 필드)
      * @param role       사용자 역할(학생/교수) (UserInfo.txt의 1번째 필드)
      * @param roomNumber 강의실 번호
-     * @param date       예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00
-     *                   13:00"
+     * @param date       예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00 13:00"
      * @param day        예약 요일
      * @return ReserveResult(예약 성공/실패 및 사유)
      */
@@ -153,7 +170,8 @@ public class ReserveManager {
 
     // 예약 정보 생성(포맷 일관성 보장)
     public static String makeReserveInfo(String roomNumber, String date, String day) {
-        return String.format("%s / %s / %s", roomNumber.trim(), date.trim(), day.trim());
+        // 요일을 항상 "월요일" 등으로 변환해서 저장/비교
+        return String.format("%s / %s / %s", roomNumber.trim(), date.trim(), toFullDayName(day));
     }
 
     // 예약 정보 비교(공백, 대소문자 무시)
@@ -295,6 +313,7 @@ public class ReserveManager {
         }
     }
 
+    // 교수 예약 여부 조회 - 클라이언트 요청 시 사용
     public static boolean hasProfessorReserve(String reserveInfo) {
         synchronized (FILE_LOCK) {
             try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
@@ -365,8 +384,71 @@ public class ReserveManager {
             return affectedStudentIds;
         }
     }
-    
-    
+
+    // 강의실 조회 - state (정규수업, 교수예약, 예약가능, 예약초과)
+    public static String getRoomState(String room, String day, String start, String end, String date) {
+        synchronized (FILE_LOCK) {
+            // 1. 정규수업 체크
+            try (BufferedReader br = new BufferedReader(new FileReader(SCHEDULE_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 6) {
+                        // ScheduleInfo.txt의 요일은 "월" 등 짧은 형식이므로 변환
+                        String fullDay = toFullDayName(parts[1].trim());
+                        if (parts[0].trim().equals(room) && fullDay.equals(toFullDayName(day))
+                                && parts[2].trim().equals(start) && parts[3].trim().equals(end)
+                                && parts[5].trim().equals("수업")) {
+                            return "정규수업";
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // 예약 정보 문자열 생성 (포맷 일치 주의)
+            // ReservationInfo.txt의 요일도 "월" 등 짧은 형식이므로 변환
+            String reserveInfo = room + " / " + date + " / " + toFullDayName(day);
+
+            // 2. 교수예약 체크
+            if (hasProfessorReserve(reserveInfo)) {
+                return "교수예약";
+            }
+
+            // 3. 예약 가능/초과 체크
+            int count = countUsersByReserveInfo(reserveInfo);
+            if (count <= 39) {
+                return "예약가능";
+            } else {
+                return "예약초과";
+            }
+        }
+    }
+
+    // 강의실 조회 - 강의실 예약 시간대 조회
+    public static List<String[]> getRoomSlots(String room, String day) {
+        List<String[]> slots = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(RESERVE_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 4) {
+                    // ReservationInfo.txt의 요일은 "월" 등 짧은 형식이므로 변환
+                    String fullDay = toFullDayName(parts[1].trim());
+                    if (parts[0].trim().equals(room) && fullDay.equals(toFullDayName(day))) {
+                        String start = parts[2].trim();
+                        String end = parts[3].trim();
+                        slots.add(new String[] { start, end });
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return slots;
+    }
+
     // 예약 수정 : 기존 예약을 삭제하고 새로운 예약으로 교체
     // 실패 시 기존 예약 복원
     public static ReserveResult updateReserve(String id, String role, String oldReserveInfo, String newRoom, String newDate, String newDay) {
@@ -403,5 +485,4 @@ public class ReserveManager {
            return new ReserveResult(true, "예약이 성공적으로 수정되었습니다.");
        }
    }
-    
 }
