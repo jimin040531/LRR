@@ -133,12 +133,21 @@ public class ClientHandler implements Runnable {
                             out.writeObject(result);
                             out.flush();
                         }
-                        // 클라이언트 요청 - id로 예약 정보 조회 요청 받는 부분
-                        if ("RETRIEVE_MY_RESERVE".equals(command)) {
-                            String userId = in.readUTF();
-                            List<String> reserves = ReserveManager.getReserveInfoById(userId);
+                        // 클라이언트 요청 - id 또는 강의실 또는 날짜로 예약 정보 조회 요청 받는 부분
+                        if ("RETRIEVE_MY_RESERVE_ADVANCED".equals(command)) {
+                            String userid = (String) in.readObject();
+                            String room = (String) in.readObject();
+                            String date = (String) in.readObject();
+
+                            if (room.equals(null) && date.equals(null)) {
+                                List<String> reserves = ReserveManager.getReserveInfoById(userid);
                             out.writeObject(reserves);
                             out.flush();
+                            } else {
+                                List<String> result = ReserveManager.getReserveInfoAdvanced(userid, room, date);
+                                out.writeObject(result);
+                                out.flush();
+                            }
                         }
                         // 클라이언트 요청 - 예약 정보로 총 예약자 수 조회 요청 받는 부분
                         if ("COUNT_RESERVE_USERS".equals(command)) {
@@ -359,7 +368,6 @@ public class ClientHandler implements Runnable {
                     }
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -45,12 +45,12 @@ public class ReserveManager {
     /**
      * 예약 요청을 처리하는 메서드입니다.
      *
-     * @param id 사용자 ID (UserInfo.txt의 3번째 필드)
-     * @param role 사용자 역할(학생/교수) (UserInfo.txt의 1번째 필드)
+     * @param id         사용자 ID (UserInfo.txt의 3번째 필드)
+     * @param role       사용자 역할(학생/교수) (UserInfo.txt의 1번째 필드)
      * @param roomNumber 강의실 번호
-     * @param date 예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00
-     * 13:00"
-     * @param day 예약 요일
+     * @param date       예약 날짜(년 월 일 시작시간(시:분) 끝시간(시:분)), 예시 "2025 / 05 / 21 / 12:00
+     *                   13:00"
+     * @param day        예약 요일
      * @return ReserveResult(예약 성공/실패 및 사유)
      */
     public static ReserveResult reserve(String id, String role, String roomNumber, String date, String day) {
@@ -218,6 +218,60 @@ public class ReserveManager {
             }
             return reserves;
         }
+    }
+
+    /**
+     * 예약 정보 조회 (id, room, date 중 하나 이상 조건으로 조회)
+     * 
+     * @param id   사용자 ID (UserInfo.txt의 3번째 필드, null이면 조건 미적용)
+     * @param room 강의실 번호 (null이면 조건 미적용)
+     * @param date 예약 날짜("년 / 월 / 일" 형식, 예: "2025 / 05 / 24", null이면 조건 미적용)
+     * @return "사용자id / 예약정보" 형식의 리스트
+     * 
+     *         예시:
+     *         - id만 지정: 해당 사용자의 모든 예약정보 반환
+     *         - room만 지정: 해당 강의실에 예약한 모든 사용자id/예약정보 반환
+     *         - date만 지정: 해당 날짜에 예약한 모든 사용자id/예약정보 반환
+     *         - 여러 조건 동시 지정 가능
+     */
+    public static List<String> getReserveInfoAdvanced(String id, String room, String date) {
+        List<String> result = new ArrayList<>();
+        synchronized (FILE_LOCK) {
+            try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length < 5)
+                        continue;
+                    String userId = parts[2].trim();
+                    // 예약 정보는 5번째 필드부터
+                    for (int i = 4; i < parts.length; i++) {
+                        String reserve = parts[i].trim();
+                        // 예약 정보 파싱: "강의실번호 / 년 / 월 / 일 / 시작시간 끝시간 / 요일"
+                        String[] reserveParts = reserve.split("/");
+                        if (reserveParts.length < 6)
+                            continue;
+                        String reserveRoom = reserveParts[0].trim();
+                        String reserveDate = reserveParts[1].trim() + " / " + reserveParts[2].trim() + " / "
+                                + reserveParts[3].trim();
+                        // 조건 체크
+                        boolean match = true;
+                        if (id != null && !id.equals(userId))
+                            match = false;
+                        if (room != null && !room.equals(reserveRoom))
+                            match = false;
+                        if (date != null && !date.equals(reserveDate))
+                            match = false;
+                        if (match) {
+                            result.add(userId + " / " + reserve);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     /**
