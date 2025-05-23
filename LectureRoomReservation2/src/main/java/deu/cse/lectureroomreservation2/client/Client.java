@@ -274,17 +274,13 @@ public class Client {
         return (UserResult) in.readObject(); // 결과 수신
     }
 
-    public ReserveManageResult sendReserveManageRequest(ReserveManageRequest req) throws IOException, ClassNotFoundException {
-        // 1. 명령 문자열 "RESERVE_MANAGE"를 먼저 전송하여 서버 측에서 예약 관리 관련 요청임을 알림
-        out.writeUTF("RESERVE_MANAGE");
+    public synchronized ReserveManageResult sendReserveManageRequest(ReserveManageRequest req)
+            throws IOException, ClassNotFoundException {
+        out.writeUTF("RESERVE_MANAGE");   // 명령 전송
         out.flush();
-
-        // 2. 직렬화된 ReserveManageRequest 객체를 서버로 전송
-        out.writeObject(req);
+        out.writeObject(req);             // 객체 직렬화 전송
         out.flush();
-
-        // 3. 서버로부터 ReserveManageResult 객체를 수신 
-        return (ReserveManageResult) in.readObject();
+        return (ReserveManageResult) in.readObject();  // 결과 수신
     }
 
     // 강의실 조회 state 요청 처리
