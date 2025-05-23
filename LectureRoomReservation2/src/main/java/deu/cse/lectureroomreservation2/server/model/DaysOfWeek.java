@@ -10,6 +10,11 @@ package deu.cse.lectureroomreservation2.server.model;
  * @author Jimin
  */
 
+/**
+ * DaysOfWeek 열거형은 요일 정보를 표현하며,
+ * 한글 요일 문자열을 영어 enum으로 변환하는 유틸리티 메서드를 포함함
+ */
+
 public enum DaysOfWeek {
     MONDAY(0),
     TUESDAY(1),

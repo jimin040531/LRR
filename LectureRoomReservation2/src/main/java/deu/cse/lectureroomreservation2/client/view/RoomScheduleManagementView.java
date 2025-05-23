@@ -16,23 +16,20 @@ import javax.swing.JOptionPane;
  *
  * @author Jimin
  */
-public class RoomScheduleManagementView extends javax.swing.JFrame {
 
-    /**
-     * Creates new form TimetableManagementView
-     */
-    private TimeTableController controller;
+public class RoomScheduleManagementView extends javax.swing.JFrame {
 
     private final Client client;
 
+    // 클라이언트 객체를 받아 UI 초기화 및 시간표 자동 로딩 설정
     public RoomScheduleManagementView(Client client) {
-        this.client = client;             // ⭐ 먼저 client 설정
-        initComponents();                // 그다음 UI 초기화
+        this.client = client;           // 먼저 client 설정
+        initComponents();               // UI 초기화
         setLocationRelativeTo(null);
-        loadTimetableOnRoomSelect();     // 이 시점부터 client 사용 가능
+        loadTimetableOnRoomSelect();  
     }
 
-    // 강의실 선택 시 시간표 자동 로드
+    // 콤보 박스로 강의실 선택 시 시간표 자동 로드
     private void loadTimetableOnRoomSelect() {
         cmbRoomSelect.addActionListener(evt -> {
             String selectedRoom = cmbRoomSelect.getSelectedItem().toString();
@@ -49,7 +46,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         }
     }
 
-    // 시간표를 메모장에서 불러오기
+    // 클라이언트와 통신하여 선택된 강의실의 시간표를 서버에서 조회 후 테이블에 출력
     private void loadTimetable(String selectedRoom) {
         initializeTimetable();
         String type = rbLecture.isSelected() ? "수업" : "제한";
@@ -76,28 +73,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         }
     }
 
-    // 강의실 시간표 업데이트
-    private void updateTimetableTable(String selectedRoom, String type) {
-        for (String day : new String[]{"월", "화", "수", "목", "금"}) {
-            // 요일별, 강의실별, 타입별로 필터링 된 Map 가져옴
-            Map<String, String> schedule = controller.getScheduleForRoom(selectedRoom, day, type);
-
-            if (schedule != null) {
-                for (Map.Entry<String, String> entry : schedule.entrySet()) {
-                    String startTime = entry.getKey();
-                    String subject = entry.getValue();
-                    int rowIndex = getRowForTime(startTime);
-                    int colIndex = getDayIndex(day);
-
-                    if (rowIndex != -1 && colIndex != -1) {
-                        tblTimetable.setValueAt(subject, rowIndex, colIndex);
-                    }
-                }
-            }
-        }
-    }
-
-    // 요일 -> 열 인덱스
+    // 요일을 열 인덱스로 변환
     private int getDayIndex(String day) {
         try {
             // 열 인덱스는 테이블에서 "월" 열이 2번째에 위치하므로 +2
@@ -107,7 +83,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         }
     }
 
-    // 시간 -> 행 인덱스
+    // 시작 시간을 행 인덱스로 변환
     private int getRowForTime(String time) {
         switch (time) {
             case "09:00":
@@ -381,10 +357,11 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         }
 
         try {
+            // ADD 요청 생성 및 서버 전송 
             ScheduleRequest req = new ScheduleRequest("ADD", selectedRoom, dayOfWeek, startTime, endTime, subject, type);
             ScheduleResult result = client.sendScheduleRequest(req);
             if (result.isSuccess()) {
-                loadTimetable(selectedRoom);
+                loadTimetable(selectedRoom);    // 성공 시 시간표 갱신
                 JOptionPane.showMessageDialog(this, "시간표가 추가되었습니다.");
             } else {
                 JOptionPane.showMessageDialog(this, result.getMessage());
@@ -407,6 +384,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
             return;
         }
 
+        // UPDATE 요청 생성
         try {
             ScheduleRequest req = new ScheduleRequest("UPDATE", selectedRoom, dayOfWeek, startTime, endTime, subject, type);
             ScheduleResult result = client.sendScheduleRequest(req);
@@ -428,8 +406,10 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         String endTime = cmbEndTime.getSelectedItem().toString().trim();
 
         try {
+            // DELETE 요청 생성 (subject, type은 비워도 무방)
             ScheduleRequest req = new ScheduleRequest("DELETE", selectedRoom, dayOfWeek, startTime, endTime, "", "");
             ScheduleResult result = client.sendScheduleRequest(req);
+            
             if (result.isSuccess()) {
                 int rowIndex = getRowForTime(startTime);
                 int colIndex = getDayIndex(dayOfWeek);
