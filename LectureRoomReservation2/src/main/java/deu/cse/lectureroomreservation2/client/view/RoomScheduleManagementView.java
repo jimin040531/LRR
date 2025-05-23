@@ -7,7 +7,6 @@ package deu.cse.lectureroomreservation2.client.view;
 import deu.cse.lectureroomreservation2.client.Client;
 import deu.cse.lectureroomreservation2.common.ScheduleRequest;
 import deu.cse.lectureroomreservation2.common.ScheduleResult;
-import deu.cse.lectureroomreservation2.server.model.DaysOfWeek;
 import java.util.Map;
 import javax.swing.JOptionPane;
 
@@ -15,7 +14,6 @@ import javax.swing.JOptionPane;
  *
  * @author Jimin
  */
-
 public class RoomScheduleManagementView extends javax.swing.JFrame {
 
     private final Client client;
@@ -25,7 +23,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         this.client = client;           // 먼저 client 설정
         initComponents();               // UI 초기화
         setLocationRelativeTo(null);
-        loadTimetableOnRoomSelect();  
+        loadTimetableOnRoomSelect();
     }
 
     // 콤보 박스로 강의실 선택 시 시간표 자동 로드
@@ -74,11 +72,19 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
 
     // 요일을 열 인덱스로 변환
     private int getDayIndex(String day) {
-        try {
-            // 열 인덱스는 테이블에서 "월" 열이 2번째에 위치하므로 +2
-            return DaysOfWeek.fromKoreanDay(day).index() + 2;
-        } catch (IllegalArgumentException e) {
-            return -1; //
+        switch (day) {
+            case "월":
+                return 2;
+            case "화":
+                return 3;
+            case "수":
+                return 4;
+            case "목":
+                return 5;
+            case "금":
+                return 6;
+            default:
+                return -1;
         }
     }
 
@@ -408,7 +414,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
             // DELETE 요청 생성 (subject, type은 비워도 무방)
             ScheduleRequest req = new ScheduleRequest("DELETE", selectedRoom, dayOfWeek, startTime, endTime, "", "");
             ScheduleResult result = client.sendScheduleRequest(req);
-            
+
             if (result.isSuccess()) {
                 int rowIndex = getRowForTime(startTime);
                 int colIndex = getDayIndex(dayOfWeek);
