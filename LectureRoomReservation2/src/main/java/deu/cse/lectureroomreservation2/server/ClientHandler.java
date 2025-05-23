@@ -258,37 +258,50 @@ public class ClientHandler implements Runnable {
                             out.flush();
                         }
 
+                        // 클라이언트로 부터 USER 명령을 수신한 경우 실행
                         if ("USER".equals(command)) {
                             UserRequest req = (UserRequest) in.readObject();
+
+                            // UserRequsetController -> 사용자 요청 처리
                             UserRequestController controller = new UserRequestController();
                             UserResult result;
 
+                            // 요청 (ADD, DELETE, SEARCH)에 따라서 처리
                             switch (req.getCommand()) {
+
+                                // 새로운 사용자(교수 or 학생) 추가
                                 case "ADD":
                                     try {
                                         controller.saveUserAndGetSingleUser(new String[]{
                                             req.getRole(), req.getName(), req.getId(), req.getPassword()
                                         });
+                                        // UserResult (요청 성공 여부, 메시지, 사용자 리스트)
                                         result = new UserResult(true, "등록 성공", null);
                                     } catch (Exception e) {
                                         result = new UserResult(false, e.getMessage(), null);
                                     }
                                     break;
 
+                                // 사용자 삭제
                                 case "DELETE":
+                                    // 역할 & ID 기준으로 사용자 삭제
                                     boolean deleted = controller.deleteUser(req.getRole(), req.getId());
                                     result = new UserResult(deleted, deleted ? "삭제 성공" : "삭제 실패", null);
                                     break;
 
+                                // 사용자 검색
                                 case "SEARCH":
+                                    // 역할 & 이름 기준으로 사용자 검색
                                     List<String[]> list = controller.handleSearchRequest(req.getRole(), req.getNameFilter());
                                     result = new UserResult(true, "조회 성공", list);
                                     break;
 
+                                // 정의되지 않은 명령일 때
                                 default:
                                     result = new UserResult(false, "알 수 없는 명령입니다", null);
                             }
 
+                            // 처리 결과를 클라이언트로 전송
                             out.writeObject(result);
                             out.flush();
                         }
