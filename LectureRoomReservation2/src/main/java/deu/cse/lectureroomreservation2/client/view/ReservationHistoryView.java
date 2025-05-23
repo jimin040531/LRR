@@ -8,7 +8,9 @@ import deu.cse.lectureroomreservation2.client.Client;
 import deu.cse.lectureroomreservation2.common.ReserveManageRequest;
 import deu.cse.lectureroomreservation2.common.ReserveManageResult;
 import deu.cse.lectureroomreservation2.common.ReserveResult;
+import deu.cse.lectureroomreservation2.server.control.ReserveManageController;
 import deu.cse.lectureroomreservation2.server.control.ReserveManager;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,11 +29,34 @@ public class ReservationHistoryView extends javax.swing.JFrame {
      * Creates new form ReservationHistoryView
      */
     private final Client client;
+    private final ReserveManageController controller;
 
     public ReservationHistoryView(Client client) {
         this.client = client;
+        this.controller = new ReserveManageController(client);
         initComponents();
         setLocationRelativeTo(null);
+
+        // 날짜 입력 힌트 설정
+        txtDate.setText("yyyy-mm-dd");
+        txtDate.setForeground(Color.GRAY);
+        txtDate.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (txtDate.getText().equals("yyyy-mm-dd")) {
+                    txtDate.setText("");
+                    txtDate.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (txtDate.getText().trim().isEmpty()) {
+                    txtDate.setText("yyyy-mm-dd");
+                    txtDate.setForeground(Color.GRAY);
+                }
+            }
+        });
     }
 
     private List<String> readUserInfoFile() {
@@ -242,12 +267,7 @@ public class ReservationHistoryView extends javax.swing.JFrame {
         String date = txtDate.getText().trim();
 
         try {
-            ReserveManageRequest req = new ReserveManageRequest(
-                    "SEARCH", userId, room, date,
-                    null, null, null, null, null, null);
-
-            ReserveManageResult res = client.sendReserveManageRequest(req);
-
+            ReserveManageResult res = controller.search(userId, room, date);
             DefaultTableModel model = (DefaultTableModel) tblReservationHistory.getModel();
             model.setRowCount(0);
 
@@ -287,7 +307,6 @@ public class ReservationHistoryView extends javax.swing.JFrame {
         String oldDateStr = String.format("%s / %s / %s / %s %s", year, month, day, startTime, endTime);
         String oldReserveInfo = oldRoom + " / " + oldDateStr + " / " + weekDay;
 
-        // 새 예약 정보 입력 받기
         String newRoom = JOptionPane.showInputDialog(this, "새 강의실 번호 입력:", oldRoom);
         String newDate = JOptionPane.showInputDialog(this, "새 날짜 및 시간 입력 (예: 2025 / 06 / 05 / 09:00 09:50):", oldDateStr);
         String newWeekDay = JOptionPane.showInputDialog(this, "새 요일 입력:", weekDay);
@@ -298,16 +317,10 @@ public class ReservationHistoryView extends javax.swing.JFrame {
         }
 
         try {
-            ReserveManageRequest req = new ReserveManageRequest(
-                    "UPDATE", userId, null, null,
-                    oldReserveInfo, newRoom, newDate, newWeekDay, null, null);
-
-            ReserveManageResult res = client.sendReserveManageRequest(req);
-
+            ReserveManageResult res = controller.update(userId, oldReserveInfo, newRoom, newDate, newWeekDay);
             JOptionPane.showMessageDialog(this, res.getMessage());
-
             if (res.isSuccess()) {
-                btnSearchActionPerformed(null);  // 수정 성공 시 목록 갱신
+                btnSearchActionPerformed(null);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "서버 오류: " + e.getMessage());
@@ -339,16 +352,10 @@ public class ReservationHistoryView extends javax.swing.JFrame {
         String reserveInfo = room + " / " + dateStr + " / " + weekDay;
 
         try {
-            ReserveManageRequest req = new ReserveManageRequest(
-                    "DELETE", userId, null, null,
-                    null, null, null, null, null, reserveInfo);
-
-            ReserveManageResult res = client.sendReserveManageRequest(req);
-
+            ReserveManageResult res = controller.delete(userId, reserveInfo);
             JOptionPane.showMessageDialog(this, res.getMessage());
-
             if (res.isSuccess()) {
-                btnSearchActionPerformed(null); // 삭제 성공 시 목록 갱신
+                btnSearchActionPerformed(null);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "서버 오류: " + e.getMessage());

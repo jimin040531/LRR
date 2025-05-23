@@ -31,6 +31,7 @@ deu\cse\lectureroomreservation2\client\view\ViewRoom$10.class
 deu\cse\lectureroomreservation2\common\ReserveResult.class
 deu\cse\lectureroomreservation2\client\view\QuickViewRoom$3.class
 deu\cse\lectureroomreservation2\server\control\LoginController.class
+deu\cse\lectureroomreservation2\client\view\ReservationHistoryView$7.class
 deu\cse\lectureroomreservation2\client\view\LRCompleteCheck$4.class
 deu\cse\lectureroomreservation2\client\view\QuickViewRoom.class
 deu\cse\lectureroomreservation2\client\view\StudentMainMenu$4.class
@@ -87,6 +88,7 @@ deu\cse\lectureroomreservation2\client\view\RoomScheduleManagementView$4.class
 deu\cse\lectureroomreservation2\client\view\RoomScheduleManagementView$7.class
 deu\cse\lectureroomreservation2\client\view\RoomScheduleManagementView.class
 deu\cse\lectureroomreservation2\common\ScheduleRequest.class
+deu\cse\lectureroomreservation2\server\control\ReserveManageController.class
 deu\cse\lectureroomreservation2\server\model\ScheduleFileManager.class
 deu\cse\lectureroomreservation2\client\view\LRCompleteCheck$5.class
 deu\cse\lectureroomreservation2\common\LoginStatus.class
