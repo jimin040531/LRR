@@ -31,9 +31,9 @@ deu\cse\lectureroomreservation2\client\view\ViewRoom$10.class
 deu\cse\lectureroomreservation2\common\ReserveResult.class
 deu\cse\lectureroomreservation2\client\view\QuickViewRoom$3.class
 deu\cse\lectureroomreservation2\server\control\LoginController.class
-deu\cse\lectureroomreservation2\client\view\ReservationHistoryView$7.class
 deu\cse\lectureroomreservation2\client\view\LRCompleteCheck$4.class
 deu\cse\lectureroomreservation2\client\view\QuickViewRoom.class
+deu\cse\lectureroomreservation2\client\view\StudentMainMenu$4.class
 deu\cse\lectureroomreservation2\client\view\ViewRoom$4.class
 deu\cse\lectureroomreservation2\client\view\ViewRoom$13.class
 deu\cse\lectureroomreservation2\server\control\TimeTableController.class
@@ -65,6 +65,7 @@ deu\cse\lectureroomreservation2\client\view\noticeWriterView.class
 deu\cse\lectureroomreservation2\client\view\LRCompleteCheck$2.class
 deu\cse\lectureroomreservation2\client\view\UserManagementView$3.class
 deu\cse\lectureroomreservation2\client\view\QuickViewRoom$2.class
+deu\cse\lectureroomreservation2\common\ReserveManageResult.class
 deu\cse\lectureroomreservation2\client\view\errorPage$2.class
 deu\cse\lectureroomreservation2\client\view\MyReservaitionView$2.class
 deu\cse\lectureroomreservation2\client\view\ViewRoom$11.class
@@ -121,6 +122,7 @@ deu\cse\lectureroomreservation2\client\view\UserManagementView$6.class
 deu\cse\lectureroomreservation2\client\view\LRCompleteCheck$6.class
 deu\cse\lectureroomreservation2\client\view\ReservationHistoryView$2.class
 deu\cse\lectureroomreservation2\client\view\ViewRoom$7.class
+deu\cse\lectureroomreservation2\common\ReserveManageRequest.class
 deu\cse\lectureroomreservation2\server\model\DaysOfWeek.class
 deu\cse\lectureroomreservation2\client\view\ViewRoom.class
 deu\cse\lectureroomreservation2\client\view\noticeWriterView$NoticeListener.class

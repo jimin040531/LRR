@@ -1,6 +1,7 @@
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\client\view\QuickViewRoom.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\server\control\TableRearrange.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\client\view\UserManagementView.java
+C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\common\ReserveManageRequest.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\client\view\RoomScheduleManagementView.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\server\model\User.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\client\view\AdminMainView.java
@@ -12,6 +13,7 @@ C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lec
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\client\Student.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\client\view\MyReservaitionView.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\server\model\UserFileManager.java
+C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\common\ReserveManageResult.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\client\view\LRCompleteCheck.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\client\view\noticeWriterView.java
 C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\src\main\java\deu\cse\lectureroomreservation2\server\control\ReserveManager.java

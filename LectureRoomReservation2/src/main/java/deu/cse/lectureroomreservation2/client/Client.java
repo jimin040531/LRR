@@ -9,6 +9,8 @@ import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
 import deu.cse.lectureroomreservation2.common.ReserveResult;
 import deu.cse.lectureroomreservation2.common.LoginStatus;
+import deu.cse.lectureroomreservation2.common.ReserveManageRequest;
+import deu.cse.lectureroomreservation2.common.ReserveManageResult;
 import deu.cse.lectureroomreservation2.common.ScheduleRequest;
 import deu.cse.lectureroomreservation2.common.ScheduleResult;
 import deu.cse.lectureroomreservation2.common.UserRequest;
@@ -266,6 +268,14 @@ public class Client {
         return (UserResult) in.readObject();
     }
 
+    public ReserveManageResult sendReserveManageRequest(ReserveManageRequest req) throws IOException, ClassNotFoundException {
+        out.writeUTF("RESERVE_MANAGE"); // 명령 전송
+        out.flush();
+        out.writeObject(req);           // 요청 객체 전송
+        out.flush();
+        return (ReserveManageResult) in.readObject(); // 응답 수신
+    }
+
     // 강의실 조회 state 요청 처리
     public synchronized String getRoomState(String room, String day, String start, String end, String date) throws IOException {
         out.writeUTF("GET_ROOM_STATE");
@@ -282,6 +292,7 @@ public class Client {
         out.flush();
         return in.readUTF();
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * String room = "908";
@@ -311,10 +322,11 @@ public class Client {
         for (int i = 0; i < size; i++) {
             String start = in.readUTF();
             String end = in.readUTF();
-            slots.add(new String[] { start, end });
+            slots.add(new String[]{start, end});
         }
         return slots;
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * java.util.List<String[]> slots = client.getRoomSlots(selectedRoom,

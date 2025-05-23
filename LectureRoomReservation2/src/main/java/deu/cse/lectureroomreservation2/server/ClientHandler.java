@@ -17,6 +17,8 @@ import deu.cse.lectureroomreservation2.common.ReserveResult;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
 import deu.cse.lectureroomreservation2.common.ReserveRequest;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
+import deu.cse.lectureroomreservation2.common.ReserveManageRequest;
+import deu.cse.lectureroomreservation2.common.ReserveManageResult;
 import deu.cse.lectureroomreservation2.common.ScheduleRequest;
 import deu.cse.lectureroomreservation2.common.ScheduleResult;
 import deu.cse.lectureroomreservation2.common.UserRequest;
@@ -103,9 +105,9 @@ public class ClientHandler implements Runnable {
                 while (true) {
                     try {
                         String command = in.readUTF();
-                        
+
                         System.out.println(">> 수신 명령: " + command); // 여기 추가
-                        
+
                         if ("LOGOUT".equalsIgnoreCase(command)) {
                             System.out.println("User has log-out: " + id);
                             break;
@@ -291,12 +293,46 @@ public class ClientHandler implements Runnable {
                             out.flush();
                         }
 
+                        if ("RESERVE_MANAGE".equals(command)) {
+                            ReserveManageRequest req = (ReserveManageRequest) in.readObject();
+                            ReserveManageResult result;
+
+                            switch (req.getCommand()) {
+                                case "SEARCH":
+                                    List<String[]> list = ReserveManager.getReserveList(req.getUserId(), req.getRoom(), req.getDate());
+                                    result = new ReserveManageResult(true, "조회 성공", list);
+                                    break;
+
+                                case "UPDATE":
+                                    ReserveResult reserveResult = ReserveManager.updateReserve(
+                                            req.getUserId(),
+                                            req.getRole(),
+                                            req.getOldReserveInfo(),
+                                            req.getNewRoom(),
+                                            req.getNewDate(),
+                                            req.getNewDay()
+                                    );
+                                    result = new ReserveManageResult(reserveResult.getResult(), reserveResult.getReason(), null);
+                                    break;
+
+                                case "DELETE":
+                                    ReserveResult cancelResult = ReserveManager.cancelReserve(req.getUserId(), req.getReserveInfo());
+                                    result = new ReserveManageResult(cancelResult.getResult(), cancelResult.getReason(), null);
+                                    break;
+
+                                default:
+                                    result = new ReserveManageResult(false, "알 수 없는 명령입니다", null);
+                            }
+
+                            out.writeObject(result);
+                            out.flush();
+                        }
+
                     } catch (IOException e) {
                         System.out.println("Client Connection Error or Terminated. " + e.getMessage());
                         e.printStackTrace();
                         break;
                     }
-
                 }
             }
 
