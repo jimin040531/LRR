@@ -32,6 +32,14 @@ public class Client {
         }
     }
 
+    public ObjectOutputStream getOutputStream() {
+        return out;
+    }
+
+    public ObjectInputStream getInputStream() {
+        return in;
+    }
+
     public void sendLoginRequest(String id, String password, String role) throws IOException {
         out.writeUTF(id);
         out.writeUTF(password);
@@ -110,7 +118,6 @@ public class Client {
      * //예약 취소 성공: 예약이 취소되었습니다.
      * //예약 취소 실패: 해당 예약 정보를 찾을 수 없습니다.
      */
-
     // 예약 변경 요청 처리(사용자 id, 기존 예약 정보, 새로운 강의실 번호, 새로운 날짜, 새로운 요일)
     public ReserveResult sendModifyReserveRequest(String id, String oldReserveInfo, String newRoomNumber,
             String newDate, String newDay, String role)
@@ -154,7 +161,6 @@ public class Client {
      * //예약 변경 성공: 예약 성공
      * //예약 변경 실패: 해당 예약 정보를 찾을 수 없습니다.
      */
-
     // 공지사항 수신 및 확인 처리
     public void checkAndShowNotices(javax.swing.JFrame parentFrame) throws IOException {
         while (true) {
@@ -192,7 +198,6 @@ public class Client {
      * "101 / 2025 / 06 / 01 / 09:00 10:00 / 화요일"
      * ]
      */
-
     // 예약 정보로 예약한 총 사용자 수 요청 처리
     public int requestReserveUserCount(String reserveInfo) throws IOException {
         out.writeUTF("COUNT_RESERVE_USERS");
@@ -208,7 +213,6 @@ public class Client {
      * int userCount = client.requestReserveUserCount(reserveInfo);
      * System.out.println("해당 예약 정보로 예약한 사용자 수: " + userCount);
      */
-
     public static void main(String[] args) {
         try {
             Client c = new Client("localhost", 5000);  // 서버 컴퓨터의 IP 주소

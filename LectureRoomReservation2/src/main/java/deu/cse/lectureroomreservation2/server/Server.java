@@ -74,7 +74,7 @@ public class Server {
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // 클라이언트 접속 대기
-                System.out.println("new client connect : " + clientSocket.getInetAddress());
+                System.out.println("new client connect : " + clientSocket.getInetAddress());    // 새 클라이언트 연결 + 주소 sout
 
                 // 클라이언트 하나를 처리할 스레드 생성
                 new Thread(new ClientHandler(clientSocket, this)).start();

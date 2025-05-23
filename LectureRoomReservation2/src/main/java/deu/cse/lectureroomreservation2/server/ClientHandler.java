@@ -95,6 +95,24 @@ public class ClientHandler implements Runnable {
                             break;
                         }
 
+                        if ("CHANGE_PASS".equals(command)) {
+                            String userId = in.readUTF();
+                            String currentPass = in.readUTF();
+                            String newPass = in.readUTF();
+
+                            ChangePassController controller = new ChangePassController();
+                            String result = controller.changePassword(userId, currentPass, newPass);
+
+                            if ("SUCCESS".equals(result)) {
+                                System.out.println("비밀번호 변경 성공: " + userId);
+                            } else {
+                                System.out.println("비밀번호 변경 실패 " + userId + result);
+                            }
+
+                            out.writeUTF(result); // 예: "SUCCESS" 또는 오류 메시지
+                            out.flush();
+                        }
+
                         // 예약 요청 처리
                         if ("RESERVE".equals(command)) {
                             // 클라이언트로부터 예약 요청 객체를 받음
@@ -188,6 +206,4 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-
 }
- 
