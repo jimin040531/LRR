@@ -7,7 +7,6 @@ package deu.cse.lectureroomreservation2.client.view;
 import deu.cse.lectureroomreservation2.client.Client;
 import deu.cse.lectureroomreservation2.common.UserRequest;
 import deu.cse.lectureroomreservation2.common.UserResult;
-import deu.cse.lectureroomreservation2.server.control.UserRequestController;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.util.*;

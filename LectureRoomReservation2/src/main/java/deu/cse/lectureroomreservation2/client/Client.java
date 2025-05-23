@@ -256,39 +256,35 @@ public class Client {
         // 1. 명령 문자열 "SCHEDULE"을 먼저 전송하여 서버 측에서 시간표 관리 관련 요청임을 알림
         out.writeUTF("SCHEDULE");
         out.flush();
-        
+
         // 2. 직렬화된 ScheduleRequest 객체를 서버로 전송
         out.writeObject(req);
         out.flush();
-        
+
         // 3. 서버로부터 ScheduleResult 객체를 수신
         return (ScheduleResult) in.readObject();
     }
 
-    public UserResult sendUserRequest(UserRequest req) throws IOException, ClassNotFoundException {
-        // 1. 명령 문자열 "USER"를 먼저 전송하여 서버 측에서 사용자 관리 관련 요청임을 알림
-        out.writeUTF("USER");
+    // 사용자 관리 요청 전송
+    public synchronized UserResult sendUserRequest(UserRequest req) throws IOException, ClassNotFoundException {
+        out.writeUTF("USER"); // 사용자 관리 명령 전송
         out.flush();
-        
-        // 2. 직렬화된 UserRequest 객체를 서버로 전송
-        out.writeObject(req);
+        out.writeObject(req); // UserRequest 객체 전송
         out.flush();
-        
-        // 3. 서버로부터 UserResult 객체를 수신
-        return (UserResult) in.readObject();
+        return (UserResult) in.readObject(); // 결과 수신
     }
 
     public ReserveManageResult sendReserveManageRequest(ReserveManageRequest req) throws IOException, ClassNotFoundException {
         // 1. 명령 문자열 "RESERVE_MANAGE"를 먼저 전송하여 서버 측에서 예약 관리 관련 요청임을 알림
         out.writeUTF("RESERVE_MANAGE");
         out.flush();
-        
+
         // 2. 직렬화된 ReserveManageRequest 객체를 서버로 전송
-        out.writeObject(req);           
+        out.writeObject(req);
         out.flush();
-        
+
         // 3. 서버로부터 ReserveManageResult 객체를 수신 
-        return (ReserveManageResult) in.readObject(); 
+        return (ReserveManageResult) in.readObject();
     }
 
     // 강의실 조회 state 요청 처리
@@ -323,7 +319,6 @@ public class Client {
      * // 응답 예시
      * // 정규수업, 교수예약, 예약 가능, 예약 초과
      */
-
     // 강의실 예약 가능 시간대 조회 요청 처리
     public synchronized java.util.List<String[]> getRoomSlots(String room, String day) throws IOException {
         out.writeUTF("GET_ROOM_SLOTS");
@@ -352,7 +347,6 @@ public class Client {
      * // ...
      * }
      */
-
     public static void main(String[] args) {
         try {
             Client c = new Client("localhost", 5000);

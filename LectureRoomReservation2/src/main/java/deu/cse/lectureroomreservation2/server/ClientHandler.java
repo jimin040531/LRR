@@ -217,10 +217,9 @@ public class ClientHandler implements Runnable {
                             out.flush();
                         }
 
-                        
                         if ("SCHEDULE".equals(command)) {
                             System.out.println(">> [서버] SCHEDULE 명령 수신됨");
-                            
+
                             // 클라이언트로부터 ScheduleRequest 객체 수신
                             ScheduleRequest req = (ScheduleRequest) in.readObject();
 
@@ -263,59 +262,59 @@ public class ClientHandler implements Runnable {
                             out.flush();
                         }
 
-                        // 클라이언트로 부터 USER 명령을 수신한 경우 실행
                         if ("USER".equals(command)) {
                             System.out.println(">> [서버] USER 명령 수신됨");
-                            UserRequest req = (UserRequest) in.readObject();
 
-                            // UserRequsetController -> 사용자 요청 처리
-                            UserRequestController controller = new UserRequestController();
-                            UserResult result;
+                            try {
+                                // 1. 클라이언트로부터 UserRequest 객체 수신
+                                UserRequest req = (UserRequest) in.readObject();
+                                UserResult result;
+                                UserRequestController controller = new UserRequestController();
 
-                            // 요청 (ADD, DELETE, SEARCH)에 따라서 처리
-                            switch (req.getCommand()) {
+                                // 2. 명령(command)에 따라 분기 처리
+                                String cmd = req.getCommand();
 
-                                // 새로운 사용자(교수 or 학생) 추가
-                                case "ADD":
+                                if ("ADD".equals(cmd)) {
                                     try {
-                                        controller.saveUserAndGetSingleUser(new String[]{
-                                            req.getRole(), req.getName(), req.getId(), req.getPassword()
-                                        });
-                                        // UserResult (요청 성공 여부, 메시지, 사용자 리스트)
-                                        result = new UserResult(true, "등록 성공", null);
+                                        List<String[]> added = controller.saveUserAndGetSingleUser(
+                                                new String[]{req.getRole(), req.getName(), req.getId(), req.getPassword()}
+                                        );
+                                        result = new UserResult(true, "사용자 등록 성공", added);
                                     } catch (Exception e) {
-                                        result = new UserResult(false, e.getMessage(), null);
+                                        result = new UserResult(false, "등록 실패: " + e.getMessage(), null);
                                     }
-                                    break;
 
-                                // 사용자 삭제
-                                case "DELETE":
-                                    // 역할 & ID 기준으로 사용자 삭제
+                                } else if ("DELETE".equals(cmd)) {
                                     boolean deleted = controller.deleteUser(req.getRole(), req.getId());
-                                    result = new UserResult(deleted, deleted ? "삭제 성공" : "삭제 실패", null);
-                                    break;
+                                    result = new UserResult(deleted, deleted ? "사용자 삭제 성공" : "삭제 실패", null);
 
-                                // 사용자 검색
-                                case "SEARCH":
-                                    // 역할 & 이름 기준으로 사용자 검색
-                                    List<String[]> list = controller.handleSearchRequest(req.getRole(), req.getNameFilter());
-                                    result = new UserResult(true, "조회 성공", list);
-                                    break;
+                                } else if ("SEARCH".equals(cmd)) {
+                                    List<String[]> users = controller.handleSearchRequest(req.getRole(), req.getNameFilter());
+                                    result = new UserResult(true, "사용자 검색 성공", users);
 
-                                // 정의되지 않은 명령일 때
-                                default:
-                                    result = new UserResult(false, "알 수 없는 명령입니다", null);
+                                } else {
+                                    result = new UserResult(false, "알 수 없는 사용자 명령입니다", null);
+                                }
+
+                                // 3. 결과 전송
+                                out.writeObject(result);
+                                out.flush();
+
+                            } catch (Exception e) {
+                                System.err.println(">> USER 명령 처리 중 오류: " + e.getMessage());
+                                e.printStackTrace();
+
+                                // 예외 발생 시 실패 결과 전송
+                                UserResult errorResult = new UserResult(false, "서버 처리 오류 발생", null);
+                                out.writeObject(errorResult);
+                                out.flush();
                             }
-
-                            // 처리 결과를 클라이언트로 전송
-                            out.writeObject(result);
-                            out.flush();
                         }
 
                         // 클라이언트로 부터 RESERVE_MANAGE 명령을 수신한 경우 실행
                         if ("RESERVE_MANAGE".equals(command)) {
                             System.out.println(">> [서버] RESERVE_MANAGE 명령 수신됨");
-                            
+
                             // 클라이언트로부터 예약 관리 요청 객체 수신
                             ReserveManageRequest req = (ReserveManageRequest) in.readObject();
                             ReserveManageResult result;
