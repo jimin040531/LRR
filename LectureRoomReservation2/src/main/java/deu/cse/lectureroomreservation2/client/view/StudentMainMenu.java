@@ -75,11 +75,6 @@ public class StudentMainMenu extends javax.swing.JFrame {
 
         reserv_time_check.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
         reserv_time_check.setText("예약 가능 시간 확인");
-        reserv_time_check.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                reserv_time_checkActionPerformed(evt);
-            }
-        });
 
         lectureroom_check.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
         lectureroom_check.setText("강의실 조회");
@@ -175,13 +170,6 @@ public class StudentMainMenu extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_lecture_reserActionPerformed
 
-    private void reserv_time_checkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reserv_time_checkActionPerformed
-        // TODO add your handling code here:
-        QuickViewRoom qvroom = new QuickViewRoom(client, userId, "S");
-        qvroom.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_reserv_time_checkActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -207,9 +195,6 @@ public class StudentMainMenu extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(StudentMainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */

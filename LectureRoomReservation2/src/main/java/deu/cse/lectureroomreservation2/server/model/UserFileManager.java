@@ -11,12 +11,25 @@ import java.util.*;
  *
  * @author Jimin
  */
+
+/**
+ * 사용자 정보를 .txt 파일 기반으로 관리
+ * 저장 형식: role,name,id,password (CSV)
+ */
 public class UserFileManager {
 
+    // UserInfo.txt 파일 경로 설정
     private static final String filePath = System.getProperty("user.dir") + "/src/main/resources/UserInfo.txt";
 
+    /**
+     * 역할과 이름에 따라 사용자 검색
+     * 
+     * @param roleFilter 역할 필터
+     * @param nameFilter 이름 포함 문자열
+     * @return 조건에 맞는 사용자 목록
+     */
     public List<UserManage> searchUsers(String roleFilter, String nameFilter) {
-    List<UserManage> result = new ArrayList<>();
+        List<UserManage> result = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -44,6 +57,11 @@ public class UserFileManager {
         return result;
     }
 
+    /**
+     * 사용자 1명을 파일에 추가 저장
+     *
+     * @param user 저장할 사용자 객체
+     */
     public void saveUser(UserManage user) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
             writer.write(String.join(",", user.getRole(), user.getName(), user.getId(), user.getPassword()));
@@ -53,7 +71,13 @@ public class UserFileManager {
         }
     }
 
-    public void overwriteAll(List<UserManage> users) {
+    
+    /**
+     * 내부용: 전체 사용자 정보 덮어쓰기
+     *
+     * @param users 새로 저장할 전체 사용자 목록
+     */
+    private void overwriteAll(List<UserManage> users) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
             for (UserManage user : users) {
                 writer.write(String.join(",", user.getRole(), user.getName(), user.getId(), user.getPassword()));
@@ -64,26 +88,14 @@ public class UserFileManager {
         }
     }
 
-    public boolean isIdDuplicate(String id) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length != 4) {
-                    continue;
-                }
-
-                String existingId = parts[2].trim();
-                if (existingId.equals(id)) {
-                    return true;  // 중복 발견
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;  // 중복 없음
-    }
-
+    /**
+     * 사용자 삭제
+     * 삭제 후 나머지 사용자 목록을 파일에 다시 저장
+     *
+     * @param role 대상 역할
+     * @param id 대상 ID
+     * @return 삭제 성공 여부
+     */
     public boolean deleteUser(String role, String id) {
         List<UserManage> allUsers = new ArrayList<>();
 
@@ -92,7 +104,9 @@ public class UserFileManager {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length != 4) continue;
+                if (parts.length != 4) {
+                    continue;
+                }
 
                 String fileRole = parts[0].trim();
                 String name = parts[1].trim();
@@ -116,5 +130,36 @@ public class UserFileManager {
         overwriteAll(allUsers);
 
         return removed;
+    }
+
+    /**
+     * 파일에 저장된 모든 사용자 정보를 불러오기.
+     *
+     * @return 전체 사용자 목록
+     */
+    public List<UserManage> loadAllUsers() {
+        List<UserManage> users = new ArrayList<>();
+        File file = new File(filePath);
+
+        if (!file.exists()) return users;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] tokens = line.split(",");
+                if (tokens.length == 4) {
+                    String role = tokens[0].trim();
+                    String name = tokens[1].trim();
+                    String id = tokens[2].trim();
+                    String password = tokens[3].trim();
+
+                    users.add(new UserManage(role, name, id, password));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return users;
     }
 }
