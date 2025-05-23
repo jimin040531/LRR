@@ -311,23 +311,22 @@ public class ClientHandler implements Runnable {
                             }
                         }
 
-                        // 클라이언트로 부터 RESERVE_MANAGE 명령을 수신한 경우 실행
                         if ("RESERVE_MANAGE".equals(command)) {
                             System.out.println(">> [서버] RESERVE_MANAGE 명령 수신됨");
 
-                            // 클라이언트로부터 예약 관리 요청 객체 수신
+                            // 클라이언트로부터 요청 객체 수신
                             ReserveManageRequest req = (ReserveManageRequest) in.readObject();
                             ReserveManageResult result;
 
-                            // 요청에 포함된 하위 명령에 따라 분기 처리
                             switch (req.getCommand()) {
-                                case "SEARCH":  // 예약 내역 조회
+                                case "SEARCH":
                                     List<String[]> list = ReserveManager.getReserveList(req.getUserId(), req.getRoom(), req.getDate());
                                     result = new ReserveManageResult(true, "조회 성공", list);
                                     break;
 
-                                case "UPDATE":  // 예약 수정
-                                    ReserveResult reserveResult = ReserveManager.updateReserve(
+                                case "UPDATE":
+                                    // 예약 수정 요청 처리
+                                    ReserveResult updateRes = ReserveManager.updateReserve(
                                             req.getUserId(),
                                             req.getRole(),
                                             req.getOldReserveInfo(),
@@ -335,22 +334,23 @@ public class ClientHandler implements Runnable {
                                             req.getNewDate(),
                                             req.getNewDay()
                                     );
-                                    result = new ReserveManageResult(reserveResult.getResult(), reserveResult.getReason(), null);
+                                    result = new ReserveManageResult(updateRes.getResult(), updateRes.getReason(), null);
                                     break;
 
-                                case "DELETE":  // 예약 삭제
-                                    ReserveResult cancelResult = ReserveManager.cancelReserve(req.getUserId(), req.getReserveInfo());
-                                    result = new ReserveManageResult(cancelResult.getResult(), cancelResult.getReason(), null);
+                                case "DELETE":
+                                    // 예약 삭제 요청 처리
+                                    ReserveResult deleteRes = ReserveManager.cancelReserve(req.getUserId(), req.getReserveInfo());
+                                    result = new ReserveManageResult(deleteRes.getResult(), deleteRes.getReason(), null);
                                     break;
 
                                 default:
                                     result = new ReserveManageResult(false, "알 수 없는 명령입니다", null);
                             }
 
-                            // 처리 결과 객체를 클라이언트에 전송
+                            // 처리 결과 전송
                             out.writeObject(result);
                             out.flush();
-                        }
+                        }   
 
                     } catch (IOException e) {
                         System.out.println("Client Connection Error or Terminated. " + e.getMessage());
