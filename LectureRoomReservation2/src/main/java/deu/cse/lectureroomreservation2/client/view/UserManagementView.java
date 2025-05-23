@@ -7,6 +7,7 @@ package deu.cse.lectureroomreservation2.client.view;
 import deu.cse.lectureroomreservation2.client.Client;
 import deu.cse.lectureroomreservation2.common.UserRequest;
 import deu.cse.lectureroomreservation2.common.UserResult;
+import deu.cse.lectureroomreservation2.server.control.UserRequestController;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.util.*;
@@ -15,25 +16,27 @@ import java.util.*;
  *
  * @author Jimin
  */
-/**
- * 사용자 관리 화면 관리자 전용으로 사용자(교수/학생)를 조회, 추가, 삭제할 수 있음
- */
 public class UserManagementView extends javax.swing.JFrame {
+
+    /**
+     * Creates new form UserManagementView
+     */
+    private UserRequestController handler = new UserRequestController();
 
     private final Client client;
 
     public UserManagementView(Client client) {
-        this.client = client;   // client 객체를 받아옴
+        this.client = client;
         initComponents();
         setLocationRelativeTo(null);
     }
 
     private void updateUserTable(JTable table, List<String[]> users) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setRowCount(0);   // 기존 데이터 삭제
+        model.setRowCount(0);
         for (String[] user : users) {
             model.addRow(new Object[]{
-                user[0], // 권한 (교수, 학생)
+                user[0], // 권한
                 user[1], // 이름
                 user[2], // 아이디
                 user[3] // 비밀번호
@@ -43,12 +46,8 @@ public class UserManagementView extends javax.swing.JFrame {
 
     private void refreshTable(String roleCode) {
         try {
-            // 사용자 검색 요청
             UserRequest req = new UserRequest("SEARCH", roleCode, null, null, null, "");
-            // 서버에 요청 보내고 결과 수신
             UserResult result = client.sendUserRequest(req);
-
-            // 권한에 따라 해당 테이블에 검색 결과 출력
             if ("P".equals(roleCode)) {
                 updateUserTable(tblProfessors, result.getUserList());
             } else {
@@ -301,19 +300,18 @@ public class UserManagementView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        // 뒤로 가기 버튼 -> 관리자 화면으로 돌아감
-        new AdminMainView("A", client).setVisible(true);
+        // TODO add your handling code here:
+        new AdminMainView("A", null).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // 서버 연결 확인
+
         if (!client.isConnected()) {
             JOptionPane.showMessageDialog(this, "서버에 연결되지 않았습니다.");
             return;
         }
 
-        // 학생, 교수 테이블 중 어디에서 선택 되었는지 확인
         JTable targetTable = null;
         int studentRow = tblStudents.getSelectedRow();
         int professorRow = tblProfessors.getSelectedRow();
@@ -328,12 +326,8 @@ public class UserManagementView extends javax.swing.JFrame {
         }
 
         int selectedRow = targetTable.getSelectedRow();
-
-        // 권한 값 가져오기 (교수 -> P, 학생 -> S)
         String rawRole = (String) targetTable.getValueAt(selectedRow, 0);
-        String role = (targetTable == tblProfessors) ? "P" : "S";
-
-        // ID 가져오기 
+        String role = rawRole.equals("교수") ? "P" : "S";
         String id = (String) targetTable.getValueAt(selectedRow, 2);
 
         int confirm = JOptionPane.showConfirmDialog(this,
@@ -344,11 +338,8 @@ public class UserManagementView extends javax.swing.JFrame {
         }
 
         try {
-            // 사용자 삭제 요청 객체 : 이름, 비밀번호, 이름 검색 필터 필요 없음 -> null
             UserRequest req = new UserRequest("DELETE", role, null, id, null, null);
-            // 서버에 삭체 요청 전송 -> 결과 수신
             UserResult result = client.sendUserRequest(req);
-
             if (result.isSuccess()) {
                 refreshTable(role);
                 JOptionPane.showMessageDialog(this, "삭제되었습니다.");
@@ -368,42 +359,27 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // 서버 연결 확인
+
         if (!client.isConnected()) {
             JOptionPane.showMessageDialog(this, "서버에 연결되지 않았습니다.");
             return;
         }
 
-        // 검색 전: 교수/학생 테이블 초기화
-        ((DefaultTableModel) tblProfessors.getModel()).setRowCount(0);
-        ((DefaultTableModel) tblStudents.getModel()).setRowCount(0);
-
-        // 콤보박스에서 역할 선택 + 텍스트 필드에서 검색어 입력
         String roleLabel = cmbRoleFilter.getSelectedItem().toString();
         String nameFilter = txtSearch.getText().trim();
         String roleCode = roleLabel.equals("교수") ? "P" : "S";
 
         try {
-            // 검색 요청 객체 생성: 이름 필터만 사용
             UserRequest req = new UserRequest("SEARCH", roleCode, null, null, null, nameFilter);
             UserResult result = client.sendUserRequest(req);
 
             if (result.isSuccess()) {
-                List<String[]> users = result.getUserList();
-
-                if (users.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "일치하는 사용자가 없습니다.");
-                    return;
-                }
-
-                // 결과를 해당 테이블에 출력
                 if ("P".equals(roleCode)) {
-                    updateUserTable(tblProfessors, users);
+                    updateUserTable(tblProfessors, result.getUserList());
                 } else {
-                    updateUserTable(tblStudents, users);
+                    updateUserTable(tblStudents, result.getUserList());
                 }
             } else {
-                // 서버가 보낸 실패 메시지 출력
                 JOptionPane.showMessageDialog(this, result.getMessage());
             }
         } catch (Exception e) {
@@ -420,19 +396,17 @@ public class UserManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbRoleFilterActionPerformed
 
     private void btnADDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnADDActionPerformed
-        // 서버 연결 확인
+
         if (!client.isConnected()) {
             JOptionPane.showMessageDialog(this, "서버에 연결되지 않았습니다.");
             return;
         }
 
-        // 추가할 사용자 정보 값 읽어오기
         String roleLabel = cmbRole.getSelectedItem().toString();
         String name = txtName.getText().trim();
         String id = txtId.getText().trim();
         String password = txtPw.getText().trim();
 
-        // 모든 필드가 채워져 있어야 함. 하나라도 비어있으면 등록 불가
         if (name.isEmpty() || id.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "모든 필드를 입력하세요.");
             return;
@@ -441,29 +415,12 @@ public class UserManagementView extends javax.swing.JFrame {
         String roleCode = roleLabel.equals("교수") ? "P" : "S";
 
         try {
-            // nameFilter는 검색용이므로 필요 없음 -> null
             UserRequest req = new UserRequest("ADD", roleCode, name, id, password, null);
             UserResult result = client.sendUserRequest(req);
 
             if (result.isSuccess()) {
-
-                DefaultTableModel profModel = (DefaultTableModel) tblProfessors.getModel();
-                DefaultTableModel studModel = (DefaultTableModel) tblStudents.getModel();
-
-                // 테이블 모두 초기화
-                profModel.setRowCount(0);
-                studModel.setRowCount(0);
-
-                // 등록된 역할 테이블에만 한 줄 추가
-                if (roleCode.equals("P")) {
-                    profModel.addRow(new Object[]{id, name, password});
-                } else {
-                    studModel.addRow(new Object[]{id, name, password});
-                }
-
+                refreshTable(roleCode);
                 JOptionPane.showMessageDialog(this, "사용자가 등록되었습니다.");
-
-                // 사용자 입력 필드 값 초기화
                 txtName.setText("");
                 txtId.setText("");
                 txtPw.setText("");

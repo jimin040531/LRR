@@ -10,13 +10,6 @@ import java.util.*;
  *
  * @author Jimin
  */
-
-/**
- * 시간표 정보를 파일에서 읽고 쓰는 역할 수행
- * - readAllLines(): 파일 전체 읽기
- * - appendLine(): 한 줄 추가
- * - overwriteAll(): 전체 덮어쓰기
- */
 public class ScheduleFileManager {
     
     private final String filePath;

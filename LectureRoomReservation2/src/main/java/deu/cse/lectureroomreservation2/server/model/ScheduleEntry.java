@@ -8,11 +8,6 @@ package deu.cse.lectureroomreservation2.server.model;
  *
  * @author Jimin
  */
-
-/**
- * 시간표의 한 항목(수업 또는 제한)을 나타내는 클래스
- * 과목명, 시작/종료 시간, 유형 정보를 포함
- */
 public class ScheduleEntry {
     private String subject;
     private String type;       // "수업" 또는 "제한"
