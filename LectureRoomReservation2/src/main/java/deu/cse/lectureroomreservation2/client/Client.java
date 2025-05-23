@@ -252,16 +252,16 @@ public class Client {
      * System.out.println("해당 시간대에 교수 예약이 없습니다.");
      * }
      */
-    public ScheduleResult sendScheduleRequest(ScheduleRequest req) throws IOException, ClassNotFoundException {
+    public synchronized ScheduleResult sendScheduleRequest(ScheduleRequest req) throws IOException, ClassNotFoundException {
         // 1. 명령 문자열 "SCHEDULE"을 먼저 전송하여 서버 측에서 시간표 관리 관련 요청임을 알림
         out.writeUTF("SCHEDULE");
         out.flush();
 
-        // 2. 직렬화된 ScheduleRequest 객체를 서버로 전송
+        // 2. ScheduleRequest 객체를 직렬화하여 서버로 전송
         out.writeObject(req);
         out.flush();
 
-        // 3. 서버로부터 ScheduleResult 객체를 수신
+        // 3. 서버로부터 ScheduleResult 응답 객체를 수신
         return (ScheduleResult) in.readObject();
     }
 

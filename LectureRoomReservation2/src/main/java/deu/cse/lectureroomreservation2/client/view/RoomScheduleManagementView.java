@@ -7,7 +7,6 @@ package deu.cse.lectureroomreservation2.client.view;
 import deu.cse.lectureroomreservation2.client.Client;
 import deu.cse.lectureroomreservation2.common.ScheduleRequest;
 import deu.cse.lectureroomreservation2.common.ScheduleResult;
-import deu.cse.lectureroomreservation2.server.control.TimeTableController;
 import deu.cse.lectureroomreservation2.server.model.DaysOfWeek;
 import java.util.Map;
 import javax.swing.JOptionPane;
