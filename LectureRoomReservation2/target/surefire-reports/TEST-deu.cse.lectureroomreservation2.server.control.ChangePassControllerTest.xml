@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.151" tests="5" errors="0" skipped="0" failures="1">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.23" tests="5" errors="2" skipped="0" failures="1">
   <properties>
-    <property name="java.specification.version" value="21"/>
-    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="java.specification.version" value="21"//
+
+    <propert  name="sun.cpu.isalist" value="amd64"/>
     <property name="sun.jnu.encoding" value="MS949"/>
-    <property name="java.class.path" value="C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\test-classes;C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\classes;C:\Users\Jimin\.m2\repository\org\projectlombok\lombok\1.18.36\lombok-1.18.36.jar;C:\Users\Jimin\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\Jimin\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-classic\1.5.17\logback-classic-1.5.17.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-core\1.5.17\logback-core-1.5.17.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.11.0-M1\junit-jupiter-engine-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-engine\1.11.0-M1\junit-platform-engine-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-commons\1.11.0-M1\junit-platform-commons-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.11.0-M1\junit-jupiter-api-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Jimin\.m2\repository\com\toedter\jcalendar\1.4\jcalendar-1.4.jar;"/>
+    <property name="java.class.path  value="C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\test-classes;C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\classes;C:\Users\Jimin\.m2\repository\org\projectlombok\lombok\1.18.36\lombok-1.18.36.jar;C:\Users\Jimin\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\Jimin\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-classic\1.5.17\logback-classic-1.5.17.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-core\1.5.17\logback-core-1.5.17.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.11.0-M1\junit-jupiter-engine-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-engine\1.11.0-M1\junit-platform-engine-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-commons\1.11.0-M1\junit-platform-commons-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.11.0-M1\junit-jupiter-api-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Jimin\.m2\repository\com\toedter\jcalendar\1.4\jcalendar-1.4.jar;"/>
     <property name="java.vm.vendor" value="Azul Systems, Inc."/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="user.variant" value=""/>
@@ -15,7 +16,7 @@
     <property name="user.country" value="KR"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\jdk_related\zulu21.36.17-ca-jdk21.0.4-win_x64\bin"/>
-    <property name="sun.java.command" value="C:\Users\Jimin\AppData\Local\Temp\surefire14981169169241392354\surefirebooter-20250523045700258_3.jar C:\Users\Jimin\AppData\Local\Temp\surefire14981169169241392354 2025-05-23T04-56-59_916-jvmRun1 surefire-20250523045700258_1tmp surefire_0-20250523045700258_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\Jimin\AppData\Local\Temp\surefire8604680844760002912\surefirebooter-20250524033145039_3.jar C:\Users\Jimin\AppData\Local\Temp\surefire8604680844760002912 2025-05-24T03-31-44_620-jvmRun1 surefire-20250524033145039_1tmp surefire_0-20250524033145039_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\test-classes;C:\Users\Jimin\Desktop\LRR\LRR\LectureRoomReservation2\target\classes;C:\Users\Jimin\.m2\repository\org\projectlombok\lombok\1.18.36\lombok-1.18.36.jar;C:\Users\Jimin\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\Jimin\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-classic\1.5.17\logback-classic-1.5.17.jar;C:\Users\Jimin\.m2\repository\ch\qos\logback\logback-core\1.5.17\logback-core-1.5.17.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.11.0-M1\junit-jupiter-engine-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-engine\1.11.0-M1\junit-platform-engine-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Jimin\.m2\repository\org\junit\platform\junit-platform-commons\1.11.0-M1\junit-platform-commons-1.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.11.0-M1\junit-jupiter-api-5.11.0-M1.jar;C:\Users\Jimin\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Jimin\.m2\repository\com\toedter\jcalendar\1.4\jcalendar-1.4.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +31,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\Jimin\AppData\Local\Temp\surefire14981169169241392354\surefirebooter-20250523045700258_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\Jimin\AppData\Local\Temp\surefire8604680844760002912\surefirebooter-20250524033145039_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="21.0.4+7-LTS"/>
@@ -60,8 +61,8 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testEmptyNewPassword" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.039"/>
-  <testcase name="testChangePassSuccess" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.021">
+  <testcase name="testEmptyNewPassword" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.059"/>
+  <testcase name="testChangePassSuccess" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.03">
     <failure message="expected: &lt;비밀번호가 변경되었습니다.&gt; but was: &lt;ID 또는 기존 비밀번호가 올바르지 않습니다.&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <비밀번호가 변경되었습니다.> but was: <ID 또는 기존 비밀번호가 올바르지 않습니다.>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
@@ -75,7 +76,37 @@
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 ]]></failure>
   </testcase>
-  <testcase name="testSamePassword" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.009"/>
-  <testcase name="testWrongCurrentPassword" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.008"/>
-  <testcase name="testIdNotFound" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.007"/>
+  <testcase name="testSamePassword" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.012">
+    <error message="user_backup.txt" type="java.nio.file.AccessDeniedException"><![CDATA[java.nio.file.AccessDeniedException: user_backup.txt
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:89)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:103)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:108)
+	at java.base/sun.nio.fs.WindowsFileCopy.copy(WindowsFileCopy.java:180)
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.copy(WindowsFileSystemProvider.java:282)
+	at java.base/java.nio.file.Files.copy(Files.java:1304)
+	at deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest.backupUserFile(ChangePassControllerTest.java:25)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	Suppressed: java.nio.file.NoSuchFileException: user.txt
+		at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:85)
+		at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:103)
+		at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:108)
+		at java.base/sun.nio.fs.WindowsFileCopy.copy(WindowsFileCopy.java:180)
+		at java.base/sun.nio.fs.WindowsFileSystemProvider.copy(WindowsFileSystemProvider.java:282)
+		at java.base/java.nio.file.Files.copy(Files.java:1304)
+		at deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest.restoreUserFile(ChangePassControllerTest.java:30)
+		... 3 more
+]]></error>
+  </testcase>
+  <testcase name="testWrongCurrentPassword" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.011"/>
+  <testcase name="testIdNotFound" classname="deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest" time="0.012"/>
+</testsuite>dowsFileSystemProvider.copy(WindowsFileSystemProvider.java:282)
+	at java.base/java.nio.file.Files.copy(Files.java:1304)
+	at deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest.restoreUserFile(ChangePassControllerTest.java:30)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+]]></error>
+  </testcase>
 </testsuite>

@@ -17,6 +17,8 @@ import deu.cse.lectureroomreservation2.common.ReserveResult;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
 import deu.cse.lectureroomreservation2.common.ReserveRequest;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
+import deu.cse.lectureroomreservation2.common.ReserveManageRequest;
+import deu.cse.lectureroomreservation2.common.ReserveManageResult;
 import deu.cse.lectureroomreservation2.common.ScheduleRequest;
 import deu.cse.lectureroomreservation2.common.ScheduleResult;
 import deu.cse.lectureroomreservation2.common.UserRequest;
@@ -103,9 +105,9 @@ public class ClientHandler implements Runnable {
                 while (true) {
                     try {
                         String command = in.readUTF();
-                        
+
                         System.out.println(">> 수신 명령: " + command); // 여기 추가
-                        
+
                         if ("LOGOUT".equalsIgnoreCase(command)) {
                             System.out.println("User has log-out: " + id);
                             break;
@@ -215,21 +217,25 @@ public class ClientHandler implements Runnable {
                             out.flush();
                         }
 
+                        
                         if ("SCHEDULE".equals(command)) {
                             System.out.println(">> [서버] SCHEDULE 명령 수신됨");
+                            
+                            // 클라이언트로부터 ScheduleRequest 객체 수신
                             ScheduleRequest req = (ScheduleRequest) in.readObject();
 
-                            ScheduleResult result;
-                            TimeTableController controller = new TimeTableController();
+                            ScheduleResult result; // 클라이언트에게 보낼 응답 객체 
+                            TimeTableController controller = new TimeTableController(); // 시간표 처리 로직
 
+                            // 클라이언트가 요청한 명령에 따라 분기 처리
                             switch (req.getCommand()) {
-                                case "LOAD":
+                                case "LOAD":    // 시간표 조회
                                     Map<String, String> schedule = controller.getScheduleForRoom(
                                             req.getRoom(), req.getDay(), req.getType());
                                     result = new ScheduleResult(true, "조회 성공", schedule);
                                     break;
 
-                                case "ADD":
+                                case "ADD": // 시간표 추가
                                     try {
                                         controller.addScheduleToFile(req.getRoom(), req.getDay(), req.getStart(), req.getEnd(), req.getSubject(), req.getType());
                                         result = new ScheduleResult(true, "등록 성공", null);
@@ -238,12 +244,12 @@ public class ClientHandler implements Runnable {
                                     }
                                     break;
 
-                                case "DELETE":
+                                case "DELETE":  // 시간표 삭제
                                     boolean deleted = controller.deleteScheduleFromFile(req.getRoom(), req.getDay(), req.getStart(), req.getEnd());
                                     result = new ScheduleResult(deleted, deleted ? "삭제 성공" : "삭제 실패", null);
                                     break;
 
-                                case "UPDATE":
+                                case "UPDATE":  // 시간표 수정
                                     boolean updated = controller.updateSchedule(req.getRoom(), req.getDay(), req.getStart(), req.getEnd(), req.getSubject(), req.getType());
                                     result = new ScheduleResult(updated, updated ? "수정 성공" : "수정 실패", null);
                                     break;
@@ -252,41 +258,97 @@ public class ClientHandler implements Runnable {
                                     result = new ScheduleResult(false, "알 수 없는 명령입니다", null);
                             }
 
+                            // 처리 결과를 클라이언트로 전송
                             out.writeObject(result);
                             out.flush();
                         }
 
+                        // 클라이언트로 부터 USER 명령을 수신한 경우 실행
                         if ("USER".equals(command)) {
+                            System.out.println(">> [서버] USER 명령 수신됨");
                             UserRequest req = (UserRequest) in.readObject();
+
+                            // UserRequsetController -> 사용자 요청 처리
                             UserRequestController controller = new UserRequestController();
                             UserResult result;
 
+                            // 요청 (ADD, DELETE, SEARCH)에 따라서 처리
                             switch (req.getCommand()) {
+
+                                // 새로운 사용자(교수 or 학생) 추가
                                 case "ADD":
                                     try {
                                         controller.saveUserAndGetSingleUser(new String[]{
                                             req.getRole(), req.getName(), req.getId(), req.getPassword()
                                         });
+                                        // UserResult (요청 성공 여부, 메시지, 사용자 리스트)
                                         result = new UserResult(true, "등록 성공", null);
                                     } catch (Exception e) {
                                         result = new UserResult(false, e.getMessage(), null);
                                     }
                                     break;
 
+                                // 사용자 삭제
                                 case "DELETE":
+                                    // 역할 & ID 기준으로 사용자 삭제
                                     boolean deleted = controller.deleteUser(req.getRole(), req.getId());
                                     result = new UserResult(deleted, deleted ? "삭제 성공" : "삭제 실패", null);
                                     break;
 
+                                // 사용자 검색
                                 case "SEARCH":
+                                    // 역할 & 이름 기준으로 사용자 검색
                                     List<String[]> list = controller.handleSearchRequest(req.getRole(), req.getNameFilter());
                                     result = new UserResult(true, "조회 성공", list);
                                     break;
 
+                                // 정의되지 않은 명령일 때
                                 default:
                                     result = new UserResult(false, "알 수 없는 명령입니다", null);
                             }
 
+                            // 처리 결과를 클라이언트로 전송
+                            out.writeObject(result);
+                            out.flush();
+                        }
+
+                        // 클라이언트로 부터 RESERVE_MANAGE 명령을 수신한 경우 실행
+                        if ("RESERVE_MANAGE".equals(command)) {
+                            System.out.println(">> [서버] RESERVE_MANAGE 명령 수신됨");
+                            
+                            // 클라이언트로부터 예약 관리 요청 객체 수신
+                            ReserveManageRequest req = (ReserveManageRequest) in.readObject();
+                            ReserveManageResult result;
+
+                            // 요청에 포함된 하위 명령에 따라 분기 처리
+                            switch (req.getCommand()) {
+                                case "SEARCH":  // 예약 내역 조회
+                                    List<String[]> list = ReserveManager.getReserveList(req.getUserId(), req.getRoom(), req.getDate());
+                                    result = new ReserveManageResult(true, "조회 성공", list);
+                                    break;
+
+                                case "UPDATE":  // 예약 수정
+                                    ReserveResult reserveResult = ReserveManager.updateReserve(
+                                            req.getUserId(),
+                                            req.getRole(),
+                                            req.getOldReserveInfo(),
+                                            req.getNewRoom(),
+                                            req.getNewDate(),
+                                            req.getNewDay()
+                                    );
+                                    result = new ReserveManageResult(reserveResult.getResult(), reserveResult.getReason(), null);
+                                    break;
+
+                                case "DELETE":  // 예약 삭제
+                                    ReserveResult cancelResult = ReserveManager.cancelReserve(req.getUserId(), req.getReserveInfo());
+                                    result = new ReserveManageResult(cancelResult.getResult(), cancelResult.getReason(), null);
+                                    break;
+
+                                default:
+                                    result = new ReserveManageResult(false, "알 수 없는 명령입니다", null);
+                            }
+
+                            // 처리 결과 객체를 클라이언트에 전송
                             out.writeObject(result);
                             out.flush();
                         }
@@ -296,7 +358,6 @@ public class ClientHandler implements Runnable {
                         e.printStackTrace();
                         break;
                     }
-
                 }
             }
 

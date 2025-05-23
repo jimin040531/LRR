@@ -138,7 +138,7 @@ public class AdminMainView extends javax.swing.JFrame {
 
     private void btnReservationHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReservationHistoryActionPerformed
         // TODO add your handling code here:
-        new ReservationHistoryView().setVisible(true);
+        new ReservationHistoryView(client).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnReservationHistoryActionPerformed
 

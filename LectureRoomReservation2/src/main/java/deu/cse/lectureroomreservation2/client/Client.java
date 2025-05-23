@@ -9,6 +9,8 @@ import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
 import deu.cse.lectureroomreservation2.common.ReserveResult;
 import deu.cse.lectureroomreservation2.common.LoginStatus;
+import deu.cse.lectureroomreservation2.common.ReserveManageRequest;
+import deu.cse.lectureroomreservation2.common.ReserveManageResult;
 import deu.cse.lectureroomreservation2.common.ScheduleRequest;
 import deu.cse.lectureroomreservation2.common.ScheduleResult;
 import deu.cse.lectureroomreservation2.common.UserRequest;
@@ -251,19 +253,42 @@ public class Client {
      * }
      */
     public ScheduleResult sendScheduleRequest(ScheduleRequest req) throws IOException, ClassNotFoundException {
+        // 1. 명령 문자열 "SCHEDULE"을 먼저 전송하여 서버 측에서 시간표 관리 관련 요청임을 알림
         out.writeUTF("SCHEDULE");
         out.flush();
+        
+        // 2. 직렬화된 ScheduleRequest 객체를 서버로 전송
         out.writeObject(req);
         out.flush();
+        
+        // 3. 서버로부터 ScheduleResult 객체를 수신
         return (ScheduleResult) in.readObject();
     }
 
     public UserResult sendUserRequest(UserRequest req) throws IOException, ClassNotFoundException {
+        // 1. 명령 문자열 "USER"를 먼저 전송하여 서버 측에서 사용자 관리 관련 요청임을 알림
         out.writeUTF("USER");
         out.flush();
+        
+        // 2. 직렬화된 UserRequest 객체를 서버로 전송
         out.writeObject(req);
         out.flush();
+        
+        // 3. 서버로부터 UserResult 객체를 수신
         return (UserResult) in.readObject();
+    }
+
+    public ReserveManageResult sendReserveManageRequest(ReserveManageRequest req) throws IOException, ClassNotFoundException {
+        // 1. 명령 문자열 "RESERVE_MANAGE"를 먼저 전송하여 서버 측에서 예약 관리 관련 요청임을 알림
+        out.writeUTF("RESERVE_MANAGE");
+        out.flush();
+        
+        // 2. 직렬화된 ReserveManageRequest 객체를 서버로 전송
+        out.writeObject(req);           
+        out.flush();
+        
+        // 3. 서버로부터 ReserveManageResult 객체를 수신 
+        return (ReserveManageResult) in.readObject(); 
     }
 
     // 강의실 조회 state 요청 처리
@@ -282,6 +307,7 @@ public class Client {
         out.flush();
         return in.readUTF();
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * String room = "908";
@@ -311,10 +337,11 @@ public class Client {
         for (int i = 0; i < size; i++) {
             String start = in.readUTF();
             String end = in.readUTF();
-            slots.add(new String[] { start, end });
+            slots.add(new String[]{start, end});
         }
         return slots;
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * java.util.List<String[]> slots = client.getRoomSlots(selectedRoom,
