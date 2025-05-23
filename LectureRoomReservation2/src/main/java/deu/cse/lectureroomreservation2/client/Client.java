@@ -9,6 +9,10 @@ import deu.cse.lectureroomreservation2.common.CheckMaxTimeResult;
 import deu.cse.lectureroomreservation2.common.CheckMaxTimeRequest;
 import deu.cse.lectureroomreservation2.common.ReserveResult;
 import deu.cse.lectureroomreservation2.common.LoginStatus;
+import deu.cse.lectureroomreservation2.common.ScheduleRequest;
+import deu.cse.lectureroomreservation2.common.ScheduleResult;
+import deu.cse.lectureroomreservation2.common.UserRequest;
+import deu.cse.lectureroomreservation2.common.UserResult;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
@@ -35,19 +39,19 @@ public class Client {
         }
     }
 
-    public void sendLoginRequest(String id, String password, String role) throws IOException {
+    public synchronized void sendLoginRequest(String id, String password, String role) throws IOException {
         out.writeUTF(id);
         out.writeUTF(password);
         out.writeUTF(role);
         out.flush();
     }
 
-    public LoginStatus receiveLoginStatus() throws IOException, ClassNotFoundException {
+    public synchronized LoginStatus receiveLoginStatus() throws IOException, ClassNotFoundException {
         status = (LoginStatus) in.readObject();
         return status;
     }
 
-    public void logout() {
+    public synchronized void logout() {
         try {
             out.writeUTF("LOGOUT");
             out.flush();
@@ -62,7 +66,7 @@ public class Client {
     }
 
     // 예약 요청 처리
-    public ReserveResult sendReserveRequest(String id, String role, String roomNumber, String date, String day,
+    public synchronized ReserveResult sendReserveRequest(String id, String role, String roomNumber, String date, String day,
             String notice)
             throws IOException, ClassNotFoundException {
         // 예약 요청 객체 생성
@@ -77,7 +81,7 @@ public class Client {
     }
 
     // 최대 예약 시간 체크 요청 처리
-    public CheckMaxTimeResult sendCheckMaxTimeRequest(String id) throws IOException, ClassNotFoundException {
+    public synchronized CheckMaxTimeResult sendCheckMaxTimeRequest(String id) throws IOException, ClassNotFoundException {
         out.writeUTF("CHECK_MAX_TIME");
         out.flush();
         out.writeObject(new CheckMaxTimeRequest(id));
@@ -86,7 +90,7 @@ public class Client {
     }
 
     // 기존 예약 취소 요청 처리
-    public ReserveResult sendCancelReserveRequest(String id, String reserveInfo)
+    public synchronized ReserveResult sendCancelReserveRequest(String id, String reserveInfo)
             throws IOException, ClassNotFoundException {
         out.writeUTF("CANCEL_RESERVE");
         out.flush();
@@ -96,6 +100,7 @@ public class Client {
         out.flush();
         return (ReserveResult) in.readObject();
     }
+
     // 클라이언트에서 예약 취소 요청 사용 예시, 응답 예시
     /*
      * String id = "20212991";
@@ -112,9 +117,8 @@ public class Client {
      * //예약 취소 성공: 예약이 취소되었습니다.
      * //예약 취소 실패: 해당 예약 정보를 찾을 수 없습니다.
      */
-
     // 예약 변경 요청 처리(사용자 id, 기존 예약 정보, 새로운 강의실 번호, 새로운 날짜, 새로운 요일)
-    public ReserveResult sendModifyReserveRequest(String id, String oldReserveInfo, String newRoomNumber,
+    public synchronized ReserveResult sendModifyReserveRequest(String id, String oldReserveInfo, String newRoomNumber,
             String newDate, String newDay, String role)
             throws IOException, ClassNotFoundException {
         out.writeUTF("MODIFY_RESERVE");
@@ -133,6 +137,7 @@ public class Client {
         out.flush();
         return (ReserveResult) in.readObject();
     }
+
     // 클라이언트에서 예약 변경 요청 사용 예시, 응답 예시
     /*
      * // 예약 변경 요청 예시
@@ -155,13 +160,13 @@ public class Client {
      * //예약 변경 성공: 예약 성공
      * //예약 변경 실패: 해당 예약 정보를 찾을 수 없습니다.
      */
-
     // 공지사항 수신 및 확인 처리
-    public void checkAndShowNotices(javax.swing.JFrame parentFrame) throws IOException {
+    public synchronized void checkAndShowNotices(javax.swing.JFrame parentFrame) throws IOException {
         while (true) {
             String msgType = in.readUTF();
-            if ("NOTICE_END".equals(msgType))
+            if ("NOTICE_END".equals(msgType)) {
                 break;
+            }
             if ("NOTICE".equals(msgType)) {
                 String noticeText = in.readUTF();
                 javax.swing.JOptionPane.showMessageDialog(parentFrame, noticeText, "공지사항",
@@ -172,13 +177,14 @@ public class Client {
 
     // 클라이언트의 예약 정보 조회 요청 처리
     @SuppressWarnings("unchecked")
-    public List<String> retrieveMyReserveInfo(String id) throws IOException, ClassNotFoundException {
+    public synchronized List<String> retrieveMyReserveInfo(String id) throws IOException, ClassNotFoundException {
         out.writeUTF("RETRIEVE_MY_RESERVE");
         out.flush();
         out.writeUTF(id);
         out.flush();
         return (List<String>) in.readObject();
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * List<String> myReserves = client.retrieveMyReserveInfo(id);
@@ -191,31 +197,31 @@ public class Client {
      * "101 / 2025 / 06 / 01 / 09:00 10:00 / 화요일"
      * ]
      */
-
     // 예약 정보로 예약한 총 사용자 수 요청 처리
-    public int requestReserveUserCount(String reserveInfo) throws IOException {
+    public synchronized int requestReserveUserCount(String reserveInfo) throws IOException {
         out.writeUTF("COUNT_RESERVE_USERS");
         out.flush();
         out.writeUTF(reserveInfo);
         out.flush();
         return in.readInt();
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * String reserveInfo = "915 / 2025 / 05 / 21 / 00:00 01:00 / 화요일";
      * int userCount = client.requestReserveUserCount(reserveInfo);
      * System.out.println("해당 예약 정보로 예약한 사용자 수: " + userCount);
      */
-
     // 예약 정보로 예약한 사용자 id 목록 요청 처리 (6번 기능)
     @SuppressWarnings("unchecked")
-    public List<String> getUserIdsByReserveInfo(String reserveInfo) throws IOException, ClassNotFoundException {
+    public synchronized List<String> getUserIdsByReserveInfo(String reserveInfo) throws IOException, ClassNotFoundException {
         out.writeUTF("GET_USER_IDS_BY_RESERVE");
         out.flush();
         out.writeUTF(reserveInfo);
         out.flush();
         return (List<String>) in.readObject();
     }
+
     // 사용 예시
     /*
      * String reserveInfo = "915 / 2025 / 05 / 21 / 00:00 01:00 / 화요일";
@@ -224,15 +230,15 @@ public class Client {
      * System.out.println("예약자 ID: " + userId);
      * }
      */
-
     // 예약 정보로 교수 예약 여부 조회 요청 처리
-    public boolean hasProfessorReserve(String reserveInfo) throws IOException {
+    public synchronized boolean hasProfessorReserve(String reserveInfo) throws IOException {
         out.writeUTF("FIND_PROFESSOR_BY_RESERVE");
         out.flush();
         out.writeUTF(reserveInfo);
         out.flush();
         return in.readBoolean();
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * String reserveInfo = "915 / 2025 / 06 / 03 / 00:00 01:00 / 화요일";
@@ -244,9 +250,24 @@ public class Client {
      * System.out.println("해당 시간대에 교수 예약이 없습니다.");
      * }
      */
+    public ScheduleResult sendScheduleRequest(ScheduleRequest req) throws IOException, ClassNotFoundException {
+        out.writeUTF("SCHEDULE");
+        out.flush();
+        out.writeObject(req);
+        out.flush();
+        return (ScheduleResult) in.readObject();
+    }
+
+    public UserResult sendUserRequest(UserRequest req) throws IOException, ClassNotFoundException {
+        out.writeUTF("USER");
+        out.flush();
+        out.writeObject(req);
+        out.flush();
+        return (UserResult) in.readObject();
+    }
 
     // 강의실 조회 state 요청 처리
-    public String getRoomState(String room, String day, String start, String end, String date) throws IOException {
+    public synchronized String getRoomState(String room, String day, String start, String end, String date) throws IOException {
         out.writeUTF("GET_ROOM_STATE");
         out.flush();
         out.writeUTF(room);
@@ -278,7 +299,7 @@ public class Client {
      */
 
     // 강의실 예약 가능 시간대 조회 요청 처리
-    public java.util.List<String[]> getRoomSlots(String room, String day) throws IOException {
+    public synchronized java.util.List<String[]> getRoomSlots(String room, String day) throws IOException {
         out.writeUTF("GET_ROOM_SLOTS");
         out.flush();
         out.writeUTF(room);

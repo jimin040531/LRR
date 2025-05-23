@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.161 s <<< FAILURE! -- in deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest
-deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest.testChangePassSuccess -- Time elapsed: 0.015 s <<< FAILURE!
+Tests run: 5, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.151 s <<< FAILURE! -- in deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest
+deu.cse.lectureroomreservation2.server.control.ChangePassControllerTest.testChangePassSuccess -- Time elapsed: 0.021 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <비밀번호가 변경되었습니다.> but was: <ID 또는 기존 비밀번호가 올바르지 않습니다.>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
