@@ -312,18 +312,22 @@ public class ClientHandler implements Runnable {
                             out.flush();
                         }
 
+                        // 클라이언트로 부터 RESERVE_MANAGE 명령을 수신한 경우 실행
                         if ("RESERVE_MANAGE".equals(command)) {
                             System.out.println(">> [서버] RESERVE_MANAGE 명령 수신됨");
+                            
+                            // 클라이언트로부터 예약 관리 요청 객체 수신
                             ReserveManageRequest req = (ReserveManageRequest) in.readObject();
                             ReserveManageResult result;
 
+                            // 요청에 포함된 하위 명령에 따라 분기 처리
                             switch (req.getCommand()) {
-                                case "SEARCH":
+                                case "SEARCH":  // 예약 내역 조회
                                     List<String[]> list = ReserveManager.getReserveList(req.getUserId(), req.getRoom(), req.getDate());
                                     result = new ReserveManageResult(true, "조회 성공", list);
                                     break;
 
-                                case "UPDATE":
+                                case "UPDATE":  // 예약 수정
                                     ReserveResult reserveResult = ReserveManager.updateReserve(
                                             req.getUserId(),
                                             req.getRole(),
@@ -335,7 +339,7 @@ public class ClientHandler implements Runnable {
                                     result = new ReserveManageResult(reserveResult.getResult(), reserveResult.getReason(), null);
                                     break;
 
-                                case "DELETE":
+                                case "DELETE":  // 예약 삭제
                                     ReserveResult cancelResult = ReserveManager.cancelReserve(req.getUserId(), req.getReserveInfo());
                                     result = new ReserveManageResult(cancelResult.getResult(), cancelResult.getReason(), null);
                                     break;
@@ -344,6 +348,7 @@ public class ClientHandler implements Runnable {
                                     result = new ReserveManageResult(false, "알 수 없는 명령입니다", null);
                             }
 
+                            // 처리 결과 객체를 클라이언트에 전송
                             out.writeObject(result);
                             out.flush();
                         }

@@ -279,11 +279,16 @@ public class Client {
     }
 
     public ReserveManageResult sendReserveManageRequest(ReserveManageRequest req) throws IOException, ClassNotFoundException {
-        out.writeUTF("RESERVE_MANAGE"); // 명령 전송
+        // 1. 명령 문자열 "RESERVE_MANAGE"를 먼저 전송하여 서버 측에서 예약 관리 관련 요청임을 알림
+        out.writeUTF("RESERVE_MANAGE");
         out.flush();
-        out.writeObject(req);           // 요청 객체 전송
+        
+        // 2. 직렬화된 ReserveManageRequest 객체를 서버로 전송
+        out.writeObject(req);           
         out.flush();
-        return (ReserveManageResult) in.readObject(); // 응답 수신
+        
+        // 3. 서버로부터 ReserveManageResult 객체를 수신 
+        return (ReserveManageResult) in.readObject(); 
     }
 
     // 강의실 조회 state 요청 처리

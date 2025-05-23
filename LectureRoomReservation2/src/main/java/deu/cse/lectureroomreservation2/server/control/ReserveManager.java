@@ -468,8 +468,17 @@ public class ReserveManager {
         return slots;
     }
 
-    // 예약 수정 : 기존 예약을 삭제하고 새로운 예약으로 교체
-    // 실패 시 기존 예약 복원
+    /**
+    * 예약 수정 요청을 처리하는 메서드
+    *
+    * @param id 사용자 ID
+    * @param role 사용자 역할 ("P" 또는 "S")
+    * @param oldReserveInfo 기존 예약 정보 (복구용)
+    * @param newRoom 새 예약 강의실 번호
+    * @param newDate 새 예약 날짜 (형식: yyyy / MM / dd / HH:mm HH:mm)
+    * @param newDay 새 예약 요일
+    * @return ReserveResult 성공/실패 여부 및 메시지
+    */
     public static ReserveResult updateReserve(String id, String role, String oldReserveInfo, String newRoom, String newDate, String newDay) {
         synchronized (FILE_LOCK) {
             // 기존 예약 삭제 시도
@@ -478,7 +487,7 @@ public class ReserveManager {
                 return new ReserveResult(false, "기존 예약 삭제 실패: " + cancelResult.getReason());
             }
 
-            // 교수 예약 시 학생 예약 강제 취소 로직 적용
+            // 교수일 경우, 같은 시간대 학생 예약 강제 삭제
             if ("P".equals(role)) {
                 cancelStudentReservesForProfessor(newRoom, newDate, newDay);
             }
@@ -486,7 +495,7 @@ public class ReserveManager {
             // 새로운 예약 시도
             ReserveResult reserveResult = reserve(id, role, newRoom, newDate, newDay);
             if (!reserveResult.getResult()) {
-                // 실패 시 기존 예약 복구
+                // 새 예약 실패 시 기존 예약 복원
                 String[] tokens = oldReserveInfo.split("/");
                 if (tokens.length >= 6) {
                     String oldRoom = tokens[0].trim();
@@ -505,6 +514,15 @@ public class ReserveManager {
         }
     }
 
+    /**
+    * 사용자 ID, 강의실 번호, 날짜 조건에 따라 예약 내역을 검색하여 반환하는 메서드
+    * 예약 정보는 USER_FILE에서 읽어오며, 필터 조건이 비어있으면 전체 검색 가능
+    *
+    * @param userId 사용자 ID (""이면 모든 사용자 포함)
+    * @param room 강의실 번호 (""이면 모든 강의실 포함)
+    * @param date 날짜 (yyyy-MM-dd 형식, ""이면 전체 날짜 포함)
+    * @return 예약 내역 리스트 (각 예약은 String[] 형태로 반환됨)
+    */
     public static List<String[]> getReserveList(String userId, String room, String date) {
         synchronized (FILE_LOCK) {
             List<String[]> result = new ArrayList<>();
@@ -521,6 +539,7 @@ public class ReserveManager {
                         continue;
                     }
 
+                    // 예약 정보는 5번째 요소부터 반복
                     for (int i = 4; i < parts.length; i++) {
                         String reserve = parts[i].trim();  // 예약 정보 문자열
                         // 예약 정보 형식: "강의실 / yyyy / MM / dd / HH:mm HH:mm / 요일"
@@ -535,9 +554,12 @@ public class ReserveManager {
                         String d = tokens[3].trim();
                         String fullDate = y + "-" + m + "-" + d;
 
+                        // 강의실 필터
                         if (!room.isEmpty() && !room.equals(roomNum)) {
                             continue;
                         }
+                        
+                        // 날짜 필터
                         if (!date.isEmpty() && !date.equals(fullDate)) {
                             continue;
                         }

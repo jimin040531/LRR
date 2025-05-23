@@ -10,10 +10,15 @@ import java.io.Serializable;
  *
  * @author Jimin
  */
+
+/**
+ * 클라이언트에서 서버로 예약 내역 관리 명령을 보낼 때 사용되는 객체
+ * 예약 조회, 수정, 삭제 요청 시 필요한 데이터를 포함 함
+ */
 public class ReserveManageRequest implements Serializable {
 
-    private final String command;       // "SEARCH", "UPDATE", "DELETE" 등 명령
-    private final String userId;        // 사용자 ID
+    private final String command;       // 명령 종류 : SEARCH, UPDATE, DELETE
+    private final String userId;        // 요청을 보낸 사용자 ID
     private final String room;          // 강의실 번호 (검색 시)
     private final String date;          // 날짜 (검색 시)
     private final String oldReserveInfo; // 기존 예약 정보 (수정 시)

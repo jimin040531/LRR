@@ -11,6 +11,11 @@ import java.util.List;
  *
  * @author Jimin
  */
+
+/**
+ * 서버에서 클라이언트로 예약 관리 요청 처리 결과를 반환하는 객체
+ * 성공 여부, 메시지, 예약 내역 리스트를 포함 함
+ */
 public class ReserveManageResult implements Serializable {
 
     private final boolean success;          // 요청 성공 여부
