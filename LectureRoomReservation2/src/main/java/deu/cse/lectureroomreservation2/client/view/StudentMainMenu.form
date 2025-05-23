@@ -141,6 +141,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="&#xc608;&#xc57d; &#xac00;&#xb2a5; &#xc2dc;&#xac04; &#xd655;&#xc778;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reserv_time_checkActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="lectureroom_check">
       <Properties>
