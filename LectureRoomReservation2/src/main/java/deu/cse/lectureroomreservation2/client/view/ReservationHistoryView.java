@@ -57,6 +57,27 @@ public class ReservationHistoryView extends javax.swing.JFrame {
         });
     }
 
+    private String findUserRole(String userId) {
+        try {
+            if (client == null || !client.isConnected()) {
+                JOptionPane.showMessageDialog(this, "서버에 연결되어 있지 않습니다.");
+                return null;
+            }
+
+            String role = client.findUserRole(userId);
+
+            if (role == null || role.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "사용자 역할을 찾을 수 없습니다.");
+            }
+
+            return role;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "역할 조회 중 오류 발생: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -335,9 +356,10 @@ public class ReservationHistoryView extends javax.swing.JFrame {
         }
 
         try {
+            String role = findUserRole(userId);
             ReserveManageRequest req = new ReserveManageRequest(
                     "UPDATE", userId, null, null,
-                    oldReserveInfo, newRoom, newDate, newWeekDay, "A", null
+                    oldReserveInfo, newRoom, newDate, newWeekDay, role, null
             );
             ReserveManageResult res = client.sendReserveManageRequest(req);
             JOptionPane.showMessageDialog(this, res.getMessage());

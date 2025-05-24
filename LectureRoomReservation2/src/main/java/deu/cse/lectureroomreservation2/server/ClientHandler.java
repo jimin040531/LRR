@@ -312,56 +312,78 @@ public class ClientHandler implements Runnable {
                             }
                         }
 
+                        if ("FIND_ROLE".equals(command)) {
+                            String userId = in.readUTF();
+                            String foundRole = null;
+                            try (BufferedReader br = new BufferedReader(new FileReader(receiveController.getFilepath() + receiveController.getFileName()))) {
+                                String line;
+                                while ((line = br.readLine()) != null) {
+                                    String[] parts = line.split(",");
+                                    if (parts.length >= 3 && parts[2].trim().equals(userId)) {
+                                        foundRole = parts[0].trim();
+                                        break;
+                                    }
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            out.writeObject(foundRole != null ? foundRole : "");
+                            out.flush();
+                            continue;
+                        }
+
                         if ("RESERVE_MANAGE".equals(command)) {
                             System.out.println(">> [서버] RESERVE_MANAGE 명령 수신됨");
 
-                            // 클라이언트로부터 요청 객체 수신
-                            ReserveManageRequest req = (ReserveManageRequest) in.readObject();
-                            ReserveManageResult result;
+                            try {
+                                // 1. 클라이언트로부터 요청 객체 수신
+                                ReserveManageRequest req = (ReserveManageRequest) in.readObject();
+                                ReserveManageResult result = null;
 
-                            System.out.println(">>> 요청 명령: " + req.getCommand());
+                                String cmd = req.getCommand();
+                                System.out.println(">>> 요청 명령: " + cmd);
 
-                            switch (req.getCommand()) {
-                                case "SEARCH":
-                                    System.out.println(">>> 요청 명령: SEARCH");
+                                switch (cmd) {
+                                    case "SEARCH":
+                                        result = ReserveManager.searchUserAndReservations(
+                                                req.getUserId(), req.getRoom(), req.getDate()
+                                        );
+                                        break;
 
-                                    // 🔁 사용자 존재 여부 + 예약 내역 조회를 하나의 메서드에서 동기화 처리
-                                    ReserveManageResult searchResult = ReserveManager.searchUserAndReservations(
-                                            req.getUserId(), req.getRoom(), req.getDate()
-                                    );
+                                    case "UPDATE":
+                                        ReserveResult updateRes = ReserveManager.updateReserve(
+                                                req.getUserId(),
+                                                req.getRole(),
+                                                req.getOldReserveInfo(),
+                                                req.getNewRoom(),
+                                                req.getNewDate(),
+                                                req.getNewDay()
+                                        );
+                                        result = new ReserveManageResult(updateRes.getResult(), updateRes.getReason(), null);
+                                        break;
 
-                                    System.out.println(">>> 사용자 ID: " + req.getUserId());
-                                    System.out.println(">>> 서버 응답 메시지: " + searchResult.getMessage());
+                                    case "DELETE":
+                                        ReserveResult deleteRes = ReserveManager.cancelReserve(
+                                                req.getUserId(), req.getReserveInfo()
+                                        );
+                                        result = new ReserveManageResult(deleteRes.getResult(), deleteRes.getReason(), null);
+                                        break;
 
-                                    result = searchResult;
-                                    break;
+                                    default:
+                                        result = new ReserveManageResult(false, "알 수 없는 명령입니다", null);
+                                }
 
-                                case "UPDATE":
-                                    // 예약 수정 요청 처리
-                                    ReserveResult updateRes = ReserveManager.updateReserve(
-                                            req.getUserId(),
-                                            req.getRole(),
-                                            req.getOldReserveInfo(),
-                                            req.getNewRoom(),
-                                            req.getNewDate(),
-                                            req.getNewDay()
-                                    );
-                                    result = new ReserveManageResult(updateRes.getResult(), updateRes.getReason(), null);
-                                    break;
+                                // 2. 결과 전송 (SEARCH / UPDATE / DELETE)
+                                out.writeObject(result);
+                                out.flush();
 
-                                case "DELETE":
-                                    // 예약 삭제 요청 처리
-                                    ReserveResult deleteRes = ReserveManager.cancelReserve(req.getUserId(), req.getReserveInfo());
-                                    result = new ReserveManageResult(deleteRes.getResult(), deleteRes.getReason(), null);
-                                    break;
-
-                                default:
-                                    result = new ReserveManageResult(false, "알 수 없는 명령입니다", null);
+                            } catch (Exception e) {
+                                System.err.println(">> RESERVE_MANAGE 처리 중 오류: " + e.getMessage());
+                                e.printStackTrace();
+                                ReserveManageResult errorResult = new ReserveManageResult(false, "서버 처리 오류", null);
+                                out.writeObject(errorResult);
+                                out.flush();
                             }
-
-                            // 처리 결과 전송
-                            out.writeObject(result);
-                            out.flush();
                         }
 
                     } catch (IOException e) {

@@ -488,6 +488,16 @@ public class ReserveManager {
                 return new ReserveResult(false, "기존 예약 삭제 실패: " + cancelResult.getReason());
             }
 
+            // 새 예약 정보 문자열 생성 (학생 중복 체크용)
+            String newReserve = makeReserveInfo(newRoom, newDate, newDay);
+
+            // 학생이 교수 예약된 시간에 예약 불가
+            if ("S".equals(role)) {
+                if (hasProfessorReserve(newReserve)) {
+                    return new ReserveResult(false, "해당 시간은 교수 예약으로 인해 예약할 수 없습니다.");
+                }
+            }
+
             // 교수일 경우, 같은 시간대 학생 예약 강제 삭제
             if ("P".equals(role)) {
                 cancelStudentReservesForProfessor(newRoom, newDate, newDay);

@@ -283,6 +283,14 @@ public class Client {
         return (ReserveManageResult) in.readObject();  // 결과 수신
     }
 
+    public synchronized String findUserRole(String userId) throws IOException, ClassNotFoundException {
+        out.writeUTF("FIND_ROLE");
+        out.flush();
+        out.writeUTF(userId);
+        out.flush();
+        return (String) in.readObject();  // 올바른 반환값 타입
+    }
+
     // 강의실 조회 state 요청 처리
     public synchronized String getRoomState(String room, String day, String start, String end, String date) throws IOException {
         out.writeUTF("GET_ROOM_STATE");
