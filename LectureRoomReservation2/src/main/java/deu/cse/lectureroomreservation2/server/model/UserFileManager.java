@@ -11,10 +11,8 @@ import java.util.*;
  *
  * @author Jimin
  */
-
 /**
- * 사용자 정보를 .txt 파일 기반으로 관리
- * 저장 형식: role,name,id,password (CSV)
+ * 사용자 정보를 .txt 파일 기반으로 관리 저장 형식: role,name,id,password (CSV)
  */
 public class UserFileManager {
 
@@ -23,13 +21,18 @@ public class UserFileManager {
 
     /**
      * 역할과 이름에 따라 사용자 검색
-     * 
+     *
      * @param roleFilter 역할 필터
      * @param nameFilter 이름 포함 문자열
      * @return 조건에 맞는 사용자 목록
      */
     public List<UserManage> searchUsers(String roleFilter, String nameFilter) {
         List<UserManage> result = new ArrayList<>();
+
+        // 이름 필터가 비어있으면 전체 조회 방지
+        if (nameFilter == null || nameFilter.trim().isEmpty()) {
+            return result; // 아무 것도 반환하지 않음
+        }
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -71,7 +74,6 @@ public class UserFileManager {
         }
     }
 
-    
     /**
      * 내부용: 전체 사용자 정보 덮어쓰기
      *
@@ -89,8 +91,7 @@ public class UserFileManager {
     }
 
     /**
-     * 사용자 삭제
-     * 삭제 후 나머지 사용자 목록을 파일에 다시 저장
+     * 사용자 삭제 삭제 후 나머지 사용자 목록을 파일에 다시 저장
      *
      * @param role 대상 역할
      * @param id 대상 ID
@@ -141,7 +142,9 @@ public class UserFileManager {
         List<UserManage> users = new ArrayList<>();
         File file = new File(filePath);
 
-        if (!file.exists()) return users;
+        if (!file.exists()) {
+            return users;
+        }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;

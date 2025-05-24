@@ -351,7 +351,16 @@ public class UserManagementView extends javax.swing.JFrame {
 
             if (result.isSuccess()) {
                 refreshTable(role);
+
+                DefaultTableModel profModel = (DefaultTableModel) tblProfessors.getModel();
+                DefaultTableModel studModel = (DefaultTableModel) tblStudents.getModel();
+
+                // 테이블 모두 초기화
+                profModel.setRowCount(0);
+                studModel.setRowCount(0);
+
                 JOptionPane.showMessageDialog(this, "삭제되었습니다.");
+
             } else {
                 JOptionPane.showMessageDialog(this, result.getMessage());
             }
@@ -383,6 +392,11 @@ public class UserManagementView extends javax.swing.JFrame {
         String nameFilter = txtSearch.getText().trim();
         String roleCode = roleLabel.equals("교수") ? "P" : "S";
 
+        if (nameFilter.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "이름을 입력하세요.");
+            return;
+        }
+
         try {
             // 검색 요청 객체 생성: 이름 필터만 사용
             UserRequest req = new UserRequest("SEARCH", roleCode, null, null, null, nameFilter);
@@ -402,6 +416,7 @@ public class UserManagementView extends javax.swing.JFrame {
                 } else {
                     updateUserTable(tblStudents, users);
                 }
+
             } else {
                 // 서버가 보낸 실패 메시지 출력
                 JOptionPane.showMessageDialog(this, result.getMessage());
@@ -454,11 +469,13 @@ public class UserManagementView extends javax.swing.JFrame {
                 profModel.setRowCount(0);
                 studModel.setRowCount(0);
 
+                txtSearch.setText("");
+
                 // 등록된 역할 테이블에만 한 줄 추가
                 if (roleCode.equals("P")) {
-                    profModel.addRow(new Object[]{id, name, password});
+                    profModel.addRow(new Object[]{roleCode, id, name, password});
                 } else {
-                    studModel.addRow(new Object[]{id, name, password});
+                    studModel.addRow(new Object[]{roleCode, id, name, password});
                 }
 
                 JOptionPane.showMessageDialog(this, "사용자가 등록되었습니다.");
