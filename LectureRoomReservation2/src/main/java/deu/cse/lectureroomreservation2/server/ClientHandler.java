@@ -31,6 +31,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ClientHandler implements Runnable {
 
@@ -161,7 +162,7 @@ public class ClientHandler implements Runnable {
                             String room = (String) in.readObject();
                             String date = (String) in.readObject();
 
-                            if (room.equals(null) && date.equals(null)) {
+                            if (Objects.isNull(room) && Objects.isNull(date)) {
                                 List<String> reserves = ReserveManager.getReserveInfoById(userid);
                                 out.writeObject(reserves);
                                 out.flush();

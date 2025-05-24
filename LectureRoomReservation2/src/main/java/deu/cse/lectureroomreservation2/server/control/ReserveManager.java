@@ -256,7 +256,7 @@ public class ReserveManager {
                                 + reserveParts[3].trim();
                         // 조건 체크
                         boolean match = true;
-                        if (id != null && !id.equals(userId))
+                        if (id != null && !id.trim().equals(userId.trim()))
                             match = false;
                         if (room != null && !room.equals(reserveRoom))
                             match = false;
