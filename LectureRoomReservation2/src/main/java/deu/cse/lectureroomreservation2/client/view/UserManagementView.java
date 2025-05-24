@@ -329,12 +329,15 @@ public class UserManagementView extends javax.swing.JFrame {
 
         int selectedRow = targetTable.getSelectedRow();
 
-        // 권한 값 가져오기 (교수 -> P, 학생 -> S)
-        String rawRole = (String) targetTable.getValueAt(selectedRow, 0);
-        String role = (targetTable == tblProfessors) ? "P" : "S";
+        // 역할 직접 추출 (P, S, A 등 그대로)
+        String rawRole = ((String) targetTable.getValueAt(selectedRow, 0)).trim();
+        String id = ((String) targetTable.getValueAt(selectedRow, 2)).trim();
 
-        // ID 가져오기 
-        String id = (String) targetTable.getValueAt(selectedRow, 2);
+        // 관리자 삭제 방지
+        if (rawRole.equals("A")) {
+            JOptionPane.showMessageDialog(this, "관리자 계정은 삭제할 수 없습니다.");
+            return;
+        }
 
         int confirm = JOptionPane.showConfirmDialog(this,
                 String.format("사용자 [%s]를 삭제하시겠습니까?", id),
@@ -344,23 +347,20 @@ public class UserManagementView extends javax.swing.JFrame {
         }
 
         try {
-            // 사용자 삭제 요청 객체 : 이름, 비밀번호, 이름 검색 필터 필요 없음 -> null
-            UserRequest req = new UserRequest("DELETE", role, null, id, null, null);
-            // 서버에 삭체 요청 전송 -> 결과 수신
+            // ③ role = rawRole (테이블 값 그대로)로 수정
+            UserRequest req = new UserRequest("DELETE", rawRole, null, id, null, null);
             UserResult result = client.sendUserRequest(req);
 
             if (result.isSuccess()) {
-                refreshTable(role);
+                refreshTable(rawRole);
 
                 DefaultTableModel profModel = (DefaultTableModel) tblProfessors.getModel();
                 DefaultTableModel studModel = (DefaultTableModel) tblStudents.getModel();
 
-                // 테이블 모두 초기화
                 profModel.setRowCount(0);
                 studModel.setRowCount(0);
 
                 JOptionPane.showMessageDialog(this, "삭제되었습니다.");
-
             } else {
                 JOptionPane.showMessageDialog(this, result.getMessage());
             }

@@ -98,39 +98,46 @@ public class UserFileManager {
      * @return 삭제 성공 여부
      */
     public boolean deleteUser(String role, String id) {
-        List<UserManage> allUsers = new ArrayList<>();
 
-        // 파일 전체 읽기
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        if (role.equals("A")) {
+            return false;
+        }
+
+        File inputFile = new File("src/main/resources/UserInfo.txt");
+        File tempFile = new File("src/main/resources/UserInfo_temp.txt");
+
+        try (
+                BufferedReader reader = new BufferedReader(new FileReader(inputFile)); 
+                BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))
+        ) {
             String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length != 4) {
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) {
                     continue;
                 }
 
-                String fileRole = parts[0].trim();
-                String name = parts[1].trim();
-                String fileId = parts[2].trim();
-                String password = parts[3].trim();
-
-                // 삭제할 조건이 아니면 리스트에 유지
-                if (!(fileRole.equals(role) && fileId.equals(id))) {
-                    allUsers.add(new UserManage(fileRole, name, fileId, password));
+                String[] parts = line.split(",", 4);  // 4까지만 분리하여 교수 수업정보 유지
+                if (parts.length < 4) {
+                    continue;
                 }
+
+                String currentRole = parts[0].trim();
+                String currentId = parts[2].trim();
+
+                // 삭제 대상이면 기록 X
+                if (currentRole.equals(role) && currentId.equals(id)) {
+                    continue;
+                }
+
+                writer.write(line);
+                writer.newLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
 
-        // 삭제 여부 판단
-        boolean removed = true; // 파일에서 일치하는 걸 제거했으므로 제거 성공
-
-        // 다시 저장
-        overwriteAll(allUsers);
-
-        return removed;
+        return inputFile.delete() && tempFile.renameTo(inputFile);
     }
 
     /**
