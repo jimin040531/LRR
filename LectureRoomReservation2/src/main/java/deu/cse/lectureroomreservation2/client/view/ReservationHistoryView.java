@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -54,34 +55,6 @@ public class ReservationHistoryView extends javax.swing.JFrame {
                 }
             }
         });
-    }
-
-    private List<String> readUserInfoFile() {
-        List<String> lines = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/UserInfo.txt"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return lines;
-    }
-
-    private String findUserRole(String userId) {
-        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/UserInfo.txt"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 3 && parts[2].trim().equals(userId)) {
-                    return parts[0].trim();  // "P" 또는 "S"
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /**
@@ -211,9 +184,10 @@ public class ReservationHistoryView extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lblDate)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
-                            .addComponent(txtDate))))
+                        .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -235,9 +209,9 @@ public class ReservationHistoryView extends javax.swing.JFrame {
                     .addComponent(lblRoomSelect)
                     .addComponent(cmbRoomSelect, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSearch)
-                .addGap(18, 18, 18)
+                .addGap(24, 24, 24)
                 .addComponent(lblReservationTableTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -258,43 +232,73 @@ public class ReservationHistoryView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        String userId = txtUserId.getText().trim();
-        String selectedRoom = cmbRoomSelect.getSelectedItem().toString();
-        String room = selectedRoom.equals("전체") ? "" : selectedRoom;
-        String date = txtDate.getText().trim();
+        // 사용자 입력값 처리
+        final String fUserId = txtUserId.getText().trim();
+        final String fRoom = cmbRoomSelect.getSelectedItem().toString().equals("전체") ? "" : cmbRoomSelect.getSelectedItem().toString();
+        final String inputDate = txtDate.getText().trim();
+        final String fDate = inputDate.equals("yyyy / mm / dd") ? "" : inputDate;
 
-// 힌트 문자열 무시
-        if (date.equals("yyyy / mm / dd")) {
-            date = "";
+        // 날짜 형식 검증
+        if (!fDate.isEmpty() && !fDate.contains("/")) {
+            JOptionPane.showMessageDialog(this, "날짜 형식이 잘못되었습니다.\n ex: yyyy / mm / dd");
+            return;
         }
 
-// 공백을 제거하고 날짜 형식을 유지하도록 처리 (예: 2025/05/24 → 2025 / 05 / 24)
-        if (!date.isEmpty() && !date.contains("/")) {
-            JOptionPane.showMessageDialog(this, "날짜 형식이 잘못되었습니다.\n예: 2025 / 05 / 24");
+        // 검색 조건이 모두 비었는지 확인
+        if (fUserId.isEmpty() && fRoom.isEmpty() && fDate.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "검색 조건을 입력해주세요.");
             return;
         }
 
         try {
-            // ReserveManageRequest 기반 요청
+            // 요청 객체 생성
             ReserveManageRequest req = new ReserveManageRequest(
-                    "SEARCH", userId, room, date,
+                    "SEARCH", fUserId, fRoom, fDate,
                     null, null, null, null, null, null
             );
+
+            // 서버에 요청
             ReserveManageResult result = client.sendReserveManageRequest(req);
 
-            DefaultTableModel model = (DefaultTableModel) tblReservationHistory.getModel();
-            model.setRowCount(0);
+            SwingUtilities.invokeLater(() -> {
+                // 무조건 테이블 초기화
+                DefaultTableModel model = (DefaultTableModel) tblReservationHistory.getModel();
+                model.setRowCount(0);
 
-            if (result != null && result.isSuccess() && result.getReserveList() != null) {
-                for (String[] row : result.getReserveList()) {
-                    model.addRow(row);
+                if (result != null) {
+                    String message = result.getMessage();
+                    List<String[]> list = result.getReserveList();
+
+                    System.out.println(">>> 서버 응답 메시지: " + message);
+
+                    if ("사용자 정보 없음".equals(message)) {
+                        JOptionPane.showMessageDialog(ReservationHistoryView.this, "사용자 정보를 찾을 수 없습니다.");
+                        return;
+                    }
+
+                    if ("예약 없음".equals(message) || list == null || list.isEmpty()) {
+                        JOptionPane.showMessageDialog(ReservationHistoryView.this, "예약 내역이 없습니다.");
+                        return;
+                    }
+
+                    // 예약 내역 표시
+                    for (String[] row : list) {
+                        model.addRow(row);
+                    }
+
+                    // 테이블 UI 강제 갱신
+                    tblReservationHistory.revalidate();
+                    tblReservationHistory.repaint();
+                } else {
+                    JOptionPane.showMessageDialog(ReservationHistoryView.this, "서버 응답 오류입니다.");
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "일치하는 예약 내역이 없습니다.");
-            }
+            });
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "서버 통신 중 오류 발생: " + e.getMessage());
             e.printStackTrace();
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(ReservationHistoryView.this, "서버 통신 중 오류 발생: " + e.getMessage());
+            });
         }
     }//GEN-LAST:event_btnSearchActionPerformed
 

@@ -28,6 +28,7 @@ import deu.cse.lectureroomreservation2.server.control.UserRequestController;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -318,10 +319,21 @@ public class ClientHandler implements Runnable {
                             ReserveManageRequest req = (ReserveManageRequest) in.readObject();
                             ReserveManageResult result;
 
+                            System.out.println(">>> 요청 명령: " + req.getCommand());
+
                             switch (req.getCommand()) {
                                 case "SEARCH":
-                                    List<String[]> list = ReserveManager.getReserveList(req.getUserId(), req.getRoom(), req.getDate());
-                                    result = new ReserveManageResult(true, "조회 성공", list);
+                                    System.out.println(">>> 요청 명령: SEARCH");
+
+                                    // 🔁 사용자 존재 여부 + 예약 내역 조회를 하나의 메서드에서 동기화 처리
+                                    ReserveManageResult searchResult = ReserveManager.searchUserAndReservations(
+                                            req.getUserId(), req.getRoom(), req.getDate()
+                                    );
+
+                                    System.out.println(">>> 사용자 ID: " + req.getUserId());
+                                    System.out.println(">>> 서버 응답 메시지: " + searchResult.getMessage());
+
+                                    result = searchResult;
                                     break;
 
                                 case "UPDATE":
@@ -350,7 +362,7 @@ public class ClientHandler implements Runnable {
                             // 처리 결과 전송
                             out.writeObject(result);
                             out.flush();
-                        }   
+                        }
 
                     } catch (IOException e) {
                         System.out.println("Client Connection Error or Terminated. " + e.getMessage());

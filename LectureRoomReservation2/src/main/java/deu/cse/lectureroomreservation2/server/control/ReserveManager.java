@@ -1,5 +1,6 @@
 package deu.cse.lectureroomreservation2.server.control;
 
+import deu.cse.lectureroomreservation2.common.ReserveManageResult;
 import deu.cse.lectureroomreservation2.common.ReserveResult;
 import java.io.*;
 import java.time.LocalDateTime;
@@ -514,18 +515,11 @@ public class ReserveManager {
         }
     }
 
-    /**
-     * 사용자 ID, 강의실 번호, 날짜 조건에 따라 예약 내역을 검색하여 반환하는 메서드 예약 정보는 USER_FILE에서 읽어오며,
-     * 필터 조건이 비어있으면 전체 검색 가능
-     *
-     * @param userId 사용자 ID (""이면 모든 사용자 포함)
-     * @param room 강의실 번호 (""이면 모든 강의실 포함)
-     * @param date 날짜 (yyyy-MM-dd 형식, ""이면 전체 날짜 포함)
-     * @return 예약 내역 리스트 (각 예약은 String[] 형태로 반환됨)
-     */
-    public static List<String[]> getReserveList(String userId, String room, String date) {
+    public static ReserveManageResult searchUserAndReservations(String userId, String room, String date) {
         synchronized (FILE_LOCK) {
+            boolean userFound = false;
             List<String[]> result = new ArrayList<>();
+
             try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -539,10 +533,11 @@ public class ReserveManager {
                         continue;
                     }
 
+                    userFound = true;
+
                     // 예약 정보는 5번째 요소부터 반복
                     for (int i = 4; i < parts.length; i++) {
-                        String reserve = parts[i].trim();  // 예약 정보 문자열
-                        // 예약 정보 형식: "강의실 / yyyy / MM / dd / HH:mm HH:mm / 요일"
+                        String reserve = parts[i].trim();
                         String[] tokens = reserve.split("/");
                         if (tokens.length < 6) {
                             continue;
@@ -554,11 +549,9 @@ public class ReserveManager {
                         String d = tokens[3].trim();
                         String fullDate = y + " / " + m + " / " + d;
 
-                        if (!date.isEmpty() && !date.equals(fullDate)) {
+                        if (!room.isEmpty() && !roomNum.equals(room)) {
                             continue;
                         }
-
-                        // 날짜 필터
                         if (!date.isEmpty() && !date.equals(fullDate)) {
                             continue;
                         }
@@ -573,8 +566,16 @@ public class ReserveManager {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                return new ReserveManageResult(false, "파일 읽기 오류", null);
             }
-            return result;
+
+            if (!userFound) {
+                return new ReserveManageResult(false, "사용자 정보 없음", null);
+            } else if (result.isEmpty()) {
+                return new ReserveManageResult(true, "예약 없음", new ArrayList<>());
+            } else {
+                return new ReserveManageResult(true, "조회 성공", result);
+            }
         }
     }
 }
