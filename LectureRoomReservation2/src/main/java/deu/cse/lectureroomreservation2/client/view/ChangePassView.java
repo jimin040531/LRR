@@ -7,7 +7,6 @@ package deu.cse.lectureroomreservation2.client.view;
 import java.io.IOException;
 import java.io.*;
 import java.util.*;
-import deu.cse.lectureroomreservation2.server.control.ChangePassController;
 import java.net.Socket;
 import javax.swing.JOptionPane;
 
