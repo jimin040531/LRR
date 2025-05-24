@@ -23,6 +23,7 @@ import deu.cse.lectureroomreservation2.common.ScheduleRequest;
 import deu.cse.lectureroomreservation2.common.ScheduleResult;
 import deu.cse.lectureroomreservation2.common.UserRequest;
 import deu.cse.lectureroomreservation2.common.UserResult;
+import deu.cse.lectureroomreservation2.server.control.ChangePassController;
 import deu.cse.lectureroomreservation2.server.control.TimeTableController;
 import deu.cse.lectureroomreservation2.server.control.UserRequestController;
 
@@ -33,6 +34,7 @@ import java.util.Map;
 
 public class ClientHandler implements Runnable {
 
+    private boolean isLoggedIn = false;
     private final Socket socket;
     private final Server server;
 
@@ -80,6 +82,7 @@ public class ClientHandler implements Runnable {
                 synchronized (server.getLoggedInUsers()) {
                     server.getLoggedInUsers().add(id); // 로그인 성공한 사용자 등록
                 }
+                isLoggedIn = true;
             }
 
             out.writeObject(status);
@@ -112,6 +115,25 @@ public class ClientHandler implements Runnable {
                             System.out.println("User has log-out: " + id);
                             break;
                         }
+
+                        if ("CHANGE_PASS".equals(command)) {
+                            String userId = in.readUTF();
+                            String currentPass = in.readUTF();
+                            String newPass = in.readUTF();
+
+                            ChangePassController controller = new ChangePassController();
+                            String result = controller.changePassword(userId, currentPass, newPass);
+
+                            if ("SUCCESS".equals(result)) {
+                                System.out.println("비밀번호 변경 성공: " + userId);
+                            } else {
+                                System.out.println("비밀번호 변경 실패 " + userId + result);
+                            }
+
+                            out.writeUTF(result); // 예: "SUCCESS" 또는 오류 메시지
+                            out.flush();
+                        }
+
                         // 예약 요청 처리
                         if ("RESERVE".equals(command)) {
                             // 클라이언트로부터 예약 요청 객체를 받음
@@ -141,8 +163,8 @@ public class ClientHandler implements Runnable {
 
                             if (room.equals(null) && date.equals(null)) {
                                 List<String> reserves = ReserveManager.getReserveInfoById(userid);
-                            out.writeObject(reserves);
-                            out.flush();
+                                out.writeObject(reserves);
+                                out.flush();
                             } else {
                                 List<String> result = ReserveManager.getReserveInfoAdvanced(userid, room, date);
                                 out.writeObject(result);
@@ -359,7 +381,7 @@ public class ClientHandler implements Runnable {
                             // 처리 결과 전송
                             out.writeObject(result);
                             out.flush();
-                        }   
+                        }
 
                     } catch (IOException e) {
                         System.out.println("Client Connection Error or Terminated. " + e.getMessage());
@@ -375,7 +397,7 @@ public class ClientHandler implements Runnable {
                 server.getConnectionLimiter().release();
             }
 
-            if (id != null) {
+            if (id != null && isLoggedIn) {
                 synchronized (server.getLoggedInUsers()) {
                     server.getLoggedInUsers().remove(id); // 로그아웃 처리
                 }
