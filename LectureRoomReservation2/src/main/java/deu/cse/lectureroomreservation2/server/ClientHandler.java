@@ -23,6 +23,7 @@ import deu.cse.lectureroomreservation2.common.ScheduleRequest;
 import deu.cse.lectureroomreservation2.common.ScheduleResult;
 import deu.cse.lectureroomreservation2.common.UserRequest;
 import deu.cse.lectureroomreservation2.common.UserResult;
+import deu.cse.lectureroomreservation2.server.control.ChangePassController;
 import deu.cse.lectureroomreservation2.server.control.TimeTableController;
 import deu.cse.lectureroomreservation2.server.control.UserRequestController;
 
@@ -33,6 +34,7 @@ import java.util.Map;
 
 public class ClientHandler implements Runnable {
 
+    private boolean isLoggedIn = false;
     private final Socket socket;
     private final Server server;
 
@@ -161,8 +163,8 @@ public class ClientHandler implements Runnable {
 
                             if (room.equals(null) && date.equals(null)) {
                                 List<String> reserves = ReserveManager.getReserveInfoById(userid);
-                            out.writeObject(reserves);
-                            out.flush();
+                                out.writeObject(reserves);
+                                out.flush();
                             } else {
                                 List<String> result = ReserveManager.getReserveInfoAdvanced(userid, room, date);
                                 out.writeObject(result);
@@ -379,7 +381,7 @@ public class ClientHandler implements Runnable {
                             // 처리 결과 전송
                             out.writeObject(result);
                             out.flush();
-                        }   
+                        }
 
                     } catch (IOException e) {
                         System.out.println("Client Connection Error or Terminated. " + e.getMessage());
