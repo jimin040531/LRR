@@ -181,7 +181,7 @@ public class StudentMainMenu extends javax.swing.JFrame {
 
     private void lecture_reserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lecture_reserActionPerformed
         // TODO add your handling code here:
-        ViewRoom viewroom = new ViewRoom(client, userId, "S");
+        ViewRoom viewroom = new ViewRoom(client, userId, "S", null);
         viewroom.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_lecture_reserActionPerformed

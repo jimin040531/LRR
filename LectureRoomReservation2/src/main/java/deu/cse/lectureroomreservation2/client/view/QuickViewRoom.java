@@ -14,9 +14,6 @@ import javax.swing.table.DefaultTableModel;
  * @author namw2
  */
 import deu.cse.lectureroomreservation2.client.Client;
-import deu.cse.lectureroomreservation2.client.Student;
-import deu.cse.lectureroomreservation2.server.model.GetReservation;
-import deu.cse.lectureroomreservation2.server.control.TableRearrange;
 
 public class QuickViewRoom extends javax.swing.JFrame {
     Client client;
