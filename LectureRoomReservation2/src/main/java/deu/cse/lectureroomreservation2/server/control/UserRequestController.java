@@ -6,8 +6,6 @@ package deu.cse.lectureroomreservation2.server.control;
 
 import deu.cse.lectureroomreservation2.server.model.UserManage;
 import deu.cse.lectureroomreservation2.server.model.UserFileManager;
-import java.io.BufferedReader;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -28,7 +28,6 @@ import deu.cse.lectureroomreservation2.server.control.UserRequestController;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -229,33 +228,36 @@ public class ClientHandler implements Runnable {
 
                             // 클라이언트가 요청한 명령에 따라 분기 처리
                             switch (req.getCommand()) {
-                                case "LOAD":    // 시간표 조회
+                                case "LOAD" -> {
+                                    // 시간표 조회
                                     Map<String, String> schedule = controller.getScheduleForRoom(
                                             req.getRoom(), req.getDay(), req.getType());
                                     result = new ScheduleResult(true, "조회 성공", schedule);
-                                    break;
+                                }
 
-                                case "ADD": // 시간표 추가
+                                case "ADD" -> {
+                                    // 시간표 추가
                                     try {
                                         controller.addScheduleToFile(req.getRoom(), req.getDay(), req.getStart(), req.getEnd(), req.getSubject(), req.getType());
                                         result = new ScheduleResult(true, "등록 성공", null);
                                     } catch (Exception e) {
                                         result = new ScheduleResult(false, "등록 실패: " + e.getMessage(), null);
                                     }
-                                    break;
+                                }
 
-                                case "DELETE":  // 시간표 삭제
+                                case "DELETE" -> {
+                                    // 시간표 삭제
                                     boolean deleted = controller.deleteScheduleFromFile(req.getRoom(), req.getDay(), req.getStart(), req.getEnd());
                                     result = new ScheduleResult(deleted, deleted ? "삭제 성공" : "삭제 실패", null);
-                                    break;
+                                }
 
-                                case "UPDATE":  // 시간표 수정
+                                case "UPDATE" -> {
+                                    // 시간표 수정
                                     boolean updated = controller.updateSchedule(req.getRoom(), req.getDay(), req.getStart(), req.getEnd(), req.getSubject(), req.getType());
                                     result = new ScheduleResult(updated, updated ? "수정 성공" : "수정 실패", null);
-                                    break;
+                                }
 
-                                default:
-                                    result = new ScheduleResult(false, "알 수 없는 명령입니다", null);
+                                default -> result = new ScheduleResult(false, "알 수 없는 명령입니다", null);
                             }
 
                             // 처리 결과를 클라이언트로 전송
@@ -275,26 +277,28 @@ public class ClientHandler implements Runnable {
                                 // 2. 명령(command)에 따라 분기 처리
                                 String cmd = req.getCommand();
 
-                                if ("ADD".equals(cmd)) {
-                                    try {
-                                        List<String[]> added = controller.saveUserAndGetSingleUser(
-                                                new String[]{req.getRole(), req.getName(), req.getId(), req.getPassword()}
-                                        );
-                                        result = new UserResult(true, "사용자 등록 성공", added);
-                                    } catch (Exception e) {
-                                        result = new UserResult(false, "등록 실패: " + e.getMessage(), null);
-                                    }
-
-                                } else if ("DELETE".equals(cmd)) {
-                                    boolean deleted = controller.deleteUser(req.getRole(), req.getId());
-                                    result = new UserResult(deleted, deleted ? "사용자 삭제 성공" : "삭제 실패", null);
-
-                                } else if ("SEARCH".equals(cmd)) {
-                                    List<String[]> users = controller.handleSearchRequest(req.getRole(), req.getNameFilter());
-                                    result = new UserResult(true, "사용자 검색 성공", users);
-
-                                } else {
+                                if (null == cmd) {
                                     result = new UserResult(false, "알 수 없는 사용자 명령입니다", null);
+                                } else switch (cmd) {
+                                    case "ADD" -> {
+                                        try {
+                                            List<String[]> added = controller.saveUserAndGetSingleUser(
+                                                    new String[]{req.getRole(), req.getName(), req.getId(), req.getPassword()}
+                                            );
+                                            result = new UserResult(true, "사용자 등록 성공", added);
+                                        } catch (Exception e) {
+                                            result = new UserResult(false, "등록 실패: " + e.getMessage(), null);
+                                        }
+                                    }
+                                    case "DELETE" -> {
+                                        boolean deleted = controller.deleteUser(req.getRole(), req.getId());
+                                        result = new UserResult(deleted, deleted ? "사용자 삭제 성공" : "삭제 실패", null);
+                                    }
+                                    case "SEARCH" -> {
+                                        List<String[]> users = controller.handleSearchRequest(req.getRole(), req.getNameFilter());
+                                        result = new UserResult(true, "사용자 검색 성공", users);
+                                    }
+                                    default -> result = new UserResult(false, "알 수 없는 사용자 명령입니다", null);
                                 }
 
                                 // 3. 결과 전송
@@ -344,13 +348,11 @@ public class ClientHandler implements Runnable {
                                 System.out.println(">>> 요청 명령: " + cmd);
 
                                 switch (cmd) {
-                                    case "SEARCH":
-                                        result = ReserveManager.searchUserAndReservations(
+                                    case "SEARCH" -> result = ReserveManager.searchUserAndReservations(
                                                 req.getUserId(), req.getRoom(), req.getDate()
                                         );
-                                        break;
 
-                                    case "UPDATE":
+                                    case "UPDATE" -> {
                                         ReserveResult updateRes = ReserveManager.updateReserve(
                                                 req.getUserId(),
                                                 req.getRole(),
@@ -360,17 +362,16 @@ public class ClientHandler implements Runnable {
                                                 req.getNewDay()
                                         );
                                         result = new ReserveManageResult(updateRes.getResult(), updateRes.getReason(), null);
-                                        break;
+                                    }
 
-                                    case "DELETE":
+                                    case "DELETE" -> {
                                         ReserveResult deleteRes = ReserveManager.cancelReserve(
                                                 req.getUserId(), req.getReserveInfo()
                                         );
                                         result = new ReserveManageResult(deleteRes.getResult(), deleteRes.getReason(), null);
-                                        break;
+                                    }
 
-                                    default:
-                                        result = new ReserveManageResult(false, "알 수 없는 명령입니다", null);
+                                    default -> result = new ReserveManageResult(false, "알 수 없는 명령입니다", null);
                                 }
 
                                 // 2. 결과 전송 (SEARCH / UPDATE / DELETE)

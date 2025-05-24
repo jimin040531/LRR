@@ -17,12 +17,12 @@ import java.io.Serializable;
  */
 public class UserRequest implements Serializable {
 
-    private String command; // 요청 명령 : ADD 또는 DELETE 또는 SEARCH
-    private String role;
-    private String name;
-    private String id;
-    private String password;
-    private String nameFilter;
+    private final String command; // 요청 명령 : ADD 또는 DELETE 또는 SEARCH
+    private final String role;
+    private final String name;
+    private final String id;
+    private final String password;
+    private final String nameFilter;
 
     public UserRequest(String command, String role, String name, String id, String password, String nameFilter) {
         this.command = command;

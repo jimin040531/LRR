@@ -73,23 +73,7 @@ public class UserFileManager {
             e.printStackTrace();
         }
     }
-
-    /**
-     * 내부용: 전체 사용자 정보 덮어쓰기
-     *
-     * @param users 새로 저장할 전체 사용자 목록
-     */
-    private void overwriteAll(List<UserManage> users) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
-            for (UserManage user : users) {
-                writer.write(String.join(",", user.getRole(), user.getName(), user.getId(), user.getPassword()));
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    
     /**
      * 사용자 삭제 삭제 후 나머지 사용자 목록을 파일에 다시 저장
      *
