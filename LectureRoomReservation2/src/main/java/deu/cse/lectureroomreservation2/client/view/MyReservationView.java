@@ -42,7 +42,7 @@ public class MyReservationView extends javax.swing.JFrame {
         this.userid = userid;
         this.role = role;
 
-        //currentUserID.setText(userid);
+        currentUserID.setText(userid);
         loadMyData();
         initComponents();
     }
