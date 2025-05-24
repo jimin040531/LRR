@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------------
+Test set: deu.cse.lectureroomreservation2.server.control.UserRequestControllerTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 1, Errors: 2, Skipped: 0, Time elapsed: 0.055 s <<< FAILURE! -- in deu.cse.lectureroomreservation2.server.control.UserRequestControllerTest
+deu.cse.lectureroomreservation2.server.control.UserRequestControllerTest.testSaveUser -- Time elapsed: 0.028 s <<< ERROR!
+java.lang.NullPointerException: Cannot load from object array because "userData" is null
+	at deu.cse.lectureroomreservation2.server.control.UserRequestController.saveUser(UserRequestController.java:32)
+	at deu.cse.lectureroomreservation2.server.control.UserRequestControllerTest.testSaveUser(UserRequestControllerTest.java:56)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+deu.cse.lectureroomreservation2.server.control.UserRequestControllerTest.testSaveUserAndGetUpdatedList -- Time elapsed: 0.007 s <<< ERROR!
+java.lang.NullPointerException: Cannot load from object array because "userData" is null
+	at deu.cse.lectureroomreservation2.server.control.UserRequestController.saveUser(UserRequestController.java:32)
+	at deu.cse.lectureroomreservation2.server.control.UserRequestController.saveUserAndGetUpdatedList(UserRequestController.java:42)
+	at deu.cse.lectureroomreservation2.server.control.UserRequestControllerTest.testSaveUserAndGetUpdatedList(UserRequestControllerTest.java:65)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+deu.cse.lectureroomreservation2.server.control.UserRequestControllerTest.testHandleSearchRequest -- Time elapsed: 0.005 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <null> but was: <[]>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
+	at deu.cse.lectureroomreservation2.server.control.UserRequestControllerTest.testHandleSearchRequest(UserRequestControllerTest.java:48)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

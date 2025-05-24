@@ -41,6 +41,14 @@ public class Client {
         }
     }
 
+    public ObjectOutputStream getOutputStream() {
+        return out;
+    }
+
+    public ObjectInputStream getInputStream() {
+        return in;
+    }
+
     public synchronized void sendLoginRequest(String id, String password, String role) throws IOException {
         out.writeUTF(id);
         out.writeUTF(password);
@@ -104,6 +112,7 @@ public class Client {
         out.flush();
         return (ReserveResult) in.readObject();
     }
+
     // 클라이언트에서 예약 취소 요청 사용 예시, 응답 예시
     /*
      * String id = "20212991";
@@ -120,7 +129,6 @@ public class Client {
      * //예약 취소 성공: 예약이 취소되었습니다.
      * //예약 취소 실패: 해당 예약 정보를 찾을 수 없습니다.
      */
-
     // 예약 변경 요청 처리(사용자 id, 기존 예약 정보, 새로운 강의실 번호, 새로운 날짜, 새로운 요일)
     public synchronized ReserveResult sendModifyReserveRequest(String id, String oldReserveInfo, String newRoomNumber,
             String newDate, String newDay, String role)
@@ -141,6 +149,7 @@ public class Client {
         out.flush();
         return (ReserveResult) in.readObject();
     }
+
     // 클라이언트에서 예약 변경 요청 사용 예시, 응답 예시
     /*
      * // 예약 변경 요청 예시
@@ -163,7 +172,6 @@ public class Client {
      * //예약 변경 성공: 예약 성공
      * //예약 변경 실패: 해당 예약 정보를 찾을 수 없습니다.
      */
-
     // 공지사항 수신 및 확인 처리
     public synchronized void checkAndShowNotices(javax.swing.JFrame parentFrame) throws IOException {
         while (true) {
@@ -197,6 +205,7 @@ public class Client {
         out.flush();
         return (List<String>) in.readObject();
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * // id만 지정
@@ -215,7 +224,6 @@ public class Client {
      * // 20212991 / 915 / 2025 / 06 / 03 / 09:00 10:00 / 화요일
      * // 20212991 / 916 / 2025 / 06 / 04 / 10:00 11:00 / 수요일
      */
-
     // 예약 정보로 예약한 총 사용자 수 요청 처리
     public synchronized int requestReserveUserCount(String reserveInfo) throws IOException {
         out.writeUTF("COUNT_RESERVE_USERS");
@@ -233,6 +241,7 @@ public class Client {
 
     // 예약 정보로 예약한 사용자 id 목록 요청 처리 (6번 기능)
     @SuppressWarnings("unchecked")
+
     public synchronized List<String> getUserIdsByReserveInfo(String reserveInfo)
             throws IOException, ClassNotFoundException {
         out.writeUTF("GET_USER_IDS_BY_RESERVE");
@@ -258,6 +267,7 @@ public class Client {
         out.flush();
         return in.readBoolean();
     }
+
     // 클라이언트에서 사용예시, 응답예시
     /*
      * String reserveInfo = "915 / 2025 / 06 / 03 / 00:00 01:00 / 화요일";
@@ -269,7 +279,8 @@ public class Client {
      * System.out.println("해당 시간대에 교수 예약이 없습니다.");
      * }
      */
-    public synchronized ScheduleResult sendScheduleRequest(ScheduleRequest req) throws IOException, ClassNotFoundException {
+    public synchronized ScheduleResult sendScheduleRequest(ScheduleRequest req)
+            throws IOException, ClassNotFoundException {
         // 1. 명령 문자열 "SCHEDULE"을 먼저 전송하여 서버 측에서 시간표 관리 관련 요청임을 알림
         out.writeUTF("SCHEDULE");
         out.flush();
@@ -293,11 +304,11 @@ public class Client {
 
     public synchronized ReserveManageResult sendReserveManageRequest(ReserveManageRequest req)
             throws IOException, ClassNotFoundException {
-        out.writeUTF("RESERVE_MANAGE");   // 명령 전송
+        out.writeUTF("RESERVE_MANAGE"); // 명령 전송
         out.flush();
-        out.writeObject(req);             // 객체 직렬화 전송
+        out.writeObject(req); // 객체 직렬화 전송
         out.flush();
-        return (ReserveManageResult) in.readObject();  // 결과 수신
+        return (ReserveManageResult) in.readObject(); // 결과 수신
     }
 
     // 강의실 조회 state 요청 처리
@@ -361,9 +372,10 @@ public class Client {
      * }
      */
 
+
     public static void main(String[] args) {
         try {
-            Client c = new Client("localhost", 5000);
+            Client c = new Client("localhost", 5000);  // 서버 컴퓨터의 IP 주소
             if (c.isConnected()) {
                 LoginStatus status = c.receiveLoginStatus();
                 c.logout();
