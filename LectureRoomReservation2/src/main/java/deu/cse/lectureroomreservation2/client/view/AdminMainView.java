@@ -12,15 +12,13 @@ import deu.cse.lectureroomreservation2.client.Client;
  */
 public class AdminMainView extends javax.swing.JFrame {
 
-    /**
+/**
      * Creates new form AdminMainView
      */
-    private final String userId;
     private final Client client;
 
     public AdminMainView(String userId, Client client) {
         
-        this.userId = userId;
         this.client = client;
 
         initComponents();

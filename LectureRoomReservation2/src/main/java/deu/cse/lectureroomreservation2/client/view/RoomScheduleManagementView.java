@@ -114,6 +114,38 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         }
     }
 
+    private void validateTimeSelection() {
+        String start = (String) cmbStartTime.getSelectedItem();
+        String end = (String) cmbEndTime.getSelectedItem();
+
+        if (start != null && end != null) {
+            String[] startParts = start.split(":");
+            String[] endParts = end.split(":");
+
+            int startHour = Integer.parseInt(startParts[0]);
+            int startMinute = Integer.parseInt(startParts[1]);
+            int endHour = Integer.parseInt(endParts[0]);
+            int endMinute = Integer.parseInt(endParts[1]);
+
+            int totalStart = startHour * 60 + startMinute;
+            int totalEnd = endHour * 60 + endMinute;
+            int duration = totalEnd - totalStart;
+
+            // 종료 시간이 시작 시간보다 늦어야 함
+            if (totalEnd <= totalStart) {
+                JOptionPane.showMessageDialog(this, "종료 시간은 시작 시간보다 늦어야 합니다.");
+                cmbEndTime.setSelectedIndex(-1);
+                return;
+            }
+
+            // 정확히 50분 차이만 허용
+            if (duration != 50) {
+                JOptionPane.showMessageDialog(this, "시작 시간과 종료 시간은 50분 단위만 허용됩니다.");
+                cmbEndTime.setSelectedIndex(-1);
+            }
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -157,11 +189,21 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         cmbDayOfWeek.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "월", "화", "수", "목", "금", "토", "일" }));
 
         cmbEndTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:50", "10:50", "11:50", "12:50", "13:50", "14:50", "15:50", "16:50", "17:50" }));
+        cmbEndTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbEndTimeActionPerformed(evt);
+            }
+        });
 
         lblTitle.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
         lblTitle.setText("강의실 일정 관리");
 
-        cmbStartTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00" }));
+        cmbStartTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00" }));
+        cmbStartTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbStartTimeActionPerformed(evt);
+            }
+        });
 
         btnBack.setText("<");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
@@ -441,6 +483,14 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
     private void cmbRoomSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoomSelectActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbRoomSelectActionPerformed
+
+    private void cmbStartTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbStartTimeActionPerformed
+        validateTimeSelection();
+    }//GEN-LAST:event_cmbStartTimeActionPerformed
+
+    private void cmbEndTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbEndTimeActionPerformed
+        validateTimeSelection();
+    }//GEN-LAST:event_cmbEndTimeActionPerformed
 
     /**
      * @param args the command line arguments

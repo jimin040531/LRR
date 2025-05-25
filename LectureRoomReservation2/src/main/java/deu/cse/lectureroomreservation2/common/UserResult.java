@@ -18,9 +18,9 @@ import java.util.List;
  */
 public class UserResult implements Serializable {
 
-    private boolean success;
-    private String message;
-    private List<String[]> userList; // 검색 결과 -> 각 항목 : [role, name, id, password]
+    private final boolean success;
+    private final String message;
+    private final List<String[]> userList; // 검색 결과 -> 각 항목 : [role, name, id, password]
 
     public UserResult(boolean success, String message, List<String[]> userList) {
         this.success = success;

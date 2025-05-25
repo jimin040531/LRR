@@ -11,10 +11,8 @@ import java.util.*;
  *
  * @author Jimin
  */
-
 /**
- * 사용자 정보를 .txt 파일 기반으로 관리
- * 저장 형식: role,name,id,password (CSV)
+ * 사용자 정보를 .txt 파일 기반으로 관리 저장 형식: role,name,id,password (CSV)
  */
 public class UserFileManager {
 
@@ -23,13 +21,18 @@ public class UserFileManager {
 
     /**
      * 역할과 이름에 따라 사용자 검색
-     * 
+     *
      * @param roleFilter 역할 필터
      * @param nameFilter 이름 포함 문자열
      * @return 조건에 맞는 사용자 목록
      */
     public List<UserManage> searchUsers(String roleFilter, String nameFilter) {
         List<UserManage> result = new ArrayList<>();
+
+        // 이름 필터가 비어있으면 전체 조회 방지
+        if (nameFilter == null || nameFilter.trim().isEmpty()) {
+            return result; // 아무 것도 반환하지 않음
+        }
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -71,65 +74,61 @@ public class UserFileManager {
         }
     }
 
-    
     /**
-     * 내부용: 전체 사용자 정보 덮어쓰기
-     *
-     * @param users 새로 저장할 전체 사용자 목록
-     */
-    private void overwriteAll(List<UserManage> users) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
-            for (UserManage user : users) {
-                writer.write(String.join(",", user.getRole(), user.getName(), user.getId(), user.getPassword()));
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 사용자 삭제
-     * 삭제 후 나머지 사용자 목록을 파일에 다시 저장
+     * 사용자 삭제 삭제 후 나머지 사용자 목록을 파일에 다시 저장
      *
      * @param role 대상 역할
      * @param id 대상 ID
      * @return 삭제 성공 여부
      */
     public boolean deleteUser(String role, String id) {
-        List<UserManage> allUsers = new ArrayList<>();
+        if (role.equals("A")) {
+            return false;
+        }
 
-        // 파일 전체 읽기
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        File inputFile = new File(filePath);
+        List<String> updatedLines = new ArrayList<>();
+
+        // 1. 메모리에 남길 라인들 저장
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
             String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length != 4) {
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) {
                     continue;
                 }
 
-                String fileRole = parts[0].trim();
-                String name = parts[1].trim();
-                String fileId = parts[2].trim();
-                String password = parts[3].trim();
-
-                // 삭제할 조건이 아니면 리스트에 유지
-                if (!(fileRole.equals(role) && fileId.equals(id))) {
-                    allUsers.add(new UserManage(fileRole, name, fileId, password));
+                String[] parts = line.split(",", 4);
+                if (parts.length < 4) {
+                    continue;
                 }
+
+                String currentRole = parts[0].trim();
+                String currentId = parts[2].trim();
+
+                // 삭제 대상이면 저장하지 않음
+                if (currentRole.equals(role) && currentId.equals(id)) {
+                    continue;
+                }
+
+                updatedLines.add(line);
             }
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
 
-        // 삭제 여부 판단
-        boolean removed = true; // 파일에서 일치하는 걸 제거했으므로 제거 성공
+        // 2. 파일을 덮어쓰기 모드로 열고 updatedLines만 다시 저장
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile))) {
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
 
-        // 다시 저장
-        overwriteAll(allUsers);
-
-        return removed;
+        return true;
     }
 
     /**
@@ -141,7 +140,9 @@ public class UserFileManager {
         List<UserManage> users = new ArrayList<>();
         File file = new File(filePath);
 
-        if (!file.exists()) return users;
+        if (!file.exists()) {
+            return users;
+        }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -162,4 +163,15 @@ public class UserFileManager {
 
         return users;
     }
+
+    public boolean isDuplicateId(String id) {
+        List<UserManage> allUsers = loadAllUsers();
+        for (UserManage user : allUsers) {
+            if (user.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

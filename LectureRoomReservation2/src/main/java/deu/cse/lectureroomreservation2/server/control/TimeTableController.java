@@ -67,6 +67,10 @@ public class TimeTableController {
     /**
      * 파일에 이미 같은 강의실/요일/시간대의 시간표가 존재하는지 확인
      *
+     * @param room
+     * @param day
+     * @param start
+     * @param end
      * @return true: 중복 있음 / false: 없음
      */
     public boolean isScheduleExists(String room, String day, String start, String end) {
@@ -86,6 +90,12 @@ public class TimeTableController {
     /**
      * 파일에 새 시간표 항목 추가 
      * 중복 항목이 있을 경우 -> 예외 처리
+     * @param room
+     * @param day
+     * @param start
+     * @param end
+     * @param subject
+     * @param type
      */
     public void addScheduleToFile(String room, String day, String start, String end, String subject, String type) {
         if (isScheduleExists(room, day, start, end)) {
@@ -99,6 +109,10 @@ public class TimeTableController {
     /**
      * 지정된 강의실/요일/시간대의 시간표 항목 삭제
      * 
+     * @param room
+     * @param day
+     * @param start
+     * @param end
      * @return 삭제 성공 여부
      */
     public boolean deleteScheduleFromFile(String room, String day, String start, String end) {
@@ -128,6 +142,12 @@ public class TimeTableController {
     /**
      * 기존 시간표를 삭제한 후 새 정보로 다시 추가해서 수정하는 방식 사용
      *
+     * @param room
+     * @param day
+     * @param start
+     * @param subject
+     * @param end
+     * @param type
      * @return 수정 성공 여부
      */
     public boolean updateSchedule(String room, String day, String start, String end, String subject, String type) {
@@ -142,6 +162,9 @@ public class TimeTableController {
     /**
      * 특정 강의실/요일/타입에 해당하는 시간표 정보를 Map으로 반환
      *
+     * @param room
+     * @param day
+     * @param type
      * @return Map<시간대, 과목명 또는 제한사유>
      */
     public Map<String, String> getScheduleForRoom(String room, String day, String type) {

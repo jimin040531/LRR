@@ -14,10 +14,10 @@ package deu.cse.lectureroomreservation2.server.model;
  * 과목명, 시작/종료 시간, 유형 정보를 포함
  */
 public class ScheduleEntry {
-    private String subject;
-    private String type;       // "수업" 또는 "제한"
-    private String startTime;
-    private String endTime;
+    private final String subject;
+    private final String type;       // "수업" 또는 "제한"
+    private final String startTime;
+    private final String endTime;
 
     public ScheduleEntry(String subject, String type, String startTime, String endTime) {
         this.subject = subject;

@@ -8,7 +8,7 @@ import java.util.Map;
  * 강의실 번호별 LectureRoom 객체를 저장하고, 시간표 조회 및 추가 기능을 제공
  */
 public class ScheduleManager {
-    private Map<String, LectureRoom> lectureRooms;
+    private final Map<String, LectureRoom> lectureRooms;
 
     public ScheduleManager() {
         this.lectureRooms = new HashMap<>();
