@@ -391,6 +391,11 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        if (cmbStartTime.getSelectedItem() == null || cmbEndTime.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(this, "시작 시간과 종료 시간을 모두 선택해 주세요.");
+            return;
+        }
+        
         String selectedRoom = cmbRoomSelect.getSelectedItem().toString().trim();
         String subject = txtSubject.getText().trim();
         String dayOfWeek = cmbDayOfWeek.getSelectedItem().toString().trim();
@@ -419,6 +424,11 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        if (cmbStartTime.getSelectedItem() == null || cmbEndTime.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(this, "시작 시간과 종료 시간을 모두 선택해 주세요.");
+            return;
+        }
+        
         String selectedRoom = cmbRoomSelect.getSelectedItem().toString().trim();
         String subject = txtSubject.getText().trim();
         String dayOfWeek = cmbDayOfWeek.getSelectedItem().toString().trim();
@@ -447,6 +457,11 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        if (cmbStartTime.getSelectedItem() == null || cmbEndTime.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(this, "시작 시간과 종료 시간을 모두 선택해 주세요.");
+            return;
+        }
+        
         String selectedRoom = cmbRoomSelect.getSelectedItem().toString().trim();
         String dayOfWeek = cmbDayOfWeek.getSelectedItem().toString().trim();
         String startTime = cmbStartTime.getSelectedItem().toString().trim();
