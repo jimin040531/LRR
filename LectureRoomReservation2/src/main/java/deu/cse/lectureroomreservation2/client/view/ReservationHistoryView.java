@@ -341,7 +341,7 @@ public class ReservationHistoryView extends javax.swing.JFrame {
         String oldReserveInfo = String.format("%s / %s / %s", oldRoom, oldDateStr, weekDay);
 
         String newRoom = JOptionPane.showInputDialog(this, "새 강의실 번호 입력:", oldRoom);
-        String newDate = JOptionPane.showInputDialog(this, "새 날짜 및 시간 입력 (예: 2025 / 06 / 05 / 09:00 09:50):", oldDateStr);
+        String newDate = JOptionPane.showInputDialog(this, "새 날짜 및 시간 입력 (예: yyyy / mm / dd / hh:mm hh:mm):", oldDateStr);
         String newWeekDay = JOptionPane.showInputDialog(this, "새 요일 입력:", weekDay);
 
         if (newRoom == null || newDate == null || newWeekDay == null) {
