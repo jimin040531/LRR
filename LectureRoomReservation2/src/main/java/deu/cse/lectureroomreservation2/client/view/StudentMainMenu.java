@@ -26,6 +26,16 @@ public class StudentMainMenu extends javax.swing.JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(330, 465);
         setLocationRelativeTo(null);
+
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (client != null) {
+                    client.logout(); // 서버에 로그아웃 알리기
+                }
+            }
+        });
+
     }
 
     /**
@@ -158,14 +168,20 @@ public class StudentMainMenu extends javax.swing.JFrame {
     private void stu_pass_changeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stu_pass_changeActionPerformed
         // TODO add your handling code here:
         ChangePassView frame = new ChangePassView();
-        frame.setSize(300, 450);           // ✨ 창 크기 설정 (적당히 보기 좋은 크기)
-        frame.setLocationRelativeTo(null); // ✨ 화면 가운데 정렬
-        frame.setVisible(true);            // ✨ 화면에 보이게 만들기
+
+        // 현재 클라이언트의 스트림 전달
+        frame.setStreams(client.getOutputStream(), client.getInputStream());
+
+        // 현재 로그인된 사용자 ID 전달
+        frame.setUserId(userId);
+        frame.setSize(300, 450);           
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);   
     }//GEN-LAST:event_stu_pass_changeActionPerformed
 
     private void lecture_reserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lecture_reserActionPerformed
         // TODO add your handling code here:
-        ViewRoom viewroom = new ViewRoom(client, userId, "S");
+        ViewRoom viewroom = new ViewRoom(client, userId, "S", null);
         viewroom.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_lecture_reserActionPerformed
@@ -195,6 +211,9 @@ public class StudentMainMenu extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(StudentMainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */

@@ -185,19 +185,22 @@ public class LoginFrame extends javax.swing.JFrame {
 
                 if (!status.isLoginSuccess()) {
                     if ("WAIT".equals(status.getRole())) {
-                        javax.swing.JOptionPane.showMessageDialog(this, status.getMessage());
+                        javax.swing.JOptionPane.showMessageDialog(this, "접속 인원 초과.");
                     } else if ("DUPLICATE".equals(status.getRole())) {
                         javax.swing.JOptionPane.showMessageDialog(this, "이미 로그인 중인 계정입니다.");
                     } else {
                         javax.swing.JOptionPane.showMessageDialog(this, "로그인 실패! ID, 비밀번호 또는 역할이 일치하지 않습니다.");
                     }
+                    client.logout();
                     return;
                 }
 
                 // 로그인 성공 → 역할에 따라 메인 화면 분기
                 switch (status.getRole()) {
-                    case "STUDENT" ->
+                    case "STUDENT" -> {
                         new StudentMainMenu(id, client).setVisible(true);
+                        client.checkAndShowNotices(this); // 공지사항 확인 및 팝업
+                    }
                     case "PROFESSOR" ->
                         new ProfessorMainMenu(id, client).setVisible(true);
                     case "ADMIN" ->

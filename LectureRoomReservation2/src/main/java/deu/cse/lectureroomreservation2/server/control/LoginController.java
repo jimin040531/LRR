@@ -7,13 +7,25 @@ package deu.cse.lectureroomreservation2.server.control;
 import deu.cse.lectureroomreservation2.common.LoginStatus;
 import deu.cse.lectureroomreservation2.server.model.UserData;
 import deu.cse.lectureroomreservation2.server.model.User;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  *
  * @author skylo
  */
 public class LoginController {
+    
+    private Path userFile;
+    private final UserData userData = new UserData();
+    
+    public LoginController() {
+        this.userFile = Paths.get("UserInfo.txt"); // 기본 파일
+    }
 
-    private final UserData userData = new UserData(); // 모델 호출
+    public LoginController(Path testPath) {
+        this.userFile = testPath; // 테스트용 생성자
+    }
 
     public LoginStatus authenticate(String id, String password, String selectedRole) {
         LoginStatus status = new LoginStatus();
@@ -31,7 +43,6 @@ public class LoginController {
             return status;
         }
 
-        // 모델에서 사용자 정보 가져오기
         var optionalUser = userData.getUser(id, password, selectedRole);
 
         if (optionalUser.isEmpty()) {

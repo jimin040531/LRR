@@ -12,11 +12,13 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.List;
 import java.util.ArrayList;
-
+import deu.cse.lectureroomreservation2.common.*;
 import javax.swing.table.*;
 import deu.cse.lectureroomreservation2.client.*;
-import deu.cse.lectureroomreservation2.server.model.GetReservation;
-import deu.cse.lectureroomreservation2.client.TableRearrange;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.awt.event.ActionListener;
 
 /**
  *
@@ -28,17 +30,26 @@ public class ViewRoom extends javax.swing.JFrame {
     Client client;
     String userid;
     String role;
+    String check;
+    private String startR, endR, roomR, stateR, dayR, choosedDate;
     private static String LastUsedButton = " "; // 새로고침 기능을 위해 마지막으로 선택한 버튼 정보를 저장
+    private boolean initializing = true;
+    private boolean isProgrammaticChange = false;
 
     /**
      * Creates new form viewRoom
      */
-    public ViewRoom(Client client, String userid, String role) {
+    public ViewRoom(Client client, String userid, String role, String check) {
         this.client = client;
         this.userid = userid;
         this.role = role;
+        this.check = check;
 
         initComponents();
+
+        if ("change".equals(check)) {
+            reservationButton.setText("예약변경");
+        }
 
         ImageIcon stairIcon = new ImageIcon(getClass().getResource("/images/stairs.jpg"));
         Image stairImg = stairIcon.getImage().getScaledInstance(60, 110, Image.SCALE_SMOOTH);
@@ -48,11 +59,20 @@ public class ViewRoom extends javax.swing.JFrame {
         stair2.setText("");
 
         addDateComboBoxListeners();
-        //updateChoosedDate(); // 초기 선택 날짜 표시
 
+        // === 날짜 콤보박스 초기화 ===
         LocalDate now = LocalDate.now();
+        LocalDate initDate = now;
+        if (now.getDayOfWeek() == DayOfWeek.SATURDAY || now.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            // 오늘이 주말이면 다음주 월요일로 이동
+            int plusDays = (8 - now.getDayOfWeek().getValue()) % 7;
+            if (plusDays == 0) {
+                plusDays = 1; // 일요일이면 +1, 토요일이면 +2
+            }
+            initDate = now.plusDays(plusDays);
+        }
 
-        for (int y = now.getYear(); y <= now.getYear() + 1; y++) {
+        for (int y = initDate.getYear(); y <= initDate.getYear() + 1; y++) {
             Year.addItem(String.valueOf(y));
         }
         for (int m = 1; m <= 12; m++) {
@@ -61,20 +81,58 @@ public class ViewRoom extends javax.swing.JFrame {
         for (int d = 1; d <= 31; d++) {
             day.addItem(String.format("%02d", d));
         }
-        Year.setSelectedItem(String.valueOf(now.getYear()));
-        Month.setSelectedItem(String.format("%02d", now.getMonthValue()));
-        day.setSelectedItem(String.format("%02d", now.getDayOfMonth()));
+        Year.setSelectedItem(String.valueOf(initDate.getYear()));
+        Month.setSelectedItem(String.format("%02d", initDate.getMonthValue()));
+        day.setSelectedItem(String.format("%02d", initDate.getDayOfMonth()));
 
         // 요일 설정 (예시 : 월)
-        DayOfWeek dayOfWeek = now.getDayOfWeek();
-        DayComboBox.setSelectedItem(dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()));
+        DayOfWeek dayOfWeek = initDate.getDayOfWeek();
+        String[] daysKor = { "월", "화", "수", "목", "금", "토", "일" };
+        String dayKor = daysKor[dayOfWeek.getValue() - 1];
+        DayComboBox.setSelectedItem(dayKor);
+
+        // === [추가] day 콤보박스 아이템을 해당 월에 맞게 초기화 ===
+        updateDayComboBoxItems();
+
+        initializing = false; // 클라이언트의 날짜가 주말일때 문제 생기는거 해결 - 초기화 끝!
 
     }
 
     private void addDateComboBoxListeners() {
-        Year.addActionListener(e -> updateChoosedDate());
-        Month.addActionListener(e -> updateChoosedDate());
-        day.addActionListener(e -> updateChoosedDate());
+        Year.addActionListener(e -> {
+            if (initializing || isProgrammaticChange) {
+                return;
+            }
+            updateDayComboBoxItems();
+            correctInvalidDateSelection();
+            refreshPage(); // 타이머 리셋
+            updateChoosedDate();
+        });
+        Month.addActionListener(e -> {
+            if (initializing || isProgrammaticChange) {
+                return;
+            }
+            updateDayComboBoxItems();
+            correctInvalidDateSelection();
+            refreshPage();
+            updateChoosedDate();
+        });
+        day.addActionListener(e -> {
+            if (initializing || isProgrammaticChange) {
+                return;
+            }
+            correctInvalidDateSelection();
+            refreshPage();
+            updateChoosedDate();
+        });
+        DayComboBox.addActionListener(e -> {
+            if (initializing || isProgrammaticChange) {
+                return;
+            }
+            updateDateBySelectedDayOfWeek();
+            refreshPage();
+            updateChoosedDate();
+        });
     }
 
     private void updateChoosedDate() {
@@ -92,18 +150,10 @@ public class ViewRoom extends javax.swing.JFrame {
             }
 
             ChoosedDate.setText(y + "년 " + m + "월 " + d + "일");
+            choosedDate = y + " / " + m + " / " + d + " / ";// "2025 / 05 / 21 12:00 13:00"
+            System.out.println(ChoosedDate);
+            System.out.println(choosedDate);
         }
-    }
-
-    public void insertValue(String roomNum) { // 테이블에 값을 집어넣는다.
-
-        // Student temp = new Student("20213066", "남성우", "01076241028"); //TODO이거도 나중에수정
-        String[][] tempResult = GetReservation.GetTime("reservation");
-        String[][] tempResult2 = GetReservation.GetTime("schedule");
-
-        TableRearrange.InsertTable(roomNum, (String) DayComboBox.getSelectedItem(), ViewTimeTable, tempResult,
-                tempResult2);
-
     }
 
     public void updateColumnValues(JTable table) { // 비어있는 칸은 공실로 처리
@@ -141,12 +191,12 @@ public class ViewRoom extends javax.swing.JFrame {
                         // 서버에서 상태 받아오기
                         String state = client.getRoomState(roomNum, dayOfWeek, start, end, date);
 
-                        rowDataList.add(new Object[]{start, end, roomNum, state, dayOfWeek});
+                        rowDataList.add(new Object[] { start, end, roomNum, state, dayOfWeek });
                     }
                 } catch (Exception e) {
                     // 예외는 done()에서 처리
                     rowDataList.clear();
-                    rowDataList.add(new Object[]{"서버 오류", "", "", "", ""});
+                    rowDataList.add(new Object[] { "서버 오류", "", "", "", "" });
                 }
                 return rowDataList;
             }
@@ -172,9 +222,9 @@ public class ViewRoom extends javax.swing.JFrame {
     private Timer refreshTimer;
 
     public void refreshPage() { // TODO 버튼 누를때마다 새로운 새로고침 함수를 불러옴 갑자기 새로고침을 한번에 함
+        // 기존 타이머가 있으면 중지
         if (refreshTimer != null && refreshTimer.isRunning()) {
-            // System.out.println("이미 새로고침이 실행 중입니다.");
-            return; // 이미 실행 중이면 중복 실행 방지
+            refreshTimer.stop();
         }
 
         this.loadData();
@@ -186,12 +236,209 @@ public class ViewRoom extends javax.swing.JFrame {
         refreshTimer.start();
     }
 
+    private void updateDayComboBoxByDate() {
+        String y = (String) Year.getSelectedItem();
+        String m = (String) Month.getSelectedItem();
+        String d = (String) day.getSelectedItem();
+        if (y == null || m == null || d == null)
+            return;
+
+        try {
+            int year = Integer.parseInt(y);
+            int month = Integer.parseInt(m);
+            int dayOfMonth = Integer.parseInt(d);
+            LocalDate date = LocalDate.of(year, month, dayOfMonth);
+            DayOfWeek dow = date.getDayOfWeek();
+            String[] daysKor = { "월", "화", "수", "목", "금", "토", "일" };
+            String dayKor = daysKor[dow.getValue() - 1];
+
+            if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY) {
+                int plusDays = (8 - dow.getValue()) % 7;
+                if (plusDays == 0)
+                    plusDays = 1;
+                LocalDate nextMonday = date.plusDays(plusDays);
+
+                isProgrammaticChange = true;
+                Year.setSelectedItem(String.valueOf(nextMonday.getYear()));
+                Month.setSelectedItem(String.format("%02d", nextMonday.getMonthValue()));
+                day.setSelectedItem(String.format("%02d", nextMonday.getDayOfMonth()));
+                DayComboBox.setSelectedItem("월");
+                isProgrammaticChange = false;
+
+                if (!initializing) {
+                    JOptionPane.showMessageDialog(this, "주말(토/일)은 선택할 수 없습니다.\n자동으로 다음 평일로 이동합니다.", "안내",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                isProgrammaticChange = true;
+                DayComboBox.setSelectedItem(dayKor);
+                isProgrammaticChange = false;
+            }
+        } catch (Exception ex) {
+            // 날짜 파싱 오류 무시
+        }
+    }
+
+    private void updateDateBySelectedDayOfWeek() {
+        String y = (String) Year.getSelectedItem();
+        String m = (String) Month.getSelectedItem();
+        String d = (String) day.getSelectedItem();
+        String selectedDay = (String) DayComboBox.getSelectedItem(); // "월", "화" 등
+
+        if (y == null || m == null || d == null || selectedDay == null) {
+            return;
+        }
+
+        try {
+            int year = Integer.parseInt(y);
+            int month = Integer.parseInt(m);
+            int dayOfMonth = Integer.parseInt(d);
+            java.time.LocalDate baseDate = java.time.LocalDate.of(year, month, dayOfMonth);
+
+            // 현재 주의 월요일 구하기
+            java.time.DayOfWeek baseDow = baseDate.getDayOfWeek();
+            int daysFromMonday = baseDow.getValue() - java.time.DayOfWeek.MONDAY.getValue();
+            java.time.LocalDate monday = baseDate.minusDays(daysFromMonday);
+
+            // 선택한 요일의 인덱스 구하기 (월=1, ..., 금=5)
+            String[] daysKor = { "월", "화", "수", "목", "금" };
+            int targetDayIndex = -1;
+            for (int i = 0; i < daysKor.length; i++) {
+                if (daysKor[i].equals(selectedDay)) {
+                    targetDayIndex = i;
+                    break;
+                }
+            }
+            if (targetDayIndex == -1) {
+                return;
+            }
+
+            // 해당 주의 해당 요일 날짜 구하기
+            java.time.LocalDate targetDate = monday.plusDays(targetDayIndex);
+
+            // Year, Month, day 콤보박스 값 변경
+            Year.setSelectedItem(String.valueOf(targetDate.getYear()));
+            Month.setSelectedItem(String.format("%02d", targetDate.getMonthValue()));
+            day.setSelectedItem(String.format("%02d", targetDate.getDayOfMonth()));
+
+            // 날짜 라벨 및 요일 콤보박스 동기화
+            updateDayComboBoxByDate();
+        } catch (Exception ex) {
+            // 날짜 파싱 오류 무시
+        }
+    }
+
+    private void updateDayComboBoxItems() {
+        String y = (String) Year.getSelectedItem();
+        String m = (String) Month.getSelectedItem();
+        if (y == null || m == null) {
+            return;
+        }
+
+        int year = Integer.parseInt(y);
+        int month = Integer.parseInt(m);
+
+        // 해당 월의 마지막 일 구하기
+        int lastDay = java.time.YearMonth.of(year, month).lengthOfMonth();
+
+        // 현재 선택된 일 저장
+        String selectedDay = (String) day.getSelectedItem();
+
+        // day 콤보박스 아이템 재설정
+        isProgrammaticChange = true;
+        day.removeAllItems();
+        for (int d = 1; d <= lastDay; d++) {
+            day.addItem(String.format("%02d", d));
+        }
+        // 기존에 선택된 일이 유효하면 복원, 아니면 마지막 일로 선택
+        if (selectedDay != null) {
+            int sel = Integer.parseInt(selectedDay);
+            if (sel <= lastDay) {
+                day.setSelectedItem(String.format("%02d", sel));
+            } else {
+                day.setSelectedItem(String.format("%02d", lastDay));
+            }
+        }
+        isProgrammaticChange = false;
+    }
+
+    private void correctInvalidDateSelection() {
+        String y = (String) Year.getSelectedItem();
+        String m = (String) Month.getSelectedItem();
+        String d = (String) day.getSelectedItem();
+        if (y == null || m == null || d == null)
+            return;
+
+        try {
+            int year = Integer.parseInt(y);
+            int month = Integer.parseInt(m);
+            int dayOfMonth = Integer.parseInt(d);
+            LocalDate selected = LocalDate.of(year, month, dayOfMonth);
+            LocalDate today = LocalDate.now();
+
+            boolean wasPast = selected.isBefore(today);
+
+            // 과거면 오늘로 이동
+            if (wasPast) {
+                selected = today;
+            }
+
+            // 주말이면 다음 평일로 이동
+            DayOfWeek dow = selected.getDayOfWeek();
+            boolean wasWeekend = (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY);
+            if (wasWeekend) {
+                int plusDays = (8 - dow.getValue()) % 7;
+                if (plusDays == 0)
+                    plusDays = 1;
+                selected = selected.plusDays(plusDays);
+            }
+
+            // 실제로 날짜가 바뀌었다면 콤보박스 값 변경
+            if (wasPast || wasWeekend) {
+                isProgrammaticChange = true;
+                Year.setSelectedItem(String.valueOf(selected.getYear()));
+                Month.setSelectedItem(String.format("%02d", selected.getMonthValue()));
+                // === [추가] 월이 바뀌었을 수 있으니 day 콤보박스 아이템을 새로 갱신 ===
+                updateDayComboBoxItems();
+                day.setSelectedItem(String.format("%02d", selected.getDayOfMonth()));
+                String[] daysKor = { "월", "화", "수", "목", "금", "토", "일" };
+                String dayKor = daysKor[selected.getDayOfWeek().getValue() - 1];
+                DayComboBox.setSelectedItem(dayKor);
+                isProgrammaticChange = false;
+
+                if (!initializing) {
+                    if (wasPast && wasWeekend) {
+                        JOptionPane.showMessageDialog(this, "과거 날짜 또는 주말(토/일)은 선택할 수 없습니다.\n자동으로 다음 평일로 이동합니다.", "안내",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else if (wasPast) {
+                        JOptionPane.showMessageDialog(this, "과거 날짜는 선택할 수 없습니다.", "안내",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else if (wasWeekend) {
+                        JOptionPane.showMessageDialog(this, "주말(토/일)은 선택할 수 없습니다.\n자동으로 다음 평일로 이동합니다.", "안내",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            } else {
+                // 평일이면 요일 콤보박스만 맞추기
+                isProgrammaticChange = true;
+                String[] daysKor = { "월", "화", "수", "목", "금", "토", "일" };
+                String dayKor = daysKor[selected.getDayOfWeek().getValue() - 1];
+                DayComboBox.setSelectedItem(dayKor);
+                isProgrammaticChange = false;
+            }
+        } catch (Exception ex) {
+            // 날짜 파싱 오류 무시
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -420,9 +667,39 @@ public class ViewRoom extends javax.swing.JFrame {
     ViewTimeTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     ViewTimeTable.setDoubleBuffered(true);
     ViewTimeTable.setGridColor(new java.awt.Color(0, 0, 0));
+    ViewTimeTable.addMouseListener(new java.awt.event.MouseAdapter() {
+        @Override
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            int row = ViewTimeTable.rowAtPoint(evt.getPoint());
+
+            if (row != -1) {
+                startR = String.valueOf(ViewTimeTable.getValueAt(row, 0));
+                endR = String.valueOf(ViewTimeTable.getValueAt(row, 1));
+                roomR = String.valueOf(ViewTimeTable.getValueAt(row, 2));
+                stateR = String.valueOf(ViewTimeTable.getValueAt(row, 3));
+                dayR = String.valueOf(ViewTimeTable.getValueAt(row, 4));
+
+                System.out.println(
+                    "클릭한 행 정보:\n" +
+                    "시작 시간: " + startR + "\n" +
+                    "종료 시간: " + endR + "\n" +
+                    "강의실: " + roomR + "\n" +
+                    "상태: " + stateR + "\n" +
+                    "요일: " + dayR
+                );
+            }
+        }
+    });
     ViewTimePane.setViewportView(ViewTimeTable);
 
     DayComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "월", "화", "수", "목", "금" }));
+    DayComboBox.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
+            updateDateBySelectedDayOfWeek();
+            loadData(); // 즉시 테이블 갱신
+        }
+    });
 
     DayLabel.setText("요일:");
 
@@ -443,9 +720,31 @@ public class ViewRoom extends javax.swing.JFrame {
 
     jLabel4.setText("날짜 변경");
 
-    Month.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+    Month.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
 
     day.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
+
+    /*Year.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
+            if (initializing) return;
+            updateDayComboBoxByDate();
+        }
+    });*/
+    /*Month.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
+            if (initializing) return;
+            updateDayComboBoxByDate();
+        }
+    });*/
+    /*day.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
+            if (initializing) return;
+            updateDayComboBoxByDate();
+        }
+    });*/
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -456,19 +755,11 @@ public class ViewRoom extends javax.swing.JFrame {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(ViewTimePane)
                         .addComponent(reservationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(0, 0, Short.MAX_VALUE)))
                     .addContainerGap())
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addComponent(RefreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(reservationButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(goBackButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(16, 16, 16))
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addGap(6, 6, 6)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -486,7 +777,17 @@ public class ViewRoom extends javax.swing.JFrame {
                     .addComponent(DayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(DayComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap())))
+                    .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(ViewTimePane)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(RefreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(reservationButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(goBackButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGap(16, 16, 16))))
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -577,9 +878,38 @@ public class ViewRoom extends javax.swing.JFrame {
 
     private void reservationButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_reservationButtonActionPerformed
         // TODO add your handling code here:
-        LastUsedButton = " ";
-        //LRCompleteCheck Lcheck = new LRCompleteCheck(userid, role, "강의실 번호", "2025 / 06 / 03 / 09:00 10:00", "화요일", client);
-        //Lcheck.setVisible(true);
+        LastUsedButton = " ";// "2025 / 05 / 21 12:00 13:00"
+        // String newRoomNumber, newDate, String newDay, String role
+        if (check == "change") {
+            MyReservationView.changereservation[0] = roomR;
+            MyReservationView.changereservation[1] = choosedDate + startR + " " + endR;
+            MyReservationView.changereservation[2] = dayR;
+            MyReservationView.changereservation[3] = role;
+
+            try {
+                ReserveResult result = client.sendModifyReserveRequest(userid, MyReservationView.cancelreservation,
+                        roomR, choosedDate + startR + " " + endR, dayR + "요일", role);
+                new viewResultLR().viewResult(result.getResult(), result.getReason());
+                if (!result.getResult()) {
+                    return;
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ViewRoom.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ViewRoom.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            // String id, String oldReserveInfo, String newRoomNumber,String newDate, String
+            // newDay, String role
+            // String id, String oldReserveInfo, String newRoomNumber,String newDate, String
+            // newDay, String role
+
+            this.dispose();
+        } else {
+            LRCompleteCheck Lcheck = new LRCompleteCheck(userid, role, roomR, choosedDate + startR + " " + endR,
+                    dayR + "요일", client);
+            Lcheck.setVisible(true);
+        }
+
         this.dispose();
 
     }// GEN-LAST:event_reservationButtonActionPerformed
@@ -643,7 +973,7 @@ public class ViewRoom extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ViewRoom(null, null, null).setVisible(true);
+                new ViewRoom(null, null, null, null).setVisible(true);
             }
         });
     }
