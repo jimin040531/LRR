@@ -65,11 +65,8 @@ public class UserRequestController {
         String password = newUser[3];
 
         // 중복 검사 (교수 & 학생 ID도 중복 X)
-        List<UserManage> existingUsers = FileManager.loadAllUsers();
-        for (UserManage user : existingUsers) {
-            if (user.getId().equals(id)) {
-                throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
-            }
+        if (FileManager.isDuplicateId(id)) {
+            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
         }
 
         // 저장

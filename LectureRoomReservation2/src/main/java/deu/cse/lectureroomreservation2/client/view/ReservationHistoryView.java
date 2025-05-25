@@ -285,9 +285,7 @@ public class ReservationHistoryView extends javax.swing.JFrame {
                 if (result != null) {
                     String message = result.getMessage();
                     List<String[]> list = result.getReserveList();
-
-                    System.out.println(">>> 서버 응답 메시지: " + message);
-
+                    
                     if ("사용자 정보 없음".equals(message)) {
                         JOptionPane.showMessageDialog(ReservationHistoryView.this, "사용자 정보를 찾을 수 없습니다.");
                         return;

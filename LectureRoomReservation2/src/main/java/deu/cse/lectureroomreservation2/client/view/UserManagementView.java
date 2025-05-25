@@ -354,11 +354,13 @@ public class UserManagementView extends javax.swing.JFrame {
             if (result.isSuccess()) {
                 refreshTable(rawRole);
 
-                DefaultTableModel profModel = (DefaultTableModel) tblProfessors.getModel();
-                DefaultTableModel studModel = (DefaultTableModel) tblStudents.getModel();
+                txtId.setText("");
+                txtName.setText("");
+                txtPw.setText("");
 
-                profModel.setRowCount(0);
-                studModel.setRowCount(0);
+                // 선택된 행 초기화해서 삭제 대상 혼동 방지
+                tblStudents.clearSelection();
+                tblProfessors.clearSelection();
 
                 JOptionPane.showMessageDialog(this, "삭제되었습니다.");
             } else {
@@ -473,9 +475,9 @@ public class UserManagementView extends javax.swing.JFrame {
 
                 // 등록된 역할 테이블에만 한 줄 추가
                 if (roleCode.equals("P")) {
-                    profModel.addRow(new Object[]{roleCode, id, name, password});
+                    profModel.addRow(new Object[]{roleCode, name, id, password});
                 } else {
-                    studModel.addRow(new Object[]{roleCode, id, name, password});
+                    studModel.addRow(new Object[]{roleCode, name, id, password});
                 }
 
                 JOptionPane.showMessageDialog(this, "사용자가 등록되었습니다.");
@@ -484,6 +486,10 @@ public class UserManagementView extends javax.swing.JFrame {
                 txtName.setText("");
                 txtId.setText("");
                 txtPw.setText("");
+
+                tblStudents.clearSelection();
+                tblProfessors.clearSelection();
+
                 jDialog1.setVisible(false);
             } else {
                 JOptionPane.showMessageDialog(this, result.getMessage());

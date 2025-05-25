@@ -218,7 +218,7 @@ public class ClientHandler implements Runnable {
                         }
 
                         if ("SCHEDULE".equals(command)) {
-                            System.out.println(">> [서버] SCHEDULE 명령 수신됨");
+                            System.out.println(">> SCHEDULE 명령 수신됨");
 
                             // 클라이언트로부터 ScheduleRequest 객체 수신
                             ScheduleRequest req = (ScheduleRequest) in.readObject();
@@ -266,7 +266,7 @@ public class ClientHandler implements Runnable {
                         }
 
                         if ("USER".equals(command)) {
-                            System.out.println(">> [서버] USER 명령 수신됨");
+                            System.out.println(">> USER 명령 수신됨");
 
                             try {
                                 // 1. 클라이언트로부터 UserRequest 객체 수신
@@ -337,7 +337,7 @@ public class ClientHandler implements Runnable {
                         }
 
                         if ("RESERVE_MANAGE".equals(command)) {
-                            System.out.println(">> [서버] RESERVE_MANAGE 명령 수신됨");
+                            System.out.println(">> RESERVE_MANAGE 명령 수신됨");
 
                             try {
                                 // 1. 클라이언트로부터 요청 객체 수신
@@ -345,7 +345,6 @@ public class ClientHandler implements Runnable {
                                 ReserveManageResult result = null;
 
                                 String cmd = req.getCommand();
-                                System.out.println(">>> 요청 명령: " + cmd);
 
                                 switch (cmd) {
                                     case "SEARCH" -> result = ReserveManager.searchUserAndReservations(

@@ -73,7 +73,7 @@ public class UserFileManager {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 사용자 삭제 삭제 후 나머지 사용자 목록을 파일에 다시 저장
      *
@@ -82,25 +82,22 @@ public class UserFileManager {
      * @return 삭제 성공 여부
      */
     public boolean deleteUser(String role, String id) {
-
         if (role.equals("A")) {
             return false;
         }
 
-        File inputFile = new File("src/main/resources/UserInfo.txt");
-        File tempFile = new File("src/main/resources/UserInfo_temp.txt");
+        File inputFile = new File(filePath);
+        List<String> updatedLines = new ArrayList<>();
 
-        try (
-                BufferedReader reader = new BufferedReader(new FileReader(inputFile)); 
-                BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))
-        ) {
+        // 1. 메모리에 남길 라인들 저장
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().isEmpty()) {
                     continue;
                 }
 
-                String[] parts = line.split(",", 4);  // 4까지만 분리하여 교수 수업정보 유지
+                String[] parts = line.split(",", 4);
                 if (parts.length < 4) {
                     continue;
                 }
@@ -108,12 +105,22 @@ public class UserFileManager {
                 String currentRole = parts[0].trim();
                 String currentId = parts[2].trim();
 
-                // 삭제 대상이면 기록 X
+                // 삭제 대상이면 저장하지 않음
                 if (currentRole.equals(role) && currentId.equals(id)) {
                     continue;
                 }
 
-                writer.write(line);
+                updatedLines.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        // 2. 파일을 덮어쓰기 모드로 열고 updatedLines만 다시 저장
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile))) {
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -121,7 +128,7 @@ public class UserFileManager {
             return false;
         }
 
-        return inputFile.delete() && tempFile.renameTo(inputFile);
+        return true;
     }
 
     /**
@@ -156,4 +163,15 @@ public class UserFileManager {
 
         return users;
     }
+
+    public boolean isDuplicateId(String id) {
+        List<UserManage> allUsers = loadAllUsers();
+        for (UserManage user : allUsers) {
+            if (user.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
