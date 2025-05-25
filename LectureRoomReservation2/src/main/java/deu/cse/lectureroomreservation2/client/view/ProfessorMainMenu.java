@@ -158,6 +158,8 @@ public class ProfessorMainMenu extends javax.swing.JFrame {
     private void prof_pass_changeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prof_pass_changeActionPerformed
         // TODO add your handling code here:
         ChangePassView frame = new ChangePassView();
+        frame.setStreams(client.getOutputStream(), client.getInputStream());
+        frame.setUserId(userId);
         frame.setSize(300, 450);           // 창 크기 설정 (적당히 보기 좋은 크기)
         frame.setLocationRelativeTo(null); // 화면 가운데 정렬
         frame.setVisible(true);            // 화면에 보이게 만들기
