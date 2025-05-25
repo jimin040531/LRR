@@ -340,7 +340,7 @@ public class ClientHandler implements Runnable {
                             System.out.println(">> RESERVE_MANAGE 명령 수신됨");
 
                             try {
-                                // 1. 클라이언트로부터 요청 객체 수신
+                                // 클라이언트로부터 요청 객체 수신
                                 ReserveManageRequest req = (ReserveManageRequest) in.readObject();
                                 ReserveManageResult result = null;
 
@@ -373,7 +373,7 @@ public class ClientHandler implements Runnable {
                                     default -> result = new ReserveManageResult(false, "알 수 없는 명령입니다", null);
                                 }
 
-                                // 2. 결과 전송 (SEARCH / UPDATE / DELETE)
+                                // 결과 전송 (SEARCH / UPDATE / DELETE)
                                 out.writeObject(result);
                                 out.flush();
 
