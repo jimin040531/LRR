@@ -197,8 +197,10 @@ public class LoginFrame extends javax.swing.JFrame {
 
                 // 로그인 성공 → 역할에 따라 메인 화면 분기
                 switch (status.getRole()) {
-                    case "STUDENT" ->
+                    case "STUDENT" -> {
                         new StudentMainMenu(id, client).setVisible(true);
+                        client.checkAndShowNotices(this); // 공지사항 확인 및 팝업
+                    }
                     case "PROFESSOR" ->
                         new ProfessorMainMenu(id, client).setVisible(true);
                     case "ADMIN" ->
