@@ -40,12 +40,17 @@ public class ViewRoom extends javax.swing.JFrame {
      * Creates new form viewRoom
      */
     public ViewRoom(Client client, String userid, String role, String check) {
+        setTitle("강의실 조회 및 예약");
         this.client = client;
         this.userid = userid;
         this.role = role;
         this.check = check;
 
         initComponents();
+        
+        // 강의실 버튼 비활성화 910 917
+        room910.setEnabled(false);
+        room917.setEnabled(false);
 
         if ("change".equals(check)) {
             reservationButton.setText("예약변경");
@@ -240,8 +245,9 @@ public class ViewRoom extends javax.swing.JFrame {
         String y = (String) Year.getSelectedItem();
         String m = (String) Month.getSelectedItem();
         String d = (String) day.getSelectedItem();
-        if (y == null || m == null || d == null)
+        if (y == null || m == null || d == null) {
             return;
+        }
 
         try {
             int year = Integer.parseInt(y);
@@ -254,8 +260,9 @@ public class ViewRoom extends javax.swing.JFrame {
 
             if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY) {
                 int plusDays = (8 - dow.getValue()) % 7;
-                if (plusDays == 0)
+                if (plusDays == 0) {
                     plusDays = 1;
+                }
                 LocalDate nextMonday = date.plusDays(plusDays);
 
                 isProgrammaticChange = true;
@@ -366,8 +373,9 @@ public class ViewRoom extends javax.swing.JFrame {
         String y = (String) Year.getSelectedItem();
         String m = (String) Month.getSelectedItem();
         String d = (String) day.getSelectedItem();
-        if (y == null || m == null || d == null)
+        if (y == null || m == null || d == null) {
             return;
+        }
 
         try {
             int year = Integer.parseInt(y);
@@ -388,8 +396,9 @@ public class ViewRoom extends javax.swing.JFrame {
             boolean wasWeekend = (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY);
             if (wasWeekend) {
                 int plusDays = (8 - dow.getValue()) % 7;
-                if (plusDays == 0)
+                if (plusDays == 0) {
                     plusDays = 1;
+                }
                 selected = selected.plusDays(plusDays);
             }
 
@@ -544,8 +553,6 @@ public class ViewRoom extends javax.swing.JFrame {
 
         stair2.setText("jLabel2");
 
-        elebator.setText("엘베 사진");
-
         stair1.setText("jLabel6");
 
         room917.setBackground(new java.awt.Color(255, 255, 204));
@@ -678,6 +685,7 @@ public class ViewRoom extends javax.swing.JFrame {
                 roomR = String.valueOf(ViewTimeTable.getValueAt(row, 2));
                 stateR = String.valueOf(ViewTimeTable.getValueAt(row, 3));
                 dayR = String.valueOf(ViewTimeTable.getValueAt(row, 4));
+                updateChoosedDate();
 
                 System.out.println(
                     "클릭한 행 정보:\n" +
@@ -824,6 +832,7 @@ public class ViewRoom extends javax.swing.JFrame {
         LastUsedButton = "916";
         this.loadData();
         this.refreshPage();
+        updateChoosedDate();
     }// GEN-LAST:event_room916ActionPerformed
 
     private void room918ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room918ActionPerformed
@@ -831,6 +840,7 @@ public class ViewRoom extends javax.swing.JFrame {
         LastUsedButton = "918";
         this.loadData();
         this.refreshPage();
+        updateChoosedDate();
     }// GEN-LAST:event_room918ActionPerformed
 
     private void room908ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room908ActionPerformed
@@ -839,6 +849,7 @@ public class ViewRoom extends javax.swing.JFrame {
         LastUsedButton = "908";
         this.loadData();
         this.refreshPage();
+        updateChoosedDate();
     }// GEN-LAST:event_room908ActionPerformed
 
     private void room911ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room911ActionPerformed
@@ -846,6 +857,7 @@ public class ViewRoom extends javax.swing.JFrame {
         LastUsedButton = "911";
         this.loadData();
         this.refreshPage();
+        updateChoosedDate();
     }// GEN-LAST:event_room911ActionPerformed
 
     private void room912ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room912ActionPerformed
@@ -853,6 +865,7 @@ public class ViewRoom extends javax.swing.JFrame {
         LastUsedButton = "912";
         this.loadData();
         this.refreshPage();
+        updateChoosedDate();
     }// GEN-LAST:event_room912ActionPerformed
 
     private void room913ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room913ActionPerformed
@@ -860,6 +873,7 @@ public class ViewRoom extends javax.swing.JFrame {
         LastUsedButton = "913";
         this.loadData();
         this.refreshPage();
+        updateChoosedDate();
     }// GEN-LAST:event_room913ActionPerformed
 
     private void room914ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room914ActionPerformed
@@ -867,6 +881,7 @@ public class ViewRoom extends javax.swing.JFrame {
         LastUsedButton = "914";
         this.loadData();
         this.refreshPage();
+        updateChoosedDate();
     }// GEN-LAST:event_room914ActionPerformed
 
     private void room915ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_room915ActionPerformed
@@ -874,39 +889,54 @@ public class ViewRoom extends javax.swing.JFrame {
         LastUsedButton = "915";
         this.loadData();
         this.refreshPage();
+        updateChoosedDate();
     }// GEN-LAST:event_room915ActionPerformed
 
     private void reservationButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_reservationButtonActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here: 예약/예약 변경 버튼
         LastUsedButton = " ";// "2025 / 05 / 21 12:00 13:00"
+
+        // 예약 가능 여부 체크
+        if (stateR == null || startR == null || endR == null || roomR == null || dayR == null || choosedDate == null) {
+            JOptionPane.showMessageDialog(this, "예약할 시간대를 먼저 선택하세요.", "알림", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String trimmedState = stateR.replaceAll("\\s+", ""); // 공백 제거
+
+        // 정규수업, 교수예약은 무조건 예약 불가
+        if ("정규수업".equals(trimmedState) || "교수예약".equals(trimmedState)) {
+            JOptionPane.showMessageDialog(this, "해당 시간은 예약할 수 없습니다.\n(정규수업/교수예약 시간)", "예약 불가",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 예약초과는 학생만 예약 불가, 교수는 예약 가능
+        if ("예약초과".equals(trimmedState) && !"P".equals(role)) {
+            JOptionPane.showMessageDialog(this, "해당 시간은 예약할 수 없습니다.\n(예약 초과)", "예약 불가", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         // String newRoomNumber, newDate, String newDay, String role
-        if (check == "change") {
+        // 예약 변경 시 기존 예약 내역을 IsChange에 담아 넘김
+        if ("change".equals(check)) {
             MyReservationView.changereservation[0] = roomR;
             MyReservationView.changereservation[1] = choosedDate + startR + " " + endR;
             MyReservationView.changereservation[2] = dayR;
             MyReservationView.changereservation[3] = role;
 
-            try {
-                ReserveResult result = client.sendModifyReserveRequest(userid, MyReservationView.cancelreservation,
-                        roomR, choosedDate + startR + " " + endR, dayR + "요일", role);
-                new viewResultLR().viewResult(result.getResult(), result.getReason());
-                if (!result.getResult()) {
-                    return;
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(ViewRoom.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ViewRoom.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            // String id, String oldReserveInfo, String newRoomNumber,String newDate, String
-            // newDay, String role
-            // String id, String oldReserveInfo, String newRoomNumber,String newDate, String
-            // newDay, String role
+            // 기존 예약 내역을 문자열로 넘김 (예: "기존강의실/기존날짜/기존요일/역할" 등)
+            String oldReserveInfo = MyReservationView.cancelreservation; // 기존 예약 내역 문자열
 
+            LRCompleteCheck Lcheck = new LRCompleteCheck(
+                    userid, role, roomR, choosedDate + startR + " " + endR, dayR + "요일", client, oldReserveInfo);
+            Lcheck.setVisible(true);
             this.dispose();
+            return;
         } else {
+            // 신규 예약
             LRCompleteCheck Lcheck = new LRCompleteCheck(userid, role, roomR, choosedDate + startR + " " + endR,
-                    dayR + "요일", client);
+                    dayR + "요일", client, null);
             Lcheck.setVisible(true);
         }
 

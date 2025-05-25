@@ -165,14 +165,23 @@ public class ProfessorMainMenu extends javax.swing.JFrame {
 
     private void reserv_time_checkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reserv_time_checkActionPerformed
         // TODO add your handling code here:
+        ViewRoom vroom = new ViewRoom(client, userId, "P", null);
+        vroom.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_reserv_time_checkActionPerformed
 
     private void quick_bookingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quick_bookingActionPerformed
         // TODO add your handling code here:
+        QuickViewRoom qvroom = new QuickViewRoom(client, userId, "P");
+        qvroom.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_quick_bookingActionPerformed
 
     private void resev_checkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resev_checkActionPerformed
         // TODO add your handling code here:
+        MyReservationView myreserveview = new MyReservationView(client, userId, "P");
+        myreserveview.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_resev_checkActionPerformed
 
     /**
@@ -200,6 +209,9 @@ public class ProfessorMainMenu extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ProfessorMainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */

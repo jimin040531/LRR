@@ -34,6 +34,8 @@
                       <Component id="jLabel1" min="-2" pref="140" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel2" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+                      <Component id="ShowCurrentDate" min="-2" pref="132" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -53,6 +55,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel1" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="ShowCurrentDate" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="131" max="-2" attributes="0"/>
@@ -118,7 +121,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="*&#xbe60;&#xb978;&#xc608;&#xc57d;&#xc740; &#xae08;&#xc77c; &#xc608;&#xc57d;&#xb9cc; &#xac00;&#xb2a5;&#xd569;&#xb2c8;&#xb2e4;."/>
+        <Property name="text" type="java.lang.String" value="*&#xbe60;&#xb978; &#xc608;&#xc57d;&#xc740; &#xb2f9;&#xc77c; &#xc608;&#xc57d;&#xb9cc; &#xac00;&#xb2a5;&#xd569;&#xb2c8;&#xb2e4;(&#xd1a0;, &#xc77c;&#xc778; &#xacbd;&#xc6b0; &#xb2e4;&#xc74c; &#xc8fc; &#xc6d4;&#xc694;&#xc77c; &#xc608;&#xc57d;&#xc774; &#xd45c;&#xc2dc;&#xb429;&#xb2c8;&#xb2e4;)"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="ShowCurrentDate">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#xbcf4;&#xc5ec;&#xc904; &#xb0a0;&#xc9dc;"/>
       </Properties>
     </Component>
   </SubComponents>

@@ -16,6 +16,7 @@ public class LRCompleteCheck extends javax.swing.JFrame {
     String showDate;
     String notice = "기본 공지사항 내용";
     private Client client;
+    String IsChange;
 
     public LRCompleteCheck() {
         initComponents();
@@ -43,7 +44,8 @@ public class LRCompleteCheck extends javax.swing.JFrame {
         viewSelectTime.setEditable(false);
     }
 
-    public LRCompleteCheck(String id, String role, String roomNumber, String date, String day, Client client) {
+    public LRCompleteCheck(String id, String role, String roomNumber, String date, String day, Client client, String IsChange) {
+        setTitle("강의실 예약");
         // id : 사용자 아이디, role : 사용자 역할("P" 또는 "S"), roomNumber : 강의실 번호, date : 년 월 일
         // 시작(시간:분) 끝(시간:분), day : 요일, client 클라이언트 넘겨주기
         this.client = client;
@@ -54,6 +56,16 @@ public class LRCompleteCheck extends javax.swing.JFrame {
         this.roomNumber = roomNumber;
         this.date = date;
         this.day = day;
+        this.IsChange = IsChange;
+
+        if(IsChange != null) {
+            System.out.println("예약 변경 모드로 실행됨: " + IsChange);
+            System.out.println("역할 정보 : " + role);
+        } else {
+            System.out.println("IsChange 가 null 이라서 신규 예약 모드로 실행됨");
+            System.out.println("역할 정보 : " + role);
+        }
+        System.out.println();
 
         showDate = date + " / " + day;
 
@@ -207,18 +219,6 @@ public class LRCompleteCheck extends javax.swing.JFrame {
         // 교수인 경우 공지사항 입력, 학생은 null
         String noticeToSend = null;
         if (role.equals("P")) {
-            /*
-             * noticeWriterView noticeDialog = new noticeWriterView();
-             * noticeDialog.setLocationRelativeTo(this);
-             * noticeDialog.setVisible(true); // 입력창이 뜨고, 입력이 끝날 때까지 대기
-             * noticeToSend = noticeDialog.getNotice();
-             * if (noticeToSend == null || noticeToSend.trim().isEmpty()) {
-             * JOptionPane.showMessageDialog(this, "공지사항을 입력해야 예약이 완료됩니다.", "입력 필요",
-             * JOptionPane.WARNING_MESSAGE);
-             * return;
-             * }
-             */
-
             noticeWriterView noticeDialog = new noticeWriterView();
             noticeDialog.setLocationRelativeTo(this);
             noticeDialog.setNoticeListener(new noticeWriterView.NoticeListener() {
@@ -229,9 +229,19 @@ public class LRCompleteCheck extends javax.swing.JFrame {
                                 JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-                    // 예약 요청 전송
                     try {
-                        ReserveResult result = client.sendReserveRequest(id, role, roomNumber, date, day, noticeText);
+                        ReserveResult result;
+                        if (IsChange != null) {
+                            // 예약 변경 처리
+                            result = client.sendModifyReserveRequest(
+                                    id, IsChange, roomNumber, date, day, role
+                            );
+                        } else {
+                            // 신규 예약 처리
+                            result = client.sendReserveRequest(
+                                    id, role, roomNumber, date, day, noticeText
+                            );
+                        }
                         new viewResultLR().viewResult(result.getResult(), result.getReason());
                         if (result.getResult()) {
                             new ProfessorMainMenu(id, client).setVisible(true);
@@ -248,12 +258,19 @@ public class LRCompleteCheck extends javax.swing.JFrame {
             return; // 교수는 여기서 예약 진행을 콜백에서 처리하므로 아래 코드 실행 안 함
 
         }
-        // 예약 요청 전송
-        ReserveResult result = client.sendReserveRequest(id, role, roomNumber, date, day, noticeToSend);
-        // 결과 안내
-        new viewResultLR().viewResult(result.getResult(), result.getReason());
 
-        // 예약 성공 시 역할별 메인 메뉴로 이동
+        // 학생 신규/변경 처리 (학생은 예약 변경이 없다면 기존 로직대로)
+        ReserveResult result;
+        if(IsChange != null) {
+            // 예약 변경 처리
+            result = client.sendModifyReserveRequest(id, IsChange, roomNumber, date, day, role);
+            new viewResultLR().viewResult(result.getResult(), result.getReason());
+        } else {
+            // 신규 예약 처리
+            result = client.sendReserveRequest(id, role, roomNumber, date, day, noticeToSend);
+            new viewResultLR().viewResult(result.getResult(), result.getReason());
+        }
+
         if (result.getResult()) {
             if (role.equals("P")) {
                 new ProfessorMainMenu(id, client).setVisible(true);
@@ -294,7 +311,7 @@ public class LRCompleteCheck extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 // new LRCompleteCheck(id, role, roomNumber, date, day, null).setVisible(true);
-                new LRCompleteCheck(null, null, null, null, null, null).setVisible(true);
+                new LRCompleteCheck(null, null, null, null, null, null, null).setVisible(true);
             }
         });
     }

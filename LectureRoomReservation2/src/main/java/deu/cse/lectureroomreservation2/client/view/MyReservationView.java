@@ -5,6 +5,7 @@
 package deu.cse.lectureroomreservation2.client.view;
 
 import deu.cse.lectureroomreservation2.client.Client;
+import deu.cse.lectureroomreservation2.common.ReserveResult;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +27,7 @@ public class MyReservationView extends javax.swing.JFrame {
     String role;
     private String startR, endR, roomR, dateR, dayR;
     static String cancelreservation = "";
-    static String[] changereservation = {"","","",""};
+    static String[] changereservation = {"", "", "", ""};
     // String newRoomNumber,String newDate, String newDay, String role
 
     /**
@@ -38,11 +39,12 @@ public class MyReservationView extends javax.swing.JFrame {
     }
 
     public MyReservationView(Client client, String userid, String role) {
+        setTitle("나의 예약 내역 조회");
         this.client = client;
         this.userid = userid;
         this.role = role;
 
-        currentUserID.setText(userid);
+        //currentUserID.setText(userid);
         loadMyData();
         initComponents();
     }
@@ -53,7 +55,7 @@ public class MyReservationView extends javax.swing.JFrame {
             protected List<Object[]> doInBackground() {
                 List<Object[]> rowDataList = new ArrayList<>();
                 try {
-                    List<String> reservations = client.retrieveMyReserveInfo(userid,null,null);
+                    List<String> reservations = client.retrieveMyReserveInfo(userid, null, null);
 
                     for (String reserve : reservations) {
                         System.out.println("확인용reservation");
@@ -275,8 +277,12 @@ public class MyReservationView extends javax.swing.JFrame {
         if (cancelreservation != null) {
             try {
                 // TODO add your handling code here:
-                client.sendCancelReserveRequest(userid, cancelreservation);
-                this.dispose();
+                ReserveResult result = client.sendCancelReserveRequest(userid, cancelreservation);
+                if (result.getResult()) {
+                    JOptionPane.showMessageDialog(this, "예약 취소를 성공하였습니다!", "알림", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "예약 취소를 실패하였습니다 \n" + result.getReason(), "실패", JOptionPane.ERROR_MESSAGE);
+                }
             } catch (IOException ex) {
                 Logger.getLogger(MyReservationView.class.getName()).log(Level.SEVERE, null, ex);
                 this.dispose();
@@ -284,18 +290,32 @@ public class MyReservationView extends javax.swing.JFrame {
                 Logger.getLogger(MyReservationView.class.getName()).log(Level.SEVERE, null, ex);
                 this.dispose();
             }
+            if (role.equals("S")) {
+                StudentMainMenu smenu = new StudentMainMenu(userid, client);
+                smenu.setVisible(true);
+            } else {
+                ProfessorMainMenu pmenu = new ProfessorMainMenu(userid, client);
+                pmenu.setVisible(true);
+            }
+            this.dispose();
         }
     }//GEN-LAST:event_cancelReservationButtonActionPerformed
 
     private void goBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goBackButtonActionPerformed
         // TODO add your handling code here:
-        new StudentMainMenu(userid, client).setVisible(true);
+        if (role.equals("S")) {
+            StudentMainMenu smenu = new StudentMainMenu(userid, client);
+            smenu.setVisible(true);
+        } else {
+            ProfessorMainMenu pmenu = new ProfessorMainMenu(userid, client);
+            pmenu.setVisible(true);
+        }
         this.dispose();
     }//GEN-LAST:event_goBackButtonActionPerformed
 
     private void changeReservationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeReservationButtonActionPerformed
         // TODO add your handling code here:
-        ViewRoom viewroom = new ViewRoom(client, userid, "S", "change");
+        ViewRoom viewroom = new ViewRoom(client, userid, role, "change");
         viewroom.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_changeReservationButtonActionPerformed

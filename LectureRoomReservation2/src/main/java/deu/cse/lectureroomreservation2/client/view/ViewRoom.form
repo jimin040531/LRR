@@ -290,9 +290,6 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="elebator">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="&#xc5d8;&#xbca0; &#xc0ac;&#xc9c4;"/>
-          </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="stair1">
           <Properties>
@@ -374,7 +371,7 @@
               <Color id="&#xae30;&#xbcf8; &#xcee4;&#xc11c;"/>
             </Property>
             <Property name="doubleBuffered" type="boolean" value="true"/>
-            <Property name="gridColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor" postCode="ViewTimeTable.addMouseListener(new java.awt.event.MouseAdapter() {&#xa;    @Override&#xa;    public void mouseClicked(java.awt.event.MouseEvent evt) {&#xa;        int row = ViewTimeTable.rowAtPoint(evt.getPoint());&#xa;&#xa;        if (row != -1) {&#xa;            startR = String.valueOf(ViewTimeTable.getValueAt(row, 0));&#xa;            endR = String.valueOf(ViewTimeTable.getValueAt(row, 1));&#xa;            roomR = String.valueOf(ViewTimeTable.getValueAt(row, 2));&#xa;            stateR = String.valueOf(ViewTimeTable.getValueAt(row, 3));&#xa;            dayR = String.valueOf(ViewTimeTable.getValueAt(row, 4));&#xa;&#xa;            System.out.println(&#xa;                &quot;&#xd074;&#xb9ad;&#xd55c; &#xd589; &#xc815;&#xbcf4;:\n&quot; +&#xa;                &quot;&#xc2dc;&#xc791; &#xc2dc;&#xac04;: &quot; + startR + &quot;\n&quot; +&#xa;                &quot;&#xc885;&#xb8cc; &#xc2dc;&#xac04;: &quot; + endR + &quot;\n&quot; +&#xa;                &quot;&#xac15;&#xc758;&#xc2e4;: &quot; + roomR + &quot;\n&quot; +&#xa;                &quot;&#xc0c1;&#xd0dc;: &quot; + stateR + &quot;\n&quot; +&#xa;                &quot;&#xc694;&#xc77c;: &quot; + dayR&#xa;            );&#xa;        }&#xa;    }&#xa;});">
+            <Property name="gridColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor" postCode="ViewTimeTable.addMouseListener(new java.awt.event.MouseAdapter() {&#xa;    @Override&#xa;    public void mouseClicked(java.awt.event.MouseEvent evt) {&#xa;        int row = ViewTimeTable.rowAtPoint(evt.getPoint());&#xa;&#xa;        if (row != -1) {&#xa;            startR = String.valueOf(ViewTimeTable.getValueAt(row, 0));&#xa;            endR = String.valueOf(ViewTimeTable.getValueAt(row, 1));&#xa;            roomR = String.valueOf(ViewTimeTable.getValueAt(row, 2));&#xa;            stateR = String.valueOf(ViewTimeTable.getValueAt(row, 3));&#xa;            dayR = String.valueOf(ViewTimeTable.getValueAt(row, 4));&#xa;            updateChoosedDate();&#xa;&#xa;            System.out.println(&#xa;                &quot;&#xd074;&#xb9ad;&#xd55c; &#xd589; &#xc815;&#xbcf4;:\n&quot; +&#xa;                &quot;&#xc2dc;&#xc791; &#xc2dc;&#xac04;: &quot; + startR + &quot;\n&quot; +&#xa;                &quot;&#xc885;&#xb8cc; &#xc2dc;&#xac04;: &quot; + endR + &quot;\n&quot; +&#xa;                &quot;&#xac15;&#xc758;&#xc2e4;: &quot; + roomR + &quot;\n&quot; +&#xa;                &quot;&#xc0c1;&#xd0dc;: &quot; + stateR + &quot;\n&quot; +&#xa;                &quot;&#xc694;&#xc77c;: &quot; + dayR&#xa;            );&#xa;        }&#xa;    }&#xa;});">
               <Color blue="0" green="0" red="0" type="rgb"/>
             </Property>
             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">

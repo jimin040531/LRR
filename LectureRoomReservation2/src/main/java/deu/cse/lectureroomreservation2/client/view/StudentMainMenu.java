@@ -176,10 +176,16 @@ public class StudentMainMenu extends javax.swing.JFrame {
 
     private void quick_bookingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quick_bookingActionPerformed
         // TODO add your handling code here:
+        QuickViewRoom qvroom = new QuickViewRoom(client, userId, "S");
+        qvroom.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_quick_bookingActionPerformed
 
     private void reserv_check1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reserv_check1ActionPerformed
         // TODO add your handling code here:
+        MyReservationView myreserveview = new MyReservationView(client, userId, "S");
+        myreserveview.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_reserv_check1ActionPerformed
 
     private void reserv_time_checkActionPerformed(java.awt.event.ActionEvent evt) {                                                  
@@ -214,6 +220,18 @@ public class StudentMainMenu extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(StudentMainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
