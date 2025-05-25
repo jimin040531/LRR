@@ -140,7 +140,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
 
             // 정확히 50분 차이만 허용
             if (duration != 50) {
-                JOptionPane.showMessageDialog(this, "수업 시간은 50분 단위만 허용됩니다.");
+                JOptionPane.showMessageDialog(this, "시작 시간과 종료 시간은 50분 단위만 허용됩니다.");
                 cmbEndTime.setSelectedIndex(-1);
             }
         }
