@@ -28,13 +28,13 @@ import java.io.Serializable;
  */
 public class ScheduleRequest implements Serializable {
 
-    private String command;
-    private String room;
-    private String day;
-    private String start;
-    private String end;
-    private String subject;
-    private String type;
+    private final String command;
+    private final String room;
+    private final String day;
+    private final String start;
+    private final String end;
+    private final String subject;
+    private final String type;
 
     // 생성자
     public ScheduleRequest(String command, String room, String day, String start, String end, String subject, String type) {

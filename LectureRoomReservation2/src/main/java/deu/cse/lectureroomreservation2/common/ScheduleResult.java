@@ -31,9 +31,9 @@ import java.util.Map;
  */
 public class ScheduleResult implements Serializable {
 
-    private boolean success;
-    private String message;
-    private Map<String, String> data; // 시간:과목명
+    private final boolean success;
+    private final String message;
+    private final Map<String, String> data; // 시간:과목명
 
     public ScheduleResult(boolean success, String message, Map<String, String> data) {
         this.success = success;

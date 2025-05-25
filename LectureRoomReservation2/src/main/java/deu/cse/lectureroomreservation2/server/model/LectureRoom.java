@@ -18,8 +18,8 @@ import java.util.Map;
  * - 수업 추가 및 타입별 필터링 조회 기능 제공
  */
 public class LectureRoom {
-    private String roomNumber;
-    private Map<DaysOfWeek, Map<String, ScheduleEntry>> fixedSchedule;
+    private final String roomNumber;
+    private final Map<DaysOfWeek, Map<String, ScheduleEntry>> fixedSchedule;
 
     public LectureRoom(String roomNumber) {
         this.roomNumber = roomNumber;
