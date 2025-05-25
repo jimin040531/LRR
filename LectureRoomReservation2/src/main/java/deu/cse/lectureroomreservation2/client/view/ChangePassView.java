@@ -167,12 +167,7 @@ public class ChangePassView extends javax.swing.JFrame {
 
             while (true) {
                 String response = in.readUTF();
-
-                if ("NOTICE".equals(response)) {
-                    in.readUTF(); // 공지 내용도 읽고 무시
-                } else if ("NOTICE_END".equals(response)) {
-                    continue; // 그냥 무시
-                } else if ("SUCCESS".equals(response)) {
+                if ("SUCCESS".equals(response)) {
                     JOptionPane.showMessageDialog(this, "비밀번호가 성공적으로 변경되었습니다.");
                     this.dispose();
                     break;

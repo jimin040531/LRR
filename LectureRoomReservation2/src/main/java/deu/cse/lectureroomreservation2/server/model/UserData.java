@@ -58,7 +58,7 @@ public class UserData {
 
             for (String line : lines) {
                 String[] parts = line.split(",");
-                if (parts.length == 4) {
+                if (parts.length >= 4) {
                     String fileId = parts[2].trim();
                     String filePw = parts[3].trim();
 
