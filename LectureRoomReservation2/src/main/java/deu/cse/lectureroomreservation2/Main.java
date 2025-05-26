@@ -9,7 +9,7 @@ import deu.cse.lectureroomreservation2.client.view.LoginFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import deu.cse.lectureroomreservation2.server.Server;
+
 /**
  *
  * @author SAMSUNG

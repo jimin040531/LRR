@@ -106,7 +106,7 @@
                     <configuration>
                         <transformers>
                             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                <mainClass>deu.cse.lectureroomreservation2.server.Server</mainClass>
+                                <mainClass>deu.cse.lectureroomreservation2.Main</mainClass>
                             </transformer>
                         </transformers>
                     </configuration>
