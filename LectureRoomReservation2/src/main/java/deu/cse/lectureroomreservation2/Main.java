@@ -3,9 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package deu.cse.lectureroomreservation2;
-
-import deu.cse.lectureroomreservation2.client.view.LoginFrame;
-
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -26,7 +23,8 @@ public class Main {
                 UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
             } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
             }
-            new LoginFrame().setVisible(true);
+            Server server = new Server();
+            server.start();
         });
     }
 
