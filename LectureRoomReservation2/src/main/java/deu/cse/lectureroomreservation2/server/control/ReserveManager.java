@@ -10,13 +10,9 @@ import java.util.*;
 public class ReserveManager {
 
     // 사용자 정보 파일 경로 (예약 정보도 이 파일에 저장)
-    private static final String USER_FILE = receiveController.getFilepath() + receiveController.getFileName();
-    // src/main/resources/UserInfo.txt
-    private static final String RESERVE_FILE = receiveController.getFilepath()
-            + receiveController.getReservationInfoFileName();
-    // src/main/resources/ReservationInfo.txt
-    private static final String SCHEDULE_FILE = receiveController.getFilepath()
-            + receiveController.getScheduleInfoFileName();
+    private static final String USER_FILE = receiveController.getUserFileName();
+    private static final String RESERVE_FILE = receiveController.getReservationInfoFileName();
+    private static final String SCHEDULE_FILE = receiveController.getScheduleInfoFileName();
     private static final int MAX_RESERVE = 4; // 최대 예약 개수
 
     // 5번: 파일 접근 동기화용 락 객체 추가

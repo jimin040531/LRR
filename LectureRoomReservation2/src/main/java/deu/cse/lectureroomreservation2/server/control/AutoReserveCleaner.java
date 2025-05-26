@@ -6,8 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class AutoReserveCleaner extends Thread {
-    private final String userFilePath = receiveController.getFilepath() + receiveController.getFileName();
-    // src/main/resources/UserInfo.txt
+    private final String userFilePath = receiveController.getUserFileName();
 
     public AutoReserveCleaner() {
         setDaemon(true); // 서버 종료시 자동 종료

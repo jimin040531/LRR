@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import deu.cse.lectureroomreservation2.server.control.receiveController;
 
 /**
  *
@@ -25,8 +26,8 @@ public class GetReservation {
     //TODO 나중에 server로 옮기기
     //TODO 날짜 어떻게 할건지 생각해보기
     public static String[][] GetTime(String what) { //텍스트 파일을 읽어와서 배열에 저장 
-        String ReservationInfoPath = "src/main/resources/ReservationInfo.txt";
-        String ScheduleInfoPath = "src/main/resources/ScheduleInfo.txt";
+        String ReservationInfoPath = receiveController.getReservationInfoFileName();
+        String ScheduleInfoPath = receiveController.getScheduleInfoFileName();
 
         List<String[]> ReservationInfoList = new ArrayList<>();
         List<String[]> ScheduleInfoList = new ArrayList<>();

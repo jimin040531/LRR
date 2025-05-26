@@ -348,7 +348,7 @@ public class ClientHandler implements Runnable {
                         if ("FIND_ROLE".equals(command)) {
                             String userId = in.readUTF();
                             String foundRole = null;
-                            try (BufferedReader br = new BufferedReader(new FileReader(receiveController.getFilepath() + receiveController.getFileName()))) {
+                            try (BufferedReader br = new BufferedReader(new FileReader(receiveController.getUserFileName()))) {
                                 String line;
                                 while ((line = br.readLine()) != null) {
                                     String[] parts = line.split(",");

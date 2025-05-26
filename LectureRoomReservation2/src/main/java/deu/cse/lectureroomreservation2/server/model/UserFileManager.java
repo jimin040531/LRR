@@ -6,6 +6,7 @@ package deu.cse.lectureroomreservation2.server.model;
 
 import java.io.*;
 import java.util.*;
+import deu.cse.lectureroomreservation2.server.control.receiveController;
 
 /**
  *
@@ -17,7 +18,7 @@ import java.util.*;
 public class UserFileManager {
 
     // UserInfo.txt 파일 경로 설정
-    private static final String filePath = System.getProperty("user.dir") + "/src/main/resources/UserInfo.txt";
+    private static final String filePath = receiveController.getUserFileName();
 
     /**
      * 역할과 이름에 따라 사용자 검색

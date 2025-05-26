@@ -20,7 +20,7 @@ public class LoginController {
     private final UserData userData = new UserData();
     
     public LoginController() {
-        this.userFile = Paths.get("UserInfo.txt"); // 기본 파일
+        this.userFile = Paths.get(receiveController.getUserFileName()); // 기본 파일
     }
 
     public LoginController(Path testPath) {

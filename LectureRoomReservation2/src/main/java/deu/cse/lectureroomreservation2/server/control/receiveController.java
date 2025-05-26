@@ -7,6 +7,8 @@ package deu.cse.lectureroomreservation2.server.control;
 import deu.cse.lectureroomreservation2.server.control.ReserveManager;
 import deu.cse.lectureroomreservation2.common.ReserveResult;
 import deu.cse.lectureroomreservation2.common.ReserveRequest;
+import java.io.*;
+import java.nio.file.*;
 
 import java.util.List;
 
@@ -17,18 +19,45 @@ import java.util.List;
  */
 public class receiveController {
 
-    // 파일 경로 및 이름 지정
-    private static final String filePath = "src/main/resources/";
-    private static final String UserFileName = "UserInfo.txt";
-    private static final String noticeFileName = "noticeSave.txt";
-    private static final String ScheduleInfoFileName = "ScheduleInfo.txt";
-    private static final String ReservationInfoFileName = "ReservationInfo.txt";
+    // 파일 경로 및 이름 지정 // 2025.05.26 추가
+    // 리소스 파일을 사용자 홈 디렉터리 아래에 저장
+    private static final String filePath = System.getProperty("user.home") + File.separator + "resources";
+    private static final String UserFileName = filePath + File.separator + "UserInfo.txt";
+    private static final String noticeFileName = filePath + File.separator + "noticeSave.txt";
+    private static final String ScheduleInfoFileName = filePath + File.separator + "ScheduleInfo.txt";
+    private static final String ReservationInfoFileName = filePath + File.separator + "ReservationInfo.txt";
+
+    static {
+        // 디렉터리 없으면 생성
+        File dir = new File(filePath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        // 리소스 파일 복사
+        copyResourceIfNotExists("UserInfo.txt", UserFileName);
+        copyResourceIfNotExists("noticeSave.txt", noticeFileName);
+        copyResourceIfNotExists("ScheduleInfo.txt", ScheduleInfoFileName);
+        copyResourceIfNotExists("ReservationInfo.txt", ReservationInfoFileName);
+    }
+
+    private static void copyResourceIfNotExists(String resourceName, String destPath) {
+        File destFile = new File(destPath);
+        if (!destFile.exists()) {
+            try (InputStream in = receiveController.class.getClassLoader().getResourceAsStream(resourceName)) {
+                if (in != null) {
+                    Files.copy(in, destFile.toPath());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public static String getFilepath() {
         return filePath;
     }
 
-    public static String getFileName() {
+    public static String getUserFileName() {
         return UserFileName;
     }
 

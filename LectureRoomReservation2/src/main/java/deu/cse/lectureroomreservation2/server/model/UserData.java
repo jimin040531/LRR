@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import deu.cse.lectureroomreservation2.server.control.receiveController;
 
 /**
  *
@@ -17,7 +18,7 @@ import java.util.*;
  */
 public class UserData {
 
-    private static final Path filePath = Paths.get("src/main/resources/UserInfo.txt");
+    private static final Path filePath = Paths.get(receiveController.getUserFileName());
 
     public Optional<User> getUser(String id, String password, String role) {
         try (BufferedReader reader = Files.newBufferedReader(filePath)) {

@@ -11,6 +11,8 @@ import java.util.*;
  * @author Jimin
  */
 
+import deu.cse.lectureroomreservation2.server.control.receiveController;
+
 /**
  * 시간표 정보를 파일에서 읽고 쓰는 역할 수행
  * - readAllLines(): 파일 전체 읽기
@@ -23,7 +25,7 @@ public class ScheduleFileManager {
 
     // 기본 생성자 (기본 경로를 지정)
     public ScheduleFileManager() {
-        this.filePath = System.getProperty("user.dir") + "/src/main/resources/ScheduleInfo.txt";
+        this.filePath = receiveController.getScheduleInfoFileName(); // 기본 시간표 파일 경로
     }
 
     // 경로를 직접 받는 생성자
