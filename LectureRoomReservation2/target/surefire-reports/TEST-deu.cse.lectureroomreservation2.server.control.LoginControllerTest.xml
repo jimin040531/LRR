@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.12" tests="5" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.108" tests="5" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="user.country" value="KR"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\Users\SAMSUNG\OneDrive\바탕 화면\backup (2)\zulu21.36.17-ca-jdk21.0.4-win_x64\bin"/>
-    <property name="sun.java.command" value="C:\Users\SAMSUNG\AppData\Local\Temp\surefire7746188954810794030\surefirebooter-20250523033145835_3.jar C:\Users\SAMSUNG\AppData\Local\Temp\surefire7746188954810794030 2025-05-23T03-31-45_601-jvmRun1 surefire-20250523033145835_1tmp surefire_0-20250523033145835_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\SAMSUNG\AppData\Local\Temp\surefire13670393210379428968\surefirebooter-20250523034515058_3.jar C:\Users\SAMSUNG\AppData\Local\Temp\surefire13670393210379428968 2025-05-23T03-45-14_886-jvmRun1 surefire-20250523034515058_1tmp surefire_0-20250523034515058_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="test" value="deu.cse.lectureroomreservation2.server.control.LoginControllerTest"/>
     <property name="surefire.test.class.path" value="C:\Users\SAMSUNG\OneDrive\바탕 화면\LRR\LRR\LectureRoomReservation2\target\test-classes;C:\Users\SAMSUNG\OneDrive\바탕 화면\LRR\LRR\LectureRoomReservation2\target\classes;C:\Users\SAMSUNG\.m2\repository\org\projectlombok\lombok\1.18.36\lombok-1.18.36.jar;C:\Users\SAMSUNG\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\SAMSUNG\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\SAMSUNG\.m2\repository\ch\qos\logback\logback-classic\1.5.17\logback-classic-1.5.17.jar;C:\Users\SAMSUNG\.m2\repository\ch\qos\logback\logback-core\1.5.17\logback-core-1.5.17.jar;C:\Users\SAMSUNG\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.11.0-M1\junit-jupiter-engine-5.11.0-M1.jar;C:\Users\SAMSUNG\.m2\repository\org\junit\platform\junit-platform-engine\1.11.0-M1\junit-platform-engine-1.11.0-M1.jar;C:\Users\SAMSUNG\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\SAMSUNG\.m2\repository\org\junit\platform\junit-platform-commons\1.11.0-M1\junit-platform-commons-1.11.0-M1.jar;C:\Users\SAMSUNG\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.11.0-M1\junit-jupiter-api-5.11.0-M1.jar;C:\Users\SAMSUNG\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\SAMSUNG\.m2\repository\com\toedter\jcalendar\1.4\jcalendar-1.4.jar;"/>
@@ -31,7 +31,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\SAMSUNG\AppData\Local\Temp\surefire7746188954810794030\surefirebooter-20250523033145835_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\SAMSUNG\AppData\Local\Temp\surefire13670393210379428968\surefirebooter-20250523034515058_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="21.0.4+7-LTS"/>
@@ -61,9 +61,9 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testValidStudentLoginFail" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.054"/>
+  <testcase name="testValidStudentLoginFail" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.042"/>
   <testcase name="testInvalidRoleWordShouldFail" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.007"/>
-  <testcase name="testValidStudentLogin2" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.008"/>
+  <testcase name="testValidStudentLogin2" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.009"/>
   <testcase name="testValidProfessorLogin" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.008"/>
-  <testcase name="testInvalidIdLength" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.005"/>
+  <testcase name="testInvalidIdLength" classname="deu.cse.lectureroomreservation2.server.control.LoginControllerTest" time="0.007"/>
 </testsuite>

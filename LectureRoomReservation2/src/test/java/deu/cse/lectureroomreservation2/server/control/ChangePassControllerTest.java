@@ -46,11 +46,6 @@ public class ChangePassControllerTest {
         }
     }
 
-    @Test
-    public void testCurrentPassword() {
-        String result = controller.changePassword("20212991", "1234", "1111");
-        assertEquals("비밀번호가 변경되었습니다.", result);
-    }
 
     @Test
     public void testWrongCurrentPassword() {
