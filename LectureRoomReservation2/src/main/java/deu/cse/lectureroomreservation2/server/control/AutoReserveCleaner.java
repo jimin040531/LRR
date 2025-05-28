@@ -7,6 +7,7 @@ import java.util.*;
 
 public class AutoReserveCleaner extends Thread {
     private final String userFilePath = receiveController.getFilepath() + receiveController.getFileName();
+    // src/main/resources/UserInfo.txt
 
     public AutoReserveCleaner() {
         setDaemon(true); // 서버 종료시 자동 종료
@@ -33,40 +34,37 @@ public class AutoReserveCleaner extends Thread {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length < 6) {
+                // UserInfo.txt: 역할,이름,ID,비번,예약1,예약2,...
+                if (parts.length < 5) {
                     lines.add(line);
                     continue;
                 }
                 List<String> validReserves = new ArrayList<>();
-                for (int i = 5; i < parts.length; i++) {
+                for (int i = 4; i < parts.length; i++) {
                     String reserve = parts[i].trim();
                     String[] reserveParts = reserve.split("/");
-                    if (reserveParts.length < 5) {
-                        validReserves.add(reserve);
+                    if (reserveParts.length < 5)
                         continue;
-                    }
+                    String datePart = reserveParts[1].trim() + "-" + reserveParts[2].trim() + "-"
+                            + reserveParts[3].trim();
+                    String timePart = reserveParts[4].trim().split(" ")[1]; // 끝나는 시간
                     try {
-                        String year = reserveParts[1].trim();
-                        String month = reserveParts[2].trim();
-                        String day = reserveParts[3].trim().split(" ")[0];
-                        String timeRange = reserveParts[4].trim();
-                        String[] times = timeRange.split(" ");
-                        String endTime = times.length > 1 ? times[1] : times[0];
-                        String dateTimeStr = year + "-" + month + "-" + day + "T" + endTime;
-                        LocalDateTime reserveEndDateTime = LocalDateTime.parse(dateTimeStr,
+                        LocalDateTime endDateTime = LocalDateTime.parse(
+                                datePart + "T" + timePart,
                                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
-                        if (reserveEndDateTime.isAfter(LocalDateTime.now())) {
+                        if (endDateTime.isAfter(LocalDateTime.now())) {
                             validReserves.add(reserve);
                         } else {
-                            changed = true; // 삭제된 예약이 있으면 변경 플래그 ON
+                            changed = true;
                         }
                     } catch (Exception e) {
-                        validReserves.add(reserve);
+                        validReserves.add(reserve); // 파싱 실패시 일단 남김
                     }
                 }
+                // 라인 재구성: 역할,이름,ID,비번,예약1,예약2,...
                 StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < 5; i++)
-                    sb.append(parts[i]).append(i < 4 ? "," : "");
+                for (int i = 0; i < 4; i++)
+                    sb.append(parts[i]).append(i < 3 ? "," : "");
                 for (String r : validReserves)
                     sb.append(",").append(r);
                 lines.add(sb.toString());

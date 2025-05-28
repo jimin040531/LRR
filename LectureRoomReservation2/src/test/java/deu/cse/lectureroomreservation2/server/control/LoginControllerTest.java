@@ -4,6 +4,7 @@
  */
 package deu.cse.lectureroomreservation2.server.control;
 
+import deu.cse.lectureroomreservation2.common.LoginStatus;
 import java.io.IOException;
 import java.nio.file.*;
 import org.junit.jupiter.api.*;
@@ -17,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LoginControllerTest {
 
     private LoginController controller;
-    private static final Path USER_FILE = Paths.get("UserInfo.txt");
-    private static final Path BACKUP_FILE = Paths.get("UserInfo_backup.txt");
+    private static final Path USER_FILE = Paths.get("src/test/resources/UserInfo_test.txt");
+    private static final Path BACKUP_FILE = Paths.get("src/test/resources/UserInfo_test_backup.txt");
 
     @BeforeEach
     void setup() throws IOException {
@@ -46,7 +47,7 @@ public class LoginControllerTest {
             Files.deleteIfExists(USER_FILE);
         }
     }
-    
+
     @Test
     public void testValidProfessorLogin() {
         LoginStatus result = controller.authenticate("12345", "1234", "P");
@@ -64,11 +65,13 @@ public class LoginControllerTest {
         LoginStatus result = controller.authenticate("shortid", "1234", "S");
         assertFalse(result.isLoginSuccess(), "실패.");
     }
+
     @Test
     public void testValidStudentLoginFail() {
         LoginStatus result = controller.authenticate("20212991", "", "S");
         assertFalse(result.isLoginSuccess(), "실패.");
     }
+
     @Test
     public void testValidStudentLogin2() {
         LoginStatus result = controller.authenticate("20212977", "1234", "S");

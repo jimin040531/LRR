@@ -7,8 +7,9 @@ package deu.cse.lectureroomreservation2.client.view;
 import java.io.IOException;
 import java.io.*;
 import java.util.*;
-import deu.cse.lectureroomreservation2.server.control.ChangePassController;
+import java.net.Socket;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author SAMSUNG
@@ -18,8 +19,23 @@ public class ChangePassView extends javax.swing.JFrame {
     /**
      * Creates new form ChangePassWord
      */
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+    private String userId;
+
     public ChangePassView() {
         initComponents();
+    }
+
+    public void setStreams(ObjectOutputStream out, ObjectInputStream in) {
+        this.out = out;
+        this.in = in;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+        change_ID.setText(userId);
+        change_ID.setEnabled(false); // 사용자가 변경하지 못하도록
     }
 
     /**
@@ -137,14 +153,38 @@ public class ChangePassView extends javax.swing.JFrame {
         String currentPass = new String(current_password.getPassword());
         String newPass = new String(change_pass.getPassword());
 
-        ChangePassController controller = new ChangePassController();
-        String result = controller.changePassword(id, currentPass, newPass);
+        if (id.isEmpty() || currentPass.isEmpty() || newPass.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "모든 값들을 입력하세요.");
+            return;
+        }
 
-        if ("SUCCESS".equals(result)) {
-            JOptionPane.showMessageDialog(this, "비밀번호가 성공적으로 변경되었습니다.");
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, result);
+        try {
+            out.writeUTF("CHANGE_PASS");
+            out.writeUTF(id);
+            out.writeUTF(currentPass);
+            out.writeUTF(newPass);
+            out.flush();
+
+            while (true) {
+                String response = in.readUTF();
+
+                if ("NOTICE".equals(response)) {
+                    in.readUTF(); // 공지 내용도 읽고 무시
+                } else if ("NOTICE_END".equals(response)) {
+                    continue; // 그냥 무시
+                } else if ("SUCCESS".equals(response)) {
+                    JOptionPane.showMessageDialog(this, "비밀번호가 성공적으로 변경되었습니다.");
+                    this.dispose();
+                    break;
+                } else {
+                    JOptionPane.showMessageDialog(this, "실패: " + response);
+                    break;
+                }
+            }
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "서버와 연결 중 오류 발생: " + e.getMessage());
+            e.printStackTrace();
         }
     }//GEN-LAST:event_ChangePassButtonActionPerformed
 
@@ -153,44 +193,6 @@ public class ChangePassView extends javax.swing.JFrame {
         this.dispose(); // 현재 창 닫기.
     }//GEN-LAST:event_back_cancelActionPerformed
 
-    private boolean updatePassword(String id, String currentPass, String newPass) {
-        File file = new File("user.txt");
-        List<String> lines = new ArrayList<>();
-        boolean updated = false;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split("\t");
-                if (parts.length >= 3 && parts[0].equals(id) && parts[1].equals(currentPass)) {
-                    parts[1] = newPass; // 비밀번호 변경
-                    updated = true;
-                }
-                lines.add(String.join("\t", parts));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        if (updated) {
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-                for (String line : lines) {
-                    bw.write(line);
-                    bw.newLine();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-
-        return updated;
-    }
-
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

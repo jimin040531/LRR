@@ -24,9 +24,9 @@ public class UserData {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.trim().split(",");
-                if (tokens.length != 4) {
+                /* if (tokens.length != 4) {
                     continue;
-                }
+                }*/
 
                 String fileRole = tokens[0].trim().toUpperCase();
                 String fileId = tokens[2].trim();
@@ -46,13 +46,12 @@ public class UserData {
     }
 
     // 비밀번호 변경
-    public boolean updatePassword(String id, String currentPw, String newPw) {
+    public synchronized boolean updatePassword(String id, String currentPw, String newPw) {
+        if (!Files.exists(filePath)) {
+            System.err.println("파일이 존재하지 않습니다: " + filePath);
+            return false;
+        }
         try {
-            if (!Files.exists(filePath)) {
-                System.err.println("파일이 존재하지 않습니다: " + filePath);
-                return false;
-            }
-
             List<String> lines = Files.readAllLines(filePath);
             List<String> updatedLines = new ArrayList<>();
             boolean updated = false;

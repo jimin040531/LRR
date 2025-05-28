@@ -5,8 +5,7 @@
 package deu.cse.lectureroomreservation2.server;
 
 import deu.cse.lectureroomreservation2.server.control.AutoReserveCleaner;
-import deu.cse.lectureroomreservation2.server.control.LoginStatus;
-import deu.cse.lectureroomreservation2.server.control.receiveController;
+import deu.cse.lectureroomreservation2.common.LoginStatus;
 import deu.cse.lectureroomreservation2.server.control.LoginController;
 import java.io.*;
 import java.net.ServerSocket;
@@ -28,9 +27,8 @@ public class Server {
 
     public Server() {
         controller = new LoginController();
-
+        
         // 예약 정보 자동 삭제 스레드 시작
-        String userFilePath = receiveController.getFilepath() + receiveController.getFileName();
         new AutoReserveCleaner().start();
     }
 
@@ -74,7 +72,7 @@ public class Server {
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // 클라이언트 접속 대기
-                System.out.println("new client connect : " + clientSocket.getInetAddress());
+                System.out.println("new client connect : " + clientSocket.getInetAddress());    // 새 클라이언트 연결 + 주소 sout
 
                 // 클라이언트 하나를 처리할 스레드 생성
                 new Thread(new ClientHandler(clientSocket, this)).start();

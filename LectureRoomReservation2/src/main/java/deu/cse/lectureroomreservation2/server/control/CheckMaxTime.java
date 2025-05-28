@@ -5,17 +5,19 @@
 package deu.cse.lectureroomreservation2.server.control;
 
 import java.io.*;
-import deu.cse.lectureroomreservation2.server.*;
 
 /**
  *
  * @author H
+ * 
+ * UserInfo.txt 파일 구조
+ * 역할,이름,ID,비번,예약1,예약2,...
  */
 public class CheckMaxTime implements Serializable {
     private String id;
 
     //private final String USER_FILE = "UserInfotest.txt";
-    private final String USER_FILE = receiveController.getFilepath() + "UserInfotest.txt";
+    private final String USER_FILE = receiveController.getFilepath() + "UserInfo.txt";
     
     public CheckMaxTime(String id) {
         this.id = id;
@@ -27,9 +29,10 @@ public class CheckMaxTime implements Serializable {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 5 && parts[0].equals(id)) {
-                    // 예약 정보는 6번째부터
-                    int reserveCount = parts.length - 5;
+                // UserInfo.txt: 역할,이름,ID,비번,예약1,예약2,...
+                if (parts.length >= 4 && parts[2].trim().equals(id)) {
+                    // 예약 정보는 5번째(4 index)부터
+                    int reserveCount = parts.length - 4;
                     return reserveCount == 4;
                 }
             }

@@ -4,8 +4,9 @@
  */
 package deu.cse.lectureroomreservation2.client.view;
 
-import deu.cse.lectureroomreservation2.server.control.TimeTableController;
-import deu.cse.lectureroomreservation2.server.model.DaysOfWeek;
+import deu.cse.lectureroomreservation2.client.Client;
+import deu.cse.lectureroomreservation2.common.ScheduleRequest;
+import deu.cse.lectureroomreservation2.common.ScheduleResult;
 import java.util.Map;
 import javax.swing.JOptionPane;
 
@@ -15,19 +16,17 @@ import javax.swing.JOptionPane;
  */
 public class RoomScheduleManagementView extends javax.swing.JFrame {
 
-    /**
-     * Creates new form TimetableManagementView
-     */
-    private TimeTableController controller;
+    private final Client client;
 
-    public RoomScheduleManagementView() {
-        initComponents();
+    // 클라이언트 객체를 받아 UI 초기화 및 시간표 자동 로딩 설정
+    public RoomScheduleManagementView(Client client) {
+        this.client = client;           // 먼저 client 설정
+        initComponents();               // UI 초기화
         setLocationRelativeTo(null);
-        controller = new TimeTableController();
         loadTimetableOnRoomSelect();
     }
 
-    // 강의실 선택 시 시간표 자동 로드
+    // 콤보 박스로 강의실 선택 시 시간표 자동 로드
     private void loadTimetableOnRoomSelect() {
         cmbRoomSelect.addActionListener(evt -> {
             String selectedRoom = cmbRoomSelect.getSelectedItem().toString();
@@ -44,45 +43,52 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         }
     }
 
-    // 시간표를 메모장에서 불러오기
+    // 클라이언트와 통신하여 선택된 강의실의 시간표를 서버에서 조회 후 테이블에 출력
     private void loadTimetable(String selectedRoom) {
-        initializeTimetable();  // 초기화
+        initializeTimetable();
         String type = rbLecture.isSelected() ? "수업" : "제한";
-        updateTimetableTable(selectedRoom, type);   // 타입 전달 필수
-    }
 
-    // 강의실 시간표 업데이트
-    private void updateTimetableTable(String selectedRoom, String type) {
-        for (String day : new String[]{"월", "화", "수", "목", "금"}) {
-            // 요일별, 강의실별, 타입별로 필터링 된 Map 가져옴
-            Map<String, String> schedule = controller.getScheduleForRoom(selectedRoom, day, type);
+        try {
+            for (String day : new String[]{"월", "화", "수", "목", "금"}) {
+                ScheduleRequest req = new ScheduleRequest("LOAD", selectedRoom, day, null, null, null, type);
+                ScheduleResult result = client.sendScheduleRequest(req);
 
-            if (schedule != null) {
-                for (Map.Entry<String, String> entry : schedule.entrySet()) {
-                    String startTime = entry.getKey();
-                    String subject = entry.getValue();
-                    int rowIndex = getRowForTime(startTime);
-                    int colIndex = getDayIndex(day);
+                if (result.isSuccess() && result.getData() != null) {
+                    for (Map.Entry<String, String> entry : result.getData().entrySet()) {
+                        int rowIndex = getRowForTime(entry.getKey());
+                        int colIndex = getDayIndex(day);  // 각 요일별 열 인덱스
 
-                    if (rowIndex != -1 && colIndex != -1) {
-                        tblTimetable.setValueAt(subject, rowIndex, colIndex);
+                        if (rowIndex != -1 && colIndex != -1) {
+                            tblTimetable.setValueAt(entry.getValue(), rowIndex, colIndex);
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "시간표 불러오기 실패");
         }
     }
 
-    // 요일 -> 열 인덱스
+    // 요일을 열 인덱스로 변환
     private int getDayIndex(String day) {
-        try {
-            // 열 인덱스는 테이블에서 "월" 열이 2번째에 위치하므로 +2
-            return DaysOfWeek.fromKoreanDay(day).index() + 2;
-        } catch (IllegalArgumentException e) {
-            return -1; //
+        switch (day) {
+            case "월":
+                return 2;
+            case "화":
+                return 3;
+            case "수":
+                return 4;
+            case "목":
+                return 5;
+            case "금":
+                return 6;
+            default:
+                return -1;
         }
     }
 
-    // 시간 -> 행 인덱스
+    // 시작 시간을 행 인덱스로 변환
     private int getRowForTime(String time) {
         switch (time) {
             case "09:00":
@@ -216,6 +222,11 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
 
         cmbRoomSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "908", "911", "912", "913", "914", "915", "916", "918" }));
         cmbRoomSelect.setToolTipText("");
+        cmbRoomSelect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbRoomSelectActionPerformed(evt);
+            }
+        });
 
         buttonGroup1.add(rbLecture);
         rbLecture.setText("강의실 수업");
@@ -333,7 +344,7 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         // TODO add your handling code here:
-        new AdminMainView("A", null).setVisible(true);
+        new AdminMainView("A", client).setVisible(true);
         dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
@@ -350,22 +361,22 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
             return;
         }
 
-        if (controller.isScheduleExists(selectedRoom, dayOfWeek, startTime, endTime)) {
-            JOptionPane.showMessageDialog(this, "이미 등록된 시간표입니다.");
-            return;
-        }
-
         try {
-            controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject, type);
-            loadTimetable(selectedRoom);
-            JOptionPane.showMessageDialog(this, "시간표가 추가되었습니다.");
+            // ADD 요청 생성 및 서버 전송 
+            ScheduleRequest req = new ScheduleRequest("ADD", selectedRoom, dayOfWeek, startTime, endTime, subject, type);
+            ScheduleResult result = client.sendScheduleRequest(req);
+            if (result.isSuccess()) {
+                loadTimetable(selectedRoom);    // 성공 시 시간표 갱신
+                JOptionPane.showMessageDialog(this, "시간표가 추가되었습니다.");
+            } else {
+                JOptionPane.showMessageDialog(this, result.getMessage());
+            }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "시간표 추가 중 오류가 발생했습니다.");
+            JOptionPane.showMessageDialog(this, "시간표 등록 중 오류 발생");
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        // TODO add your handling code here:
         String selectedRoom = cmbRoomSelect.getSelectedItem().toString().trim();
         String subject = txtSubject.getText().trim();
         String dayOfWeek = cmbDayOfWeek.getSelectedItem().toString().trim();
@@ -378,19 +389,18 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
             return;
         }
 
+        // UPDATE 요청 생성
         try {
-            if (controller.isScheduleExists(selectedRoom, dayOfWeek, startTime, endTime)) {
-                // 시간표 삭제
-                controller.deleteScheduleFromFile(selectedRoom, dayOfWeek, startTime, endTime);
-                // 수정된 값으로 시간표 추가
-                controller.addScheduleToFile(selectedRoom, dayOfWeek, startTime, endTime, subject, type);
+            ScheduleRequest req = new ScheduleRequest("UPDATE", selectedRoom, dayOfWeek, startTime, endTime, subject, type);
+            ScheduleResult result = client.sendScheduleRequest(req);
+            if (result.isSuccess()) {
                 loadTimetable(selectedRoom);
                 JOptionPane.showMessageDialog(this, "시간표가 수정되었습니다.");
             } else {
-                JOptionPane.showMessageDialog(this, "해당 시간표가 존재하지 않습니다. 시간표를 등록해주세요.");
+                JOptionPane.showMessageDialog(this, result.getMessage());
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "시간표 수정 중 오류가 발생했습니다.");
+            JOptionPane.showMessageDialog(this, "시간표 수정 중 오류 발생");
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
@@ -401,24 +411,22 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         String endTime = cmbEndTime.getSelectedItem().toString().trim();
 
         try {
-            boolean deleted = controller.deleteScheduleFromFile(selectedRoom, dayOfWeek, startTime, endTime);
-            if (deleted) {
-                controller.loadSchedulesFromFile();  // 메모리 반영만 (혹시 이후 재조회 시 필요할 수 있음)
+            // DELETE 요청 생성 (subject, type은 비워도 무방)
+            ScheduleRequest req = new ScheduleRequest("DELETE", selectedRoom, dayOfWeek, startTime, endTime, "", "");
+            ScheduleResult result = client.sendScheduleRequest(req);
 
-                // ✅ 해당 시간대 셀만 찾아서 빈 문자열로 변경
+            if (result.isSuccess()) {
                 int rowIndex = getRowForTime(startTime);
                 int colIndex = getDayIndex(dayOfWeek);
-
                 if (rowIndex != -1 && colIndex != -1) {
                     tblTimetable.setValueAt("", rowIndex, colIndex);
                 }
-
                 JOptionPane.showMessageDialog(this, "시간표가 삭제되었습니다.");
             } else {
-                JOptionPane.showMessageDialog(this, "해당 시간표를 찾을 수 없습니다.");
+                JOptionPane.showMessageDialog(this, result.getMessage());
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "시간표 삭제 중 오류가 발생했습니다.");
+            JOptionPane.showMessageDialog(this, "시간표 삭제 중 오류 발생");
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
@@ -430,47 +438,13 @@ public class RoomScheduleManagementView extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtSubjectActionPerformed
 
+    private void cmbRoomSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoomSelectActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbRoomSelectActionPerformed
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RoomScheduleManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RoomScheduleManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RoomScheduleManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RoomScheduleManagementView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new RoomScheduleManagementView().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;

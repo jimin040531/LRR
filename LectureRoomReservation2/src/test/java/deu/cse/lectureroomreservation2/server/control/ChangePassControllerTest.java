@@ -18,8 +18,8 @@ import java.util.List;
 public class ChangePassControllerTest {
 
     ChangePassController controller = new ChangePassController();
-    private static final Path USER_FILE = Paths.get("src/main/resources/UserInfo.txt");
-    private static final Path BACKUP_FILE = Paths.get("src/main/resources/UserInfo_backup.txt");
+    private static final Path USER_FILE = Paths.get("src/test/resources/UserInfo_test.txt");
+    private static final Path BACKUP_FILE = Paths.get("src/test/resources/UserInfo_test_backup.txt");
 
     @BeforeEach
     void setup() throws IOException {
@@ -46,11 +46,16 @@ public class ChangePassControllerTest {
         }
     }
 
+    @Test
+    public void testCurrentPassword() {
+        String result = controller.changePassword("20212991", "1234", "1111");
+        assertEquals("SUCCESS", result);
+    }
 
     @Test
     public void testWrongCurrentPassword() {
         String result = controller.changePassword("20212991", "Wrongpass", "newpass");
-        assertEquals("ID 또는 기존 비밀번호가 올바르지 않습니다.", result);
+        assertEquals("ID 또는 현재 비밀번호가 일치하지 않습니다.", result);
     }
 
     @Test
@@ -62,12 +67,12 @@ public class ChangePassControllerTest {
     @Test
     public void testSamePassword() {
         String result = controller.changePassword("20212991", "1234", "1234");
-        assertEquals("비밀번호가 기존 비밀번호와 동일합니다. 다른 새 비밀번호를 입력해주세요.", result);
+        assertEquals("기존 비밀번호와 동일합니다. 다른 비밀번호를 입력하세요.", result);
     }
 
     @Test
     public void testIdNotFound() {
         String result = controller.changePassword("99999999", "1234", "newpass");
-        assertEquals("ID 또는 기존 비밀번호가 올바르지 않습니다.", result);
+        assertEquals("ID 또는 현재 비밀번호가 일치하지 않습니다.", result);
     }
 }
