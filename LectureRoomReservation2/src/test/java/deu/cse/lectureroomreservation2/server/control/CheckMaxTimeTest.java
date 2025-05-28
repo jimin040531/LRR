@@ -8,6 +8,6 @@ class CheckMaxTimeTest {
     void testCheckMaxTime() {
         CheckMaxTime checker = new CheckMaxTime("20212991");
         boolean exceeded = checker.check();
-        // assertTrue/False 등으로 검증
+        assertFalse(exceeded, "최대 예약 시간 초과 여부 확인 실패");
     }
 }
