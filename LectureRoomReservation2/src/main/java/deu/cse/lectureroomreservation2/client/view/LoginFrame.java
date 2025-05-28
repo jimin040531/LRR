@@ -14,11 +14,24 @@ import java.io.*;
  * @author User
  */
 public class LoginFrame extends javax.swing.JFrame {
+    private String server_ip = "localhost";
 
     /**
      * Creates new form LoginForm
      */
     public LoginFrame() {
+        initComponents();
+
+        // 라디오 버튼 그룹화
+        javax.swing.ButtonGroup roleGroup = new javax.swing.ButtonGroup();
+        roleGroup.add(stuRadio);
+        roleGroup.add(profRadio);
+        roleGroup.add(adminRadio);
+        setLocationRelativeTo(null);    // GUI 가운데 정렬.
+    }
+    
+    public LoginFrame(String server_ip) {
+        this.server_ip = server_ip;
         initComponents();
 
         // 라디오 버튼 그룹화
@@ -177,7 +190,7 @@ public class LoginFrame extends javax.swing.JFrame {
 
         try {
             // TCP 서버에 접속
-            deu.cse.lectureroomreservation2.client.Client client = new deu.cse.lectureroomreservation2.client.Client("localhost", 5000);
+            deu.cse.lectureroomreservation2.client.Client client = new deu.cse.lectureroomreservation2.client.Client(server_ip, 5000);
             client.sendLoginRequest(id, pw, role);  // 로그인 요청 전송
 
             try {
