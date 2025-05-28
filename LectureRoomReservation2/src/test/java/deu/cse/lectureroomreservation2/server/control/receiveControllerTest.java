@@ -26,15 +26,15 @@ class receiveControllerTest {
     }
 
     @Test
-    void testHandleReserve_학생_교수_정상처리() throws Exception {
+    void testHandleReserve_ByRole() throws Exception {
         // 학생 예약
-        ReserveRequest studentReq = new ReserveRequest("20230001", "S", "911", "2025/06/05", "목요일", "");
+        ReserveRequest studentReq = new ReserveRequest("20230001", "S", "911", "2025 / 06 / 05", "목요일", "");
         receiveController controller = new receiveController();
         ReserveResult studentResult = controller.handleReserve(studentReq);
         assertTrue(studentResult.getResult(), "학생 예약 성공");
 
         // 교수 예약
-        ReserveRequest profReq = new ReserveRequest("12345", "P", "911", "2025/06/05", "목요일", "");
+        ReserveRequest profReq = new ReserveRequest("12345", "P", "911", "2025 / 06 / 05", "목요일", "");
         ReserveResult profResult = controller.handleReserve(profReq);
         assertTrue(profResult.getResult(), "교수 예약 성공");
 
@@ -46,9 +46,9 @@ class receiveControllerTest {
     }
 
     @Test
-    void testHandleReserve_중복예약_실패() throws Exception {
+    void testHandleReserve_duplicate_test() throws Exception {
         // 동일 시간에 두 번 예약 시도
-        ReserveRequest req = new ReserveRequest("20230001", "S", "911", "2025/06/05", "목요일", "");
+        ReserveRequest req = new ReserveRequest("20230001", "S", "911", "2025 / 06 / 05", "목요일", "");
         receiveController controller = new receiveController();
         controller.handleReserve(req); // 첫 예약 성공
         ReserveResult result = controller.handleReserve(req); // 두 번째 예약 실패
@@ -56,8 +56,8 @@ class receiveControllerTest {
     }
 
     @Test
-    void testHandleReserve_예약취소_후_재예약() throws Exception {
-        ReserveRequest req = new ReserveRequest("20230001", "S", "911", "2025/06/06", "금요일", "");
+    void testHandleReserve_cancel_and_new_reserve() throws Exception {
+        ReserveRequest req = new ReserveRequest("20230001", "S", "911", "2025 / 06 / 06", "금요일", "");
         receiveController controller = new receiveController();
         controller.handleReserve(req); // 예약
 
