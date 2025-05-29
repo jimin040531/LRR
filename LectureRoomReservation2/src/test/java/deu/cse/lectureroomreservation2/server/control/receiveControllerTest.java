@@ -8,21 +8,55 @@ import deu.cse.lectureroomreservation2.common.*;
 import deu.cse.lectureroomreservation2.server.control.receiveController;
 
 class receiveControllerTest {
-    static final Path TEST_DATA = Paths.get("src/test/resources/UserInfo_Test.txt");
-    static final Path ORIGIN_DATA = Paths.get("src/main/resources/UserInfo.txt");
+    static final Path TEST_USER_DATA = Paths.get("src/test/resources/UserInfo_Test.txt");
+    static final Path ORIGIN_USER_DATA = Paths.get("src/main/resources/UserInfo.txt");
+    static final Path TEST_RESERVE_DATA = Paths.get("src/test/resources/ReserveInfo_Test.txt"); 
+    static final Path ORIGIN_RESERVE_DATA = Paths.get("src/main/resources/ReserveInfo.txt");
+    static final Path TEST_NOTICE_DATA = Paths.get("src/test/resources/NoticeInfo_Test.txt");
+    static final Path ORIGIN_NOTICE_DATA = Paths.get("src/main/resources/NoticeInfo.txt");
 
+    public static String getTestUserFileName() {
+        // 테스트용 유저 데이터 파일 이름 반환
+        return TEST_USER_DATA.toString();
+    }
+
+    public static String getTestReserveFileName() {
+        // 테스트용 예약 데이터 파일 이름 반환
+        return TEST_RESERVE_DATA.toString();
+    }
+
+    public static String getOriginUserFileName() {
+        // 원본 유저 데이터 파일 이름 반환
+        return ORIGIN_USER_DATA.toString();
+    }
+
+    public static String getOriginReserveFileName() {
+        // 원본 예약 데이터 파일 이름 반환
+        return ORIGIN_RESERVE_DATA.toString();
+    }
+    
+    public static String getTestNoticeFileName() {
+        // 테스트용 공지 데이터 파일 이름 반환
+        return TEST_NOTICE_DATA.toString();
+    }
+
+    public static String getOriginNoticeFileName() {
+        // 원본 공지 데이터 파일 이름 반환
+        return ORIGIN_NOTICE_DATA.toString();
+    }
+    
     @BeforeEach
     void setUp() throws Exception {
         // 테스트용 데이터 파일이 없으면 복사
-        if (!Files.exists(TEST_DATA)) {
-            Files.copy(ORIGIN_DATA, TEST_DATA);
+        if (!Files.exists(TEST_USER_DATA)) {
+            Files.copy(ORIGIN_USER_DATA, TEST_USER_DATA);
         }
     }
 
     @AfterEach
     void tearDown() throws Exception {
         // 테스트 후 파일 정리(필요시)
-        Files.deleteIfExists(TEST_DATA);
+        Files.deleteIfExists(TEST_USER_DATA);
     }
 
     @Test
