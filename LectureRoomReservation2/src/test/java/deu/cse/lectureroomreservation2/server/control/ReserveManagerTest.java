@@ -8,12 +8,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ReserveManagerTest {
     @Test
-    void testReservePastAndWeekend() {
+    void GeneraReserve() {
+        // 일반 예약 생성 테스트, 다음날 기준으로 예약
+        String nextDate = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy / MM / dd"));
+        ReserveResult result = ReserveManager.reserve("20230001", "S", "911", nextDate, "화요일");
+        assertTrue(result.getResult(), "일반 예약은 성공해야 함");
+    }
+    
+    @Test
+    void testReservePast() {
         // 과거 예약
         String pastDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy / MM / dd"));
         ReserveResult pastResult = ReserveManager.reserve("20230001", "S", "911", pastDate, "월요일");
         assertFalse(pastResult.getResult(), "과거 예약은 실패해야 함");
+    }
 
+    @Test 
+    void testReserveWeekend() {
         // 주말 예약
         String weekendDate = "2025/06/07"; // 토요일
         ReserveResult weekendResult = ReserveManager.reserve("20230001", "S", "911", weekendDate, "토요일");
@@ -22,8 +33,8 @@ class ReserveManagerTest {
 
     @Test
     void testReserveMaxCount() {
-        // 최대 예약 개수 초과 시도(가정: 3개)
-        for (int i = 0; i < 3; i++) {
+        // 최대 예약 개수 초과 시도(가정: 4개)
+        for (int i = 0; i < 4; i++) {
             String date = LocalDate.now().plusDays(i + 1).format(DateTimeFormatter.ofPattern("yyyy / MM / dd"));
             ReserveManager.reserve("20230001", "S", "911", date, "목요일");
         }
