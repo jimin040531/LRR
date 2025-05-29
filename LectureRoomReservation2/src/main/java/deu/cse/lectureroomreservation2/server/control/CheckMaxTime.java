@@ -16,7 +16,7 @@ import java.io.*;
 public class CheckMaxTime implements Serializable {
     private String id;
 
-    //private final String USER_FILE = "UserInfotest.txt";
+    //private final String USER_FILE = "UserInfo.txt";
     private final String USER_FILE = receiveController.getUserFileName();
     
     public CheckMaxTime(String id) {

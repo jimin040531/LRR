@@ -117,7 +117,7 @@ public class TableRearrangeTest {
         assertEquals("12:00", quickViewTimeTable.getValueAt(0, 0)); // 
         assertEquals("908", quickViewTimeTable.getValueAt(0, 2)); //
         assertEquals("공실", quickViewTimeTable.getValueAt(0, 3)); // 
-        assertEquals("25/05/21", quickViewTimeTable.getValueAt(0, 4)); //여기에 오늘 날짜를 기입해야 테스트 통과가능
+        assertEquals("25/05/30", quickViewTimeTable.getValueAt(0, 4)); //여기에 오늘 날짜를 기입해야 테스트 통과가능
  
     }
 }
